@@ -20,8 +20,8 @@
 ```ts
 /**
  * [파일명] UserService.ts
- * [기능]   사용자 인증 및 계정 관리
- * [역할]   로그인·회원가입·토큰 갱신 비즈니스 로직 처리
+ * [기능]   사용자 인증 및 계정 관리 (비밀번호 해싱, JWT 발급, 세션 갱신 등 핵심 비즈니스 로직)
+ * [역할]   컨트롤러에서 전달된 사용자 정보를 기반으로 DB 검증을 수행하고, 성공 시 액세스/리프레시 토큰 페어를 생성하여 반환한다.
  * [export] UserService 클래스
  */
 ```
@@ -77,10 +77,10 @@ const isLoggedIn = false   // 현재 로그인 여부
 ### 파일 최상단
 ```python
 """
-[파일명] user_service.py
-[기능]   사용자 인증 및 계정 관리
-[역할]   로그인·회원가입·토큰 갱신 비즈니스 로직 처리
-[export] UserService 클래스
+[파일명] user_router.py
+[기능]   사용자 계정 관리 API 라우터 (회원가입, 로그인, 프로필 조회 기능 제공)
+[역할]   POST /users (회원가입), POST /users/login (인증 토큰 발급), GET /users/me (프로필 조회) 엔드포인트를 등록하고 HTTP 요청 파라미터를 검증한다.
+[export] user_router 객체 (FastAPI APIRouter)
 """
 ```
 
@@ -89,8 +89,8 @@ const isLoggedIn = false   // 현재 로그인 여부
 class UserService:
     """
     사용자 인증 서비스 클래스
-    DB 조회·비밀번호 검증·토큰 발급을 담당한다.
-    Repository 레이어를 주입받아 사용한다.
+    DB 조회·비밀번호 검증·토큰 발급 등 도메인 핵심 로직을 담당한다.
+    Repository 레이어를 외부에 의존성을 두고 주입받아 사용한다.
     """
 
     async def login(self, email: str, password: str):
@@ -127,10 +127,10 @@ is_logged_in = False # 현재 로그인 여부
 ### 파일 최상단
 ```java
 /**
- * [파일명] UserService.java
- * [기능]   사용자 인증 및 계정 관리
- * [역할]   로그인·회원가입·토큰 갱신 비즈니스 로직 처리
- * [Bean]   @Service — Spring 컨테이너에 의해 싱글톤 관리
+ * [파일명] UserController.java
+ * [기능]   사용자 계정 관리 REST API 제어 (회원가입, 인증, 프로필 조회)
+ * [역할]   POST /api/v1/users/login (로그인), POST /api/v1/users/signup (회원가입) 엔드포인트를 제공하고 클라이언트 요청 파라미터를 검증하여 UserService로 전달한다.
+ * [Bean]   @RestController — Spring 컨테이너에 의해 싱글톤 관리
  */
 ```
 

@@ -56,6 +56,7 @@ cat requirements.txt pyproject.toml 2>/dev/null | grep -iE "fastapi|django|flask
 ### Step 4 — 결과 미리보기 및 사용자 확인
 
 주석이 추가된 전체 파일 내용을 대화창에 출력하고 승인을 요청한다.
+**만약 git 이력에서 작성자를 찾지 못한 경우, 승인 요청 시 사용자에게 작성자 이름을 한 번 물어보아 입력받는다.**
 
 > "위 내용으로 파일을 덮어쓸까요? (승인 / 수정 요청 / 취소)"
 
