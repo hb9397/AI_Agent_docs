@@ -6,14 +6,25 @@
 
 ## 1. 현재 상태 파악
 
-```bash
-# git 기준: 변경된 스킬 파악
-git diff --name-only HEAD -- "*/skills/**" 2>/dev/null
+변경 감지는 **파일 내용 체크섬(MD5)** 비교를 1순위로 사용한다.
+git / mtime은 보조 힌트로만 참조하고, 최종 판단은 반드시 내용 비교로 결정한다.
 
-# fallback: 파일 시스템 mtime 기준
-find . -path "*/skills/*/SKILL.md" ! -path "*/node_modules/*" ! -path "*/venv/*" \
-  -printf "%T@ %p\n" 2>/dev/null | sort -rn
+```bash
+# 스킬 디렉토리 목록 수집
+find . -path "*/.agents/skills/*/SKILL.md" \
+       -o -path "*/.claude/skills/*/SKILL.md" 2>/dev/null \
+  | grep -v "node_modules\|venv\|__pycache__"
+
+# 파일 체크섬 생성 (비교용)
+md5sum .agents/skills/<skill-name>/SKILL.md 2>/dev/null \
+  || md5 -q .agents/skills/<skill-name>/SKILL.md 2>/dev/null
+
+# git 보조 힌트 (참고만)
+git diff --name-only HEAD -- "*/skills/**" 2>/dev/null
 ```
+
+> **중요**: git diff 결과가 비어 있어도 체크섬이 다르면 "수정"으로 처리한다.
+> 체크섬 비교가 불가능한 경우 파일을 직접 Read하여 내용을 줄 단위로 비교한다.
 
 ---
 
@@ -40,8 +51,12 @@ mkdir -p .claude/skills .gemini/commands
 |-----------|-----------|------|
 | 스킬 추가 | 기준 경로에만 있고 나머지에 없음 | 나머지 경로에 **복사** |
 | 스킬 삭제 | git diff로 D(deleted) 감지 또는 기준에서 사라짐 | 나머지 경로에서도 **삭제** |
-| 스킬 수정 | git diff 또는 mtime 비교로 최신 버전 판별 | 나머지 경로에 **덮어쓰기** |
-| 변경 없음 | 내용과 구조 동일 | **스킵** |
+| 스킬 수정 | **체크섬(MD5) 불일치** → 내용 직접 비교로 최신 버전 확정 | 나머지 경로에 **덮어쓰기** |
+| 변경 없음 | 체크섬 동일 **AND** 파일 수 동일 | **스킵** |
+
+> **스킵 판단 기준**: 두 조건을 모두 충족해야 스킵한다.
+> - 체크섬이 같은 경우에도 하위 파일 수가 다르면 전체 재복사한다.
+> - 체크섬 명령 실패 시 파일을 Read하여 내용을 직접 비교한다. 비교 불가 시 항상 덮어쓰기한다.
 
 스킬 단위는 `skills/<skill-name>/` 디렉토리 전체를 대상으로 한다 (하위 파일 포함).
 
@@ -55,15 +70,25 @@ mkdir -p .claude/skills .gemini/commands
 mkdir -p .gemini/commands
 ```
 
-### 스킬 추가 시
+### 스킬 추가 / 수정 시
 
-`.gemini/commands/<skill-name>.toml` 파일을 생성한다:
+`.gemini/commands/<skill-name>.toml` 파일을 생성한다.
+
+**인코딩 규칙 (필수)**
+- 파일은 반드시 **UTF-8 (BOM 없음)** 으로 저장한다.
+- TOML 값에는 **ASCII 문자만** 사용한다. 한글, 특수문자, 이모지 금지.
+- 생성 후 `file` 명령으로 인코딩 확인: `file .gemini/commands/<skill-name>.toml`
 
 ```toml
-description = ".agents/skills/<skill-name> 실행"
-execute = ".agents/skills/<skill-name>"
-prompt = ".agents/skills/<skill-name> 에 정의된 Skills 를 수행해줘"
+description = "Run .agents/skills/<skill-name> skill"
+prompt = "Please execute the skill defined in .agents/skills/<skill-name>"
 ```
+
+> TOML 직접 작성이 불안정한 환경에서는 아래 bash로 생성한다:
+> ```bash
+> printf 'description = "Run .agents/skills/<skill-name> skill"\nprompt = "Please execute the skill defined in .agents/skills/<skill-name>"\n' \
+>   > .gemini/commands/<skill-name>.toml
+> ```
 
 ### 스킬 삭제 시
 
