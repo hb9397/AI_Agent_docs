@@ -38,19 +38,9 @@
 
 | 스킬명 | 작업 | 대상 경로 |
 |--------|------|-----------|
-| `multi-review` | ✅ 동기화됨 | `.claude/skills/` |
-| `agent-sync` | ✅ 추가됨 | `.claude/skills/` |
-| `old-skill` | 🗑️ 삭제됨 | `.claude/skills/` |
-
----
-
-## ⚡ 3. Gemini CLI Commands 동기화 결과
-
-| 파일 | 작업 |
-|------|------|
-| `.gemini/commands/multi-review.toml` | ✅ 생성됨 |
-| `.gemini/commands/agent-sync.toml` | ✅ 생성됨 |
-| `.gemini/commands/old-skill.toml` | 🗑️ 삭제됨 |
+| `multi-review` | ✅ 동기화됨 | `.agents/skills/`, `.claude/skills/` |
+| `agent-sync` | ✅ 추가됨 | `.agents/skills/`, `.claude/skills/` |
+| `old-skill` | 🗑️ 삭제됨 | `.agents/skills/`, `.claude/skills/` |
 
 ---
 

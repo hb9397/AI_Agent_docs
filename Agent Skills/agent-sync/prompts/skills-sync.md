@@ -1,6 +1,6 @@
 # Task B — Skills 동기화 (skills-sync)
 
-**역할**: SKILL.md Step 2에서 전달받은 변경된 Skills 목록을 기준으로 `.agents/skills`, `.claude/skills`, `.gemini/commands`를 동기화하는 전담 에이전트.
+**역할**: SKILL.md Step 2에서 전달받은 변경된 Skills 목록을 기준으로 `.agents/skills`, `.claude/skills`를 동기화하는 전담 에이전트.
 
 ---
 
@@ -27,17 +27,16 @@ md5sum .agents/skills/<skill-name>/SKILL.md 2>/dev/null \
 
 ## 2. 동기화 대상 경로
 
-아래 세 경로를 **모두 동기화** 대상으로 처리한다.
+아래 두 경로를 **모두 동기화** 대상으로 처리한다.
 경로가 존재하지 않아도 **자동 생성**한 뒤 동기화를 진행한다.
 
 ```
 .agents/skills/     ← 주 기준 경로
 .claude/skills/     ← 보조 경로 (없으면 mkdir 후 생성)
-.gemini/commands/   ← Gemini CLI 커맨드 경로 (없으면 mkdir 후 생성)
 ```
 
 ```bash
-mkdir -p .claude/skills .gemini/commands
+mkdir -p .claude/skills
 ```
 
 ---
@@ -59,35 +58,6 @@ mkdir -p .claude/skills .gemini/commands
 
 ---
 
-## 4. Gemini CLI Commands 동기화
+## 4. 결과 반환
 
-`.gemini/commands/` 경로가 없으면 자동 생성한다.
-
-```bash
-mkdir -p .gemini/commands
-```
-
-### 스킬 추가 / 수정 시
-
-`.gemini/commands/<skill-name>.toml` 파일을 생성한다.
-
-**인코딩 규칙 (필수)**
-
-- 파일은 반드시 **UTF-8 (BOM 없음)** 으로 저장한다.
-- TOML 값에는 **ASCII 문자만** 사용한다. 한글, 특수문자, 이모지 금지.
-
-```bash
-printf 'description = "Run .agents/skills/<skill-name> skill"\nprompt = "Please execute the skill defined in .agents/skills/<skill-name>"\n' \
-  > .gemini/commands/<skill-name>.toml
-```
-
-### 스킬 삭제 시
-
-대응하는 `.gemini/commands/<skill-name>.toml` 을 삭제한다.
-
----
-
-## 5. 결과 반환
-
-동기화한 각 스킬의 이름, 작업 유형(추가/삭제/수정/스킵), 대상 경로 목록과
-`.gemini/commands` 변경 내역을 반환한다.
+동기화한 각 스킬의 이름, 작업 유형(추가/삭제/수정/스킵), 대상 경로 목록을 반환한다.
