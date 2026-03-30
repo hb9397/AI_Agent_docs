@@ -35,8 +35,14 @@ git rev-parse --is-inside-work-tree 2>/dev/null
 
 ## Step 2 — 대상 파일 결정
 
-진입 분기표에 따라 해당하는 경로를 실행한다.
-세부 규칙은 `prompts/change-detection.md`의 [대상 파일 결정] 섹션을 참조한다.
+진입 분기표에 따라 `prompts/change-detection.md`의 해당 섹션을 참조한다.
+
+| 상황 | change-detection.md 참조 섹션 |
+|------|------------------------------|
+| 특정 파일 지정 + git 있음 | [Git Diff — 특정 파일] |
+| 특정 파일 지정 + git 없음 | [Mtime — 특정 파일] |
+| 파일 미지정 + git 있음 | [Git Diff — 전체 변경 파일] |
+| 파일 미지정 + git 없음 | [사용자 질문] |
 
 > ✋ **확인 게이트** (Step 2D — 파일 미지정 + git 미적용인 경우만)
 > "주석을 적용할 파일 또는 디렉토리 경로를 지정해 주세요."
@@ -78,7 +84,7 @@ cat requirements.txt pyproject.toml 2>/dev/null | grep -iE "fastapi|django|flask
 ## Step 5 — 결과 미리보기 및 사용자 확인
 
 주석이 추가된 전체 파일 내용을 대화창에 출력하고 승인을 요청한다.
-**git 이력에서 작성자를 찾지 못한 경우, 승인 요청 시 사용자에게 작성자 이름을 한 번 물어본다.**
+파일 최하단 변경 이력 처리 규칙은 `prompts/comment-rules.md`의 Section 5 참조.
 
 > ✋ **확인 게이트**
 > "위 내용으로 파일을 덮어쓸까요? (승인 / 수정 요청 / 취소)"

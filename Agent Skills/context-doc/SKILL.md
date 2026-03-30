@@ -1,6 +1,10 @@
 ---
 name: context-doc
-description: "설계 문서 → CLAUDE.md + basic-instruction.md 자동 생성"
+description: >
+  설계 문서나 PRD가 완성된 후 AI Agent용 컨텍스트 파일을 만들 때 사용한다.
+  'CLAUDE.md 만들어줘', '컨텍스트 문서 생성', 'basic-instruction 작성',
+  '에이전트 가이드 만들어줘' 요청이 오면 반드시 이 스킬을 쓴다.
+  설계 문서 → CLAUDE.md + basic-instruction.md 2종 자동 생성.
 allowed-tools: Read, Glob, Grep, Bash, Write
 agent: fork
 ---
@@ -29,6 +33,8 @@ design-doc (설계 인터뷰 → OUTPUT 문서)
 context-doc → CLAUDE.md + basic-instruction.md
 ```
 
+> 아래 섹션 번호는 `design-doc`의 **OUTPUT_V2 기준**이다. V1 OUTPUT은 번호 체계가 다르므로 비권장.
+
 design-doc OUTPUT의 각 섹션은 아래와 같이 매핑된다.
 
 | design-doc OUTPUT 섹션 | 생성 대상 |
@@ -54,7 +60,8 @@ design-doc OUTPUT의 각 섹션은 아래와 같이 매핑된다.
 ### Step 2-A — CLAUDE.md 분석
 
 `prompts/analysis-claude.md` 기준으로 설계 문서를 분석한다.
-누락 항목은 `미정 — [이유]` 로 표시하고, 필요 시 사용자에게 최대 2개만 묻는다.
+**질문은 최대 1개만** 한다. (Step 2-B와 합산 2개 이하)
+누락 항목은 `미정 — [이유]` 로 표시한다.
 
 ---
 
@@ -62,6 +69,7 @@ design-doc OUTPUT의 각 섹션은 아래와 같이 매핑된다.
 
 `prompts/analysis-instruction.md` 기준으로 설계 문서를 분석한다.
 특히 금지 목록은 **금지 패턴 + 이유 + 대안** 삼위일체가 모두 갖춰졌는지 확인한다.
+**질문은 최대 1개만** 한다. (Step 2-A에서 질문했다면 이 단계에서는 질문 금지)
 누락 항목은 `미정 — [이유]` 로 표시한다.
 
 ---
@@ -94,16 +102,10 @@ Step 2-A / 2-B 분석 결과를 각각 채워 초안을 작성한다.
 
 ### Step 5 — 파일 저장
 
-승인 시 아래 순서로 파일을 생성한다.
-
-```bash
-# .instruction 디렉토리가 없으면 생성
-mkdir -p .instruction
-
-# 파일 저장
-# CLAUDE.md → 프로젝트 루트
-# .instruction/basic-instruction.md → .instruction/ 하위
-```
+승인 시 `.instruction/` 디렉토리가 없으면 먼저 생성한 후 두 파일을 저장한다.
+저장 경로는 아래를 따른다.
+- `CLAUDE.md` → 프로젝트 루트
+- `.instruction/basic-instruction.md` → `.instruction/` 하위
 
 저장 완료 후 `CLAUDE.md` 내 `@.instruction/basic-instruction.md` 참조 경로가
 실제 파일 위치와 일치하는지 확인한다.

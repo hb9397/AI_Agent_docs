@@ -8,10 +8,11 @@
 
 | 스케일 | INPUT 양식 | OUTPUT 양식 | 비고 |
 |--------|-----------|------------|------|
-| 프로젝트 전체 | INPUT_V1 | OUTPUT_V1 | Agent 스킬에서는 지양. 사용자가 명시적으로 요청 시에만 허용 |
-| 화면 단위 | INPUT_V2 | OUTPUT_V2 | 기본 권장 스케일 |
-| 기능 단위 | INPUT_V2 | OUTPUT_V2 | |
-| 컴포넌트 / 로직 단위 | INPUT_V2 | OUTPUT_V2 | |
+| 프로젝트 전체 | INPUT_V2 | OUTPUT_V2 | 권장 |
+| 화면 단위 | INPUT_V2 | OUTPUT_V2 | 권장 |
+| 기능 단위 | INPUT_V2 | OUTPUT_V2 | 권장 |
+| 컴포넌트 / 로직 단위 | INPUT_V2 | OUTPUT_V2 | 권장 |
+| 프로젝트 전체 (레거시) | INPUT_V1 | OUTPUT_V1_deprecated | ⚠️ deprecated — 레거시 호환 시에만 |
 
 ---
 

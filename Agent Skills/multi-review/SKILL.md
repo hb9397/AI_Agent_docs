@@ -1,6 +1,10 @@
 ---
 name: multi-review
-description: "멀티 페르소나 코드 리뷰"
+description: >
+  코드 리뷰가 필요할 때 반드시 이 스킬을 사용한다.
+  '코드 리뷰해줘', '리뷰', '코드 점검', '보안 체크', '성능 확인',
+  '이 코드 괜찮아?', 'PR 리뷰' 요청이 오면 이 스킬로 처리한다.
+  보안·성능·유지보수성·테스트 4개 관점을 병렬 실행하는 멀티 페르소나 리뷰.
 allowed-tools: Read, Glob, Grep, Bash, Task
 disable-model-invocation: true
 agent: fork

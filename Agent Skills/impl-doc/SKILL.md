@@ -1,6 +1,10 @@
 ---
 name: impl-doc
-description: "설계 문서 → FE/BE 페어 기능 단위 작업지침서 생성"
+description: >
+  설계가 끝난 뒤 구현 순서와 작업 단위를 정리할 때 사용한다.
+  '작업지침서 만들어줘', '구현 계획 세워줘', 'Phase 나눠줘',
+  '태스크 쪼개줘', '어떤 순서로 개발하면 돼?' 요청이 오면 이 스킬을 쓴다.
+  설계 문서 → FE/BE 페어 Phase별 작업지침서 자동 생성.
 allowed-tools: Read, Glob, Grep, Bash, Write
 agent: fork
 ---
