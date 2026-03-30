@@ -124,38 +124,57 @@ rfp-design-input-{일련번호목록}.md
   ├─ 불명확 항목 인라인 확인 질문
   └─ rfp-design-input-*.md 생성
         │
-        ▼
+        ├─────────────────────────────────────────────┐
+        │ [제안 단계 / 추상 목업]                       │
+        │                                             ▼
+        │                                  /create-prototype
+        │                                    ├─ rfp-design-input-*.md 기반
+        │                                    ├─ 화면 흐름 미확정 상태로 제작
+        │                                    └─ SFR 번호 기반 HTML 목업
+        │                                    (이후 설계 확정 시 재생성 가능)
+        │
+        ▼ [설계·구현 단계]
 [2단계] /design-doc
   ├─ rfp-design-input-*.md를 인터뷰 응답으로 활용
   └─ 설계 문서 생성 (화면 정의, 기술 스택, 데이터 구조 등)
         │
+        ▼
+[3단계] /impl-doc
+  ├─ design-doc 산출물 → FE/BE 페어 Phase별 작업지침서
+  ├─ 태스크 의존 관계 및 구현 순서 확정
+  └─ Phase별 검증 시나리오 작성
+        │
         ├──────────────────────────────┐
         ▼                              ▼
-[3단계] /impl-screen-doc         /sfr-trace (선택)
+[4단계] /impl-screen-doc         /sfr-trace (선택)
   ├─ 화면별 컴포넌트 구조          ├─ SFR ↔ 화면 ↔ API 매핑 매트릭스
   ├─ API 연동 포인트               └─ 누락/충돌 항목 리포트
-  ├─ 상태/에러 시나리오
-  └─ 구현 순서(Phase)
+  └─ 상태/에러 처리 시나리오
         │
         ├──────────────────────┐
         ▼                      ▼
-[4단계] /create-prototype  /frontend-design
-  └─ SFR 번호 기반           └─ 실제 컴포넌트 구현
+[5단계] /create-prototype  /frontend-design
+  └─ 설계 확정 후 정밀    └─ 실제 컴포넌트 구현
      HTML 프로토타입
         │
         ▼
-[5단계] /multi-review
-  └─ 설계·구현 교차 리뷰
+[6단계] /multi-review
+  └─ 보안·성능·유지보수성·테스트 4관점 코드 리뷰
         │
         ├──────────────────────────────┐
         ▼                              ▼
-[6단계] /pre-commit             /rfp-compliance-review (선택)
+[7단계] /pre-commit             /rfp-compliance-review (선택)
   └─ 코드 규칙 검사              └─ 설계·구현 vs RFP 요구사항 누락 점검
         │
         ▼
-[7단계] /commit
+[8단계] /commit
   └─ Conventional Commits 메시지 생성 및 커밋
 ```
+
+> **`/create-prototype` 사용 시점**
+> - **제안 단계**: rfp-ingest 직후 → 추상적 화면 목업. 설계 미확정 상태 허용.
+> - **구현 단계**: impl-screen-doc 이후 → 설계 확정 기반 정밀 프로토타입.
+> - 동일 SFR에 대해 두 번 실행되는 것이 정상이며, 이후 버전이 이전 버전을 덮어쓴다.
 
 ---
 
@@ -253,8 +272,10 @@ review               sfr-trace                             │  commit
                               ▼
                         design-doc ──► 설계문서.md
                               │              │
-                    ┌─────────┘              └──► sfr-trace ──► sfr-trace-matrix.md
-                    ▼
+                              ▼              └──► sfr-trace ──► sfr-trace-matrix.md
+                          impl-doc ──► 작업지침서.md (FE/BE Phase)
+                              │
+                              ▼
               impl-screen-doc ──► impl-screen-{화면}.md
                     │
                     ▼
@@ -275,9 +296,11 @@ review               sfr-trace                             │  commit
 | 상황 | 실행 스킬 |
 |------|-----------|
 | 새 SFR 작업 시작 | `rfp-ingest` |
+| 제안 단계 추상 목업 | `create-prototype` (rfp-ingest 직후, 설계 미확정 상태) |
 | SFR → 화면 설계 | `design-doc` (rfp-design-input-*.md 첨부) |
-| 화면 단위 구현 지침 | `impl-screen-doc` |
-| UI 목업/검증 | `create-prototype` |
+| 구현 순서·Phase 분할 | `impl-doc` |
+| 화면 단위 구현 명세 | `impl-screen-doc` |
+| 설계 확정 후 정밀 목업 | `create-prototype` (impl-screen-doc 이후 재실행) |
 | SFR 커버리지 점검 | `sfr-trace` |
 | 커밋 전 | `pre-commit` → `commit` |
 | 납품 전 최종 점검 | `rfp-compliance-review` |
