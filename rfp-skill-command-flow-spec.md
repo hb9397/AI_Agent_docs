@@ -1,7 +1,7 @@
 # RFP 기반 스킬 커맨드 흐름 정의서
 
-> **최종 갱신**: 2026-03-30
-> **갱신 배경**: Codex 리뷰 반영 + 하네스 엔지니어 관점의 추가 스킬 제안 + 전체 흐름 재정리
+> **최종 갱신**: 2026-03-31
+> **갱신 배경**: impl-doc → impl-fe-be-doc 이름 변경 반영 + impl-screen-doc / impl-fe-be-doc 선택 구조로 흐름 개편 + 범용 impl-doc 추가 예정 반영
 
 ---
 
@@ -97,13 +97,28 @@ rfp-design-input-{일련번호목록}.md
 
 ### `impl-screen-doc` 역할
 
-`design-doc` 결과를 입력으로 받아 화면 단위 구현 지침서를 만든다.
+`design-doc` 결과를 입력으로 받아 **화면 단위** 구현 지침서를 만든다.
 
 - 화면별 컴포넌트 구조
 - 화면별 API 연동 포인트
 - 상태/에러 처리 시나리오
 - 화면별 검증 체크리스트
 - 구현 순서(Phase)
+
+---
+
+## 4-1) 구현 지침 스킬 선택 기준
+
+`design-doc` 이후 구현 지침 단계에서 아래 두 스킬 중 **하나를 선택**한다.
+항상 둘 다 수행하는 것이 아님.
+
+| 스킬 | 사용 기준 | 산출물 |
+|------|-----------|--------|
+| `impl-fe-be-doc` | FE / BE 구분이 명확하고, Phase별 페어 작업이 필요한 경우 | FE/BE 페어 Phase별 작업지침서 |
+| `impl-screen-doc` | 화면 단위 명세가 중심이고, RFP SFR 기반 화면 구현인 경우 | 화면별 컴포넌트·API·상태 명세 |
+
+> 프로젝트 특성에 맞는 스킬 하나만 선택해서 진행한다.
+> 두 산출물이 모두 필요한 경우에도, **주가 되는 스킬을 먼저 완성**한 뒤 보조적으로 다른 스킬을 실행한다.
 
 ---
 
@@ -139,41 +154,45 @@ rfp-design-input-{일련번호목록}.md
   └─ 설계 문서 생성 (화면 정의, 기술 스택, 데이터 구조 등)
         │
         ▼
-[3단계] /impl-doc
-  ├─ design-doc 산출물 → FE/BE 페어 Phase별 작업지침서
-  ├─ 태스크 의존 관계 및 구현 순서 확정
-  └─ Phase별 검증 시나리오 작성
+[3단계] 구현 지침 스킬 — 아래 중 하나 선택 (둘 다 수행하지 않음)
         │
-        ├──────────────────────────────┐
-        ▼                              ▼
-[4단계] /impl-screen-doc         /sfr-trace (선택)
-  ├─ 화면별 컴포넌트 구조          ├─ SFR ↔ 화면 ↔ API 매핑 매트릭스
-  ├─ API 연동 포인트               └─ 누락/충돌 항목 리포트
-  └─ 상태/에러 처리 시나리오
-        │
-        ├──────────────────────┐
-        ▼                      ▼
-[5단계] /create-prototype  /frontend-design
-  └─ 설계 확정 후 정밀    └─ 실제 컴포넌트 구현
-     HTML 프로토타입
+        ├──────────────────────────────────────────────────────────────┐
+        ▼                                                              ▼
+/impl-fe-be-doc                                           /impl-screen-doc
+  ├─ FE/BE 구분이 명확한 경우 선택                          ├─ RFP SFR 기반 화면 구현 중심인 경우 선택
+  ├─ FE/BE 페어 Phase별 작업지침서                          ├─ 화면별 컴포넌트 구조
+  ├─ 태스크 의존 관계 및 구현 순서 확정                      ├─ API 연동 포인트
+  └─ Phase별 검증 시나리오 작성                             └─ 상태/에러 처리 시나리오
+        │                                                              │
+        └──────────────────────────┬───────────────────────────────────┘
+                                   │
+                             ┌─────┴──────┐
+                             ▼            ▼
+                       /sfr-trace     (선택 시)
+                         SFR ↔ 화면 ↔ API 매핑
+                         누락/충돌 항목 리포트
+                                   │
+                                   ▼
+[4단계] /create-prototype  또는  /frontend-design
+  ├─ 설계 확정 후 정밀 HTML 프로토타입  또는  실제 컴포넌트 구현
         │
         ▼
-[6단계] /multi-review
+[5단계] /multi-review
   └─ 보안·성능·유지보수성·테스트 4관점 코드 리뷰
         │
         ├──────────────────────────────┐
         ▼                              ▼
-[7단계] /pre-commit             /rfp-compliance-review (선택)
+[6단계] /pre-commit             /rfp-compliance-review (선택)
   └─ 코드 규칙 검사              └─ 설계·구현 vs RFP 요구사항 누락 점검
         │
         ▼
-[8단계] /commit
+[7단계] /commit
   └─ Conventional Commits 메시지 생성 및 커밋
 ```
 
 > **`/create-prototype` 사용 시점**
 > - **제안 단계**: rfp-ingest 직후 → 추상적 화면 목업. 설계 미확정 상태 허용.
-> - **구현 단계**: impl-screen-doc 이후 → 설계 확정 기반 정밀 프로토타입.
+> - **구현 단계**: impl-screen-doc 또는 impl-fe-be-doc 이후 → 설계 확정 기반 정밀 프로토타입.
 > - 동일 SFR에 대해 두 번 실행되는 것이 정상이며, 이후 버전이 이전 버전을 덮어쓴다.
 
 ---
@@ -203,7 +222,15 @@ rfp-design-input-{일련번호목록}.md
 | 항목 | 내용 |
 |------|------|
 | 상태 | 이 문서에 스펙 정의됨. SKILL.md 미생성. |
-| 우선순위 이유 | design-doc 이후 화면 단위 구현 지침 자동화. impl-doc 계열 완성 |
+| 우선순위 이유 | design-doc 이후 화면 단위 구현 지침 자동화. impl-fe-be-doc 계열 완성 |
+
+#### `impl-doc` *(추가 예정)*
+| 항목 | 내용 |
+|------|------|
+| 상태 | 추가 예정. 스펙 미정의. |
+| 역할 | FE/BE 구분 없이 화면·기능·로직 단위를 범용적으로 Phase별 구현할 수 있도록 돕는 범용 구현 지침 스킬 |
+| 대상 | impl-fe-be-doc (FE/BE 페어)도 impl-screen-doc (화면 중심)도 맞지 않는 경우 — 내부 도구, 자동화 스크립트, 단독 기능 단위 구현 등 |
+| 우선순위 이유 | 구현 지침 스킬 3종 체계 완성 (화면 / FE-BE 페어 / 범용) |
 
 ---
 
@@ -253,15 +280,16 @@ rfp-design-input-{일련번호목록}.md
 ### 현재 스킬 계열 구조
 
 ```text
-[RFP 해석 계열]         [설계 계열]          [구현 계열]           [품질 계열]
-rfp-ingest           design-doc          impl-doc             pre-commit
-rfp-compliance-      context-doc         impl-screen-doc  ─┐  multi-review
-review               sfr-trace                             │  commit
-                                                           ▼
-                                                     create-prototype
-                                                     frontend-design
-                                                     code-comment
+[RFP 해석 계열]         [설계 계열]          [구현 지침 계열]              [목업·구현 계열]      [품질 계열]
+rfp-ingest           design-doc          impl-fe-be-doc ✓             create-prototype ✓   pre-commit ✓
+rfp-compliance-      context-doc         impl-screen-doc ✗  (선택)    frontend-design ✓    multi-review ✓
+review ✗             sfr-trace ✗         impl-doc ✗         (예정)    code-comment ✓       commit ✓
 ```
+
+> **구현 지침 계열 선택 규칙**: impl-fe-be-doc / impl-screen-doc / impl-doc 중 하나만 선택 실행.
+> - `impl-fe-be-doc`: FE/BE 페어 Phase 분할이 필요한 경우
+> - `impl-screen-doc`: RFP SFR 기반 화면 단위 명세가 중심인 경우
+> - `impl-doc` (예정): FE/BE 구분·화면 구분 없이 범용 단계별 구현이 필요한 경우
 
 ### 스킬 간 데이터 흐름
 
@@ -272,23 +300,28 @@ review               sfr-trace                             │  commit
                               ▼
                         design-doc ──► 설계문서.md
                               │              │
-                              ▼              └──► sfr-trace ──► sfr-trace-matrix.md
-                          impl-doc ──► 작업지침서.md (FE/BE Phase)
+                              │              └──► sfr-trace ──► sfr-trace-matrix.md
                               │
-                              ▼
-              impl-screen-doc ──► impl-screen-{화면}.md
-                    │
-                    ▼
-             create-prototype ──► SFR-{번호}.html
-                    │
-                    ▼
-              multi-review ──► 리뷰 결과
-                    │
-                    ▼
-              pre-commit ──► 규칙 검사 통과
-                    │
-                    ▼
-               commit ──► git history
+                    ┌─────────┴──────────────────────┐
+                    │  구현 지침 스킬 — 하나만 선택    │
+                    ▼                                ▼
+          impl-fe-be-doc                    impl-screen-doc
+          작업지침서.md                      impl-screen-{화면}.md
+          (FE/BE Phase 페어)                (화면별 컴포넌트·API)
+                    │                                │
+                    └──────────────┬─────────────────┘
+                                   ▼
+                         create-prototype ──► SFR-{번호}.html
+                                   │
+                         frontend-design ──► 컴포넌트 코드
+                                   │
+                           multi-review ──► 리뷰 결과
+                                   │
+                           pre-commit ──► 규칙 검사 통과
+                                   │
+                            commit ──► git history
+                                   │
+                   rfp-compliance-review ──► rfp-compliance-report.md
 ```
 
 ### 스킬 선택 기준 (런타임)
@@ -298,12 +331,21 @@ review               sfr-trace                             │  commit
 | 새 SFR 작업 시작 | `rfp-ingest` |
 | 제안 단계 추상 목업 | `create-prototype` (rfp-ingest 직후, 설계 미확정 상태) |
 | SFR → 화면 설계 | `design-doc` (rfp-design-input-*.md 첨부) |
-| 구현 순서·Phase 분할 | `impl-doc` |
-| 화면 단위 구현 명세 | `impl-screen-doc` |
-| 설계 확정 후 정밀 목업 | `create-prototype` (impl-screen-doc 이후 재실행) |
+| FE/BE 페어 Phase 분할 구현 | `impl-fe-be-doc` ← 구 `impl-doc` |
+| RFP SFR 기반 화면 단위 구현 명세 | `impl-screen-doc` |
+| 범용 단계별 구현 (FE·BE·화면 구분 불필요) | `impl-doc` *(추가 예정)* |
+| 설계 확정 후 정밀 목업 | `create-prototype` (impl-screen-doc 또는 impl-fe-be-doc 이후 재실행) |
 | SFR 커버리지 점검 | `sfr-trace` |
 | 커밋 전 | `pre-commit` → `commit` |
 | 납품 전 최종 점검 | `rfp-compliance-review` |
+
+### 설계 원칙 (반영 완료 / 향후 유지)
+
+1. **명시적 트리거**: Hook 자동 실행 없음. 모든 스킬은 사용자가 명시적으로 호출.
+2. **SFR 선택 실행**: RFP 전체를 일괄 처리하지 않음. 그 때 그 때 필요한 SFR만.
+3. **산출물 연결**: 각 스킬의 출력이 다음 스킬의 입력이 되는 파이프라인 구조.
+4. **스킬 경계 명확화**: 유사 기능은 별도 스킬 분리 대신 옵션/플래그로 흡수.
+5. **구현 지침 스킬 선택 실행**: impl-fe-be-doc / impl-screen-doc / impl-doc 중 상황에 맞는 하나만 실행. 순차 실행이 기본값이 아님.
 
 ### 설계 원칙 (반영 완료 / 향후 유지)
 

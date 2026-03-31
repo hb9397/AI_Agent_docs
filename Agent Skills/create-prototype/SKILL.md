@@ -2,17 +2,17 @@
 name: create-prototype
 description: >
   HTML UI 프로토타입 생성 스킬. `/create-prototype` 명령어로 트리거되며,
-  성능요구사항(SFR) 번호 기반 화면 프로토타입을 HTML 파일로 생성한다.
+  요구사항 번호(SFR, REQ, UC 등 프로젝트별 prefix) 기반 화면 프로토타입을 HTML 파일로 생성한다.
   Tailwind CSS CDN + Noto Sans KR 기반이며, 실제 서비스 수준의 인터랙티브 프로토타입을 만든다.
   "프로토타입 만들어줘", "화면 설계", "UI 프로토타입", "HTML 화면", "화면 구현",
-  "SFR 화면", "목업", "화면 시안" 등의 요청에도 반드시 이 스킬을 사용한다.
+  "SFR 화면", "REQ 화면", "목업", "화면 시안" 등의 요청에도 반드시 이 스킬을 사용한다.
   화면이나 프로토타입이라는 단어가 포함된 요청이면 거의 항상 이 스킬을 쓴다.
 allowed-tools: Read, Write, Glob, Task
 ---
 
 # Create Prototype — HTML UI 프로토타입 생성기
 
-성능요구사항(SFR) 번호를 기반으로 인터랙티브 UI 프로토타입을 생성하는 스킬이다.
+요구사항 번호(기본 PREFIX: `SFR`, 커스텀 PREFIX 허용)를 기반으로 인터랙티브 UI 프로토타입을 생성하는 스킬이다.
 Tailwind CSS CDN과 Noto Sans KR 폰트를 사용하며, VS Code Go Live 서버로 바로 확인할 수 있다.
 
 ---
@@ -28,29 +28,33 @@ Task 툴 호출 실패 시 자동으로 순차 생성으로 전환한다.
 
 ## 워크플로우
 
-`/create-prototype` 명령이 들어오면 먼저 사용자 메시지에서 아래 3가지를 사전 추출한다.
+`/create-prototype` 명령이 들어오면 먼저 사용자 메시지에서 아래 4가지를 사전 추출한다.
 
 | 항목 | 추출 기준 |
 |---|---|
-| SFR 번호 | `SFR-NNN` 패턴 포함 여부 |
+| PREFIX | `[A-Z]+-NNN` 패턴 포함 여부 (예: `SFR-018`, `REQ-005`, `UC-012`) — 없으면 기본값 `SFR` |
+| 번호 | PREFIX와 결합된 숫자 부분 |
 | 기능 설명 | 메시지에 화면 기능 설명이 있는가 |
 | 메인 색상 | HEX 코드 또는 색상명 포함 여부 |
 
 추출된 항목은 해당 STEP을 건너뛴다.
-3개가 모두 추출되면 STEP 4로 바로 진입한다.
+4개가 모두 추출되면 STEP 4로 바로 진입한다.
+
+> PREFIX는 사용자가 명시한 값을 그대로 사용한다. 이후 모든 파일명, 디렉토리명, HTML title에 `{PREFIX}-{번호}` 형태로 반영한다.
 
 그 외에는 아래 4단계를 순서대로 진행한다.
 
-### STEP 1 — 성능요구사항 번호 수집 (미제공 시에만 질문)
+### STEP 1 — 요구사항 번호 수집 (미제공 시에만 질문)
 
-사용자에게 해당 화면의 **성능요구사항 번호**를 물어본다.
+사용자에게 해당 화면의 **요구사항 번호**를 물어본다.
 
-- 형식 규칙: `SFR-001` (세 자리, 영어 대문자 + 하이픈 + 숫자 세 자리)
-- 복수 화면: `SFR-001&002` 형태로 `&`로 결합
-- HTML `<title>`에도 반영: `SFR-001 — {프로젝트명} 화면 예시`
+- 기본 PREFIX: `SFR` — 사용자가 다른 prefix를 사용하면 그것을 그대로 따른다
+- 형식 규칙: `{PREFIX}-001` (영어 대문자 + 하이픈 + 숫자, 자릿수는 프로젝트 관례 따름)
+- 복수 화면: `{PREFIX}-001&002` 형태로 `&`로 결합
+- HTML `<title>`에도 반영: `{PREFIX}-001 — {프로젝트명} 화면 예시`
 
 사용자에게 이렇게 물어본다:
-> "이 화면의 성능요구사항 번호를 알려주세요. (예: SFR-001, 복수이면 SFR-001&002)"
+> "이 화면의 요구사항 번호를 알려주세요. (예: SFR-001, REQ-005, UC-012 등 프로젝트에서 쓰는 번호로 알려주세요. 복수이면 & 로 결합: SFR-001&002)"
 
 ### STEP 2 — 화면 기능구성 + 와이어프레임 수집 (미제공 시에만 질문)
 
@@ -92,30 +96,30 @@ Task 툴 호출 실패 시 자동으로 순차 생성으로 전환한다.
 
 | 조건 | 구조 |
 |---|---|
-| 화면 수 3개 이하 **AND** 예상 700줄 이하 | **단일 파일**: `SFR-{번호}.html` |
-| 화면 수 4개 이상 **OR** 예상 700줄 초과 | **분리 구조**: `SFR-{번호}/` 디렉토리 |
+| 화면 수 3개 이하 **AND** 예상 700줄 이하 | **단일 파일**: `{PREFIX}-{번호}.html` |
+| 화면 수 4개 이상 **OR** 예상 700줄 초과 | **분리 구조**: `{PREFIX}-{번호}/` 디렉토리 |
 
 #### 단일 파일 구조
 
 ```text
-SFR-001.html    ← 단독 파일, CSS·JS 전부 인라인
+{PREFIX}-001.html    ← 단독 파일, CSS·JS 전부 인라인
 ```
 
-파일 저장: 사용자가 지정한 경로 또는 현재 작업 디렉토리에 `SFR-{번호}.html`로 저장.
+파일 저장: 사용자가 지정한 경로 또는 현재 작업 디렉토리에 `{PREFIX}-{번호}.html`로 저장.
 
 #### 분리 구조 (Go Live 서버 완전 호환)
 
 화면이 많거나 길어질 경우 디렉토리를 생성하고 화면별로 분리한다:
 
 ```text
-SFR-001/
-├── SFR-001.html        ← 메인: 공통 CSS, nav, JS 로더
-├── SFR-001-1.html      ← 화면 1 HTML 조각 (div 내용만)
-├── SFR-001-2.html      ← 화면 2 HTML 조각
-└── SFR-001-3.html      ← 화면 3 HTML 조각 (필요 시)
+{PREFIX}-001/
+├── {PREFIX}-001.html        ← 메인: 공통 CSS, nav, JS 로더
+├── {PREFIX}-001-1.html      ← 화면 1 HTML 조각 (div 내용만)
+├── {PREFIX}-001-2.html      ← 화면 2 HTML 조각
+└── {PREFIX}-001-3.html      ← 화면 3 HTML 조각 (필요 시)
 ```
 
-**SFR-{번호}.html (메인 파일) 구조:**
+**{PREFIX}-{번호}.html (메인 파일) 구조:**
 ```html
 <!DOCTYPE html>
 <html lang="ko">
@@ -135,7 +139,7 @@ SFR-001/
     async function loadScreen(n, btn) {
       document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
       btn.classList.add('active');
-      const res = await fetch(`./SFR-001-${n}.html`);
+      const res = await fetch(`./{PREFIX}-001-${n}.html`);
       document.getElementById('screen-container').innerHTML = await res.text();
     }
     loadScreen(1, document.querySelector('.tab-btn.active'));
@@ -144,7 +148,7 @@ SFR-001/
 </html>
 ```
 
-**SFR-{번호}-N.html (화면 조각 파일) 구조:**
+**{PREFIX}-{번호}-N.html (화면 조각 파일) 구조:**
 ```html
 <!-- 화면 1: 진입화면 — <!DOCTYPE>, <html>, <head> 없음. div 조각만 작성 -->
 <div class="screen-wrap">
@@ -155,7 +159,7 @@ SFR-001/
 </script>
 ```
 
-> **Go Live 호환 이유**: Go Live는 HTTP 서버이므로 `fetch('./SFR-001-1.html')`이 CORS 없이 완벽히 동작한다. 파일 이중 클릭(file:// 프로토콜)으로는 fetch가 차단되지만, Go Live 사용 시 항상 정상 작동한다.
+> **Go Live 호환 이유**: Go Live는 HTTP 서버이므로 `fetch('./{PREFIX}-001-1.html')`이 CORS 없이 완벽히 동작한다. 파일 이중 클릭(file:// 프로토콜)으로는 fetch가 차단되지만, Go Live 사용 시 항상 정상 작동한다.
 
 #### 분리 구조 생성 — 병렬 subagent (Claude Code / Codex)
 
@@ -169,16 +173,16 @@ SFR-001/
 
 ```text
 병렬 실행 (동시):
-  subagent-0: SFR-001.html     ← 공통 CSS, nav, fetch 로더 생성
-  subagent-1: SFR-001-1.html   ← 화면 1 조각 생성
-  subagent-2: SFR-001-2.html   ← 화면 2 조각 생성
-  subagent-3: SFR-001-3.html   ← 화면 3 조각 생성 (있을 경우)
+  subagent-0: {PREFIX}-001.html     ← 공통 CSS, nav, fetch 로더 생성
+  subagent-1: {PREFIX}-001-1.html   ← 화면 1 조각 생성
+  subagent-2: {PREFIX}-001-2.html   ← 화면 2 조각 생성
+  subagent-3: {PREFIX}-001-3.html   ← 화면 3 조각 생성 (있을 경우)
 ```
 
 각 subagent에게 전달할 공통 컨텍스트:
 
 - CSS 변수 팔레트 (`--primary`, `--bg`, `--surface` 등 전체 목록)
-- 프로젝트명, SFR 번호
+- 프로젝트명, PREFIX, 번호
 - 해당 화면의 기능 명세 (해당 조각만)
 - 화면 조각 파일 작성 규칙 (`<!DOCTYPE>` 없이 `<div class="screen-wrap">` 조각만)
 
@@ -262,9 +266,9 @@ Task 툴 호출이 실패하거나 미지원 환경이면 **순차 생성으로 
 |---|---|---|
 | `references/html-template.md` | HTML 골격, CSS 기본 클래스 정의, JS 함수 템플릿 | STEP 4 시작 시 반드시 |
 | `references/color-system.md` | 메인 색상 → 전체 팔레트 파생 규칙 | STEP 3에서 색상 확정 후 |
-| `examples/SFR-018.html` | 완성 예제 (1700줄, 5개 화면) | STEP 4에서 코드 스타일 참고 |
+| `examples/SFR-018.html` | 완성 예제 (1700줄, 5개 화면, PREFIX=SFR) | STEP 4에서 코드 스타일 참고 |
 
-`examples/SFR-018.html`은 이 스킬이 목표로 하는 **품질 기준**이다.
+`examples/SFR-018.html`은 이 스킬이 목표로 하는 **품질 기준**이다. PREFIX가 달라도 동일한 파일 구조와 코드 패턴을 따른다.
 구조, 네이밍, 인터랙션 패턴, CSS 클래스명, 더미 데이터 스타일 등을 이 파일에서 참고한다.
 
 ---

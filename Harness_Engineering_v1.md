@@ -31,7 +31,9 @@ Claude Code 같은 IDE 내 Agent에서 `/skill명` 형태로 호출해서 쓰는
 | ----- | --------- |
 | `design-doc` | 설계 인터뷰 → 구조화된 설계 문서 자동 도출 |
 | `context-doc` | 설계 문서 → `CLAUDE.md` + `basic-instruction.md` 생성 |
-| `impl-doc` | 설계 문서 → FE/BE 페어 기능 단위 작업지침서 생성 |
+| `impl-fe-be-doc` | 설계 문서 → FE/BE 페어 Phase별 작업지침서 생성 (구 `impl-doc`) |
+| `impl-screen-doc` | 설계 문서 → RFP SFR 기반 화면 단위 구현 지침서 생성 *(추가 예정)* |
+| `impl-doc` | 범용 단계별 구현 지침 — FE/BE·화면 구분 없이 사용 *(추가 예정)* |
 | `create-prototype` | 설계 기반 HTML 프로토타입 생성 |
 | `frontend-design` | 고품질·개성 있는 프론트엔드 UI 코드 생성 |
 | `agent-sync` | Agent 문서·Skill 변경 감지 및 동기화 |
@@ -56,11 +58,11 @@ Gemini Gems 또는 Claude Project에 넣어서 쓰는 인터뷰 템플릿 문서
 
 ## 2. 전체 스킬 맵
 
-```
-[RFP 해석 계열]          [설계 계열]           [구현 지침 계열]       [목업·구현 계열]
-rfp-ingest ✗            design-doc ✓          impl-doc ✓            create-prototype ✓
-rfp-compliance-         context-doc ✓         impl-screen-doc ✗     frontend-design ✓
-review ✗                sfr-trace ✗                                 code-comment ✓
+```text
+[RFP 해석 계열]          [설계 계열]           [구현 지침 계열 — 하나만 선택]   [목업·구현 계열]
+rfp-ingest ✗            design-doc ✓          impl-fe-be-doc ✓              create-prototype ✓
+rfp-compliance-         context-doc ✓         impl-screen-doc ✗  (예정)     frontend-design ✓
+review ✗                sfr-trace ✗           impl-doc ✗         (예정)     code-comment ✓
 
 [품질 게이트 계열]        [메타·하네스 계열]
 multi-review ✓          skill-designer ✓
@@ -70,6 +72,11 @@ commit ✓                agent-sync ✓
 ```
 
 > ✓ = 구현 완료  ✗ = 스펙 정의만 있거나 미존재 (구현 필요)
+>
+> **구현 지침 계열 선택 규칙**: design-doc 이후 세 스킬 중 **하나만** 선택 실행한다.
+> - `impl-fe-be-doc`: FE/BE 역할이 분리된 프로젝트에서 Phase별 페어 작업지침서가 필요한 경우
+> - `impl-screen-doc`: RFP SFR 기반 화면 단위 명세가 중심인 경우
+> - `impl-doc` (예정): FE/BE·화면 구분 없이 범용 단계별 구현이 필요한 경우
 
 ---
 
@@ -140,20 +147,25 @@ commit ✓                agent-sync ✓
   └─ basic-instruction.md 생성                  (화면 아이디어 확인용)
   │
   ▼
-[Step 4] /impl-doc
-  ├─ FE/BE 페어 Phase별 작업지침서
-  ├─ 태스크 의존 관계 확정
-  └─ Phase별 검증 시나리오
+[Step 4] 구현 지침 스킬 — 아래 중 하나 선택 (셋 다 순차 실행하지 않음)
   │
-  ▼
-[Step 5] /impl-screen-doc  (화면 단위 작업 시)
-  ├─ 화면별 컴포넌트 구조
-  ├─ API 연동 포인트
-  └─ 상태·에러 처리 시나리오
+  ├──────────────────────────┬──────────────────────────────────────────┐
+  ▼                          ▼                                          ▼
+/impl-fe-be-doc        /impl-screen-doc                           /impl-doc
+  ├─ FE/BE 구분 명확     ├─ 화면 단위 명세 중심 시 선택              ├─ FE/BE·화면 구분
+  │  + Phase 페어        ├─ 화면별 컴포넌트 구조                    │  없이 범용 단계별
+  │  작업 필요 시 선택   ├─ API 연동 포인트                         │  구현 시 선택
+  ├─ FE/BE 페어          └─ 상태·에러 처리 시나리오                 │  (추가 예정)
+  │  Phase별 작업지침서                                             └─ 내부 도구·자동화
+  ├─ 태스크 의존 관계 확정                                             스크립트·단독 기능
+  └─ Phase별 검증 시나리오                                             단위 구현 등
+  │                          │                                          │
+  └──────────────────────────┴──────────────────────────────────────────┘
+                               │
+  ┌────────────────────────────┘
   │
   ├──────────────────────────┐
   ▼                          ▼
-[Step 6-A]                [Step 6-B]
 /create-prototype         /frontend-design
   └─ 설계 확정 후 정밀      └─ 실제 컴포넌트 구현
      HTML 프로토타입
@@ -169,13 +181,15 @@ commit ✓                agent-sync ✓
 /commit
 ```
 
+> **`impl-doc` (추가 예정)**: FE/BE 구분도, 화면 중심 분류도 맞지 않는 경우 — 내부 도구, 자동화 스크립트, 단독 기능 단위 구현 등에 사용할 범용 구현 지침 스킬.
+
 ### Flow A 스케일별 단축 경로
 
 | 스케일 | 생략 가능한 단계 |
 |--------|----------------|
 | 프로젝트 | 전 단계 필수 |
-| 화면 단위 | impl-doc 선택 (단순 화면이면 impl-screen-doc 바로) |
-| 기능 단위 | context-doc 선택, impl-doc 선택 |
+| 화면 단위 | context-doc 선택. 구현 지침은 impl-fe-be-doc 또는 impl-screen-doc 중 선택 |
+| 기능 단위 | context-doc 선택. 구현 지침 스킬은 상황에 맞게 하나 선택 |
 | 세부 로직 | design-doc만 하고 바로 구현 가능 |
 
 ---
@@ -219,19 +233,23 @@ commit ✓                agent-sync ✓
   └─ basic-instruction.md            └─ 누락·충돌 항목 리포트
         │
         ▼
-[Step 4] /impl-doc
-  ├─ FE/BE 페어 Phase별 작업지침서
-  └─ Phase별 검증 시나리오
+[Step 4] 구현 지침 스킬 — 아래 중 하나 선택 (셋 다 순차 실행하지 않음)
         │
-        ▼
-[Step 5] /impl-screen-doc
-  ├─ 화면별 컴포넌트 구조
-  ├─ API 연동 포인트
-  └─ 상태·에러 처리 시나리오
-        │
-        ├──────────────────────────┐
-        ▼                          ▼
-[Step 6-A]                    [Step 6-B]
+        ├──────────────────────────┬──────────────────────────────────────────┐
+        ▼                          ▼                                          ▼
+/impl-fe-be-doc            /impl-screen-doc                           /impl-doc
+  ├─ FE/BE 구분 명확          ├─ RFP SFR 기반 화면                      ├─ FE/BE·화면 구분
+  │  + Phase 페어             │  구현 중심 시 선택                       │  없이 범용 단계별
+  │  작업 필요 시 선택         ├─ 화면별 컴포넌트 구조                    │  구현 시 선택
+  ├─ FE/BE 페어              ├─ API 연동 포인트                         │  (추가 예정)
+  │  Phase별 작업지침서       └─ 상태·에러 처리 시나리오                 └─ 내부 도구·자동화
+  └─ Phase별 검증 시나리오                                                 스크립트·단독 기능
+        │                          │                                          │
+        └──────────────────────────┴──────────────────────────────────────────┘
+                                   │
+        ├──────────────────────────┐│
+        ▼                          ▼│
+[Step 5-A]                    [Step 5-B]
 /create-prototype             /frontend-design
   └─ 설계 확정 후 정밀            └─ 실제 컴포넌트 구현
      HTML 프로토타입
@@ -249,12 +267,14 @@ commit ✓                agent-sync ✓
                              └─ 미반영 SFR · 부분 반영(위험) 리포트
 ```
 
+> **`impl-doc` (추가 예정)**: FE/BE 페어도 화면 중심도 아닌 범용 단계별 구현이 필요한 경우 사용.
+
 ### Flow B create-prototype 두 가지 시점
 
 | 시점 | 단계 | 상태 | 목적 |
 |------|------|------|------|
 | **제안 단계** | rfp-ingest 직후 | 설계 미확정 허용 | 발주처 설득용 추상 목업 |
-| **구현 단계** | impl-screen-doc 이후 | 설계 확정 기반 | 정밀 프로토타입, 개발 기준 |
+| **구현 단계** | impl-fe-be-doc / impl-screen-doc / impl-doc 이후 | 설계 확정 기반 | 정밀 프로토타입, 개발 기준 |
 
 > 같은 SFR에 대해 두 번 실행이 정상. 구현 단계 버전이 제안 단계 버전을 덮어씀.
 
@@ -391,7 +411,7 @@ commit ✓                agent-sync ✓
 
 ## 8. 스킬 간 데이터 흐름
 
-```
+```text
 @RFP ──► rfp-ingest ──► rfp-design-input-*.md
                                 │
                                 ▼
@@ -402,10 +422,10 @@ commit ✓                agent-sync ✓
                     ├──► context-doc ──► CLAUDE.md
                     │                   basic-instruction.md
                     │
-                    └──► impl-doc ──► 작업지침서.md
-                              │
-                              ▼
-                      impl-screen-doc ──► impl-screen-{화면}.md
+                    │   [구현 지침 스킬 — 하나만 선택]
+                    ├──► impl-fe-be-doc ──► 작업지침서.md (FE/BE Phase)
+                    ├──► impl-screen-doc ──► impl-screen-{화면}.md (화면별 명세)
+                    └──► impl-doc (예정) ──► 범용 Phase 작업지침서
                               │
                       create-prototype ──► SFR-{번호}.html
                               │
@@ -431,7 +451,7 @@ commit ✓                agent-sync ✓
 | `multi-review` | 보안·성능·유지보수·테스트 4 페르소나 | 리뷰 시간 1/4 |
 | `create-prototype` | 화면 조각 파일 (SFR-001-1.html 등) | 화면 수만큼 병렬 |
 | `doc-audit` | 분석 관점별 (의존성·패턴·규칙 위반) | 분석 시간 단축 |
-| `impl-doc` | fork 모드 실행 | 컨텍스트 격리 |
+| `impl-fe-be-doc` | fork 모드 실행 | 컨텍스트 격리 |
 
 ### 신규 스킬에 적용할 서브에이전트 토폴로지
 
@@ -504,8 +524,9 @@ commit ✓                agent-sync ✓
 | 제안 단계 추상 목업 필요 | `/create-prototype` (rfp-ingest 직후) |
 | 아이디어 → 설계 문서 | `/design-doc` |
 | 설계 완료 → AI 컨텍스트 파일 | `/context-doc` |
-| 구현 순서·Phase 분할 | `/impl-doc` |
-| 화면 단위 구현 명세 | `/impl-screen-doc` |
+| FE/BE 페어 Phase 분할 구현 | `/impl-fe-be-doc` (구 `impl-doc`) |
+| RFP SFR 기반 화면 단위 구현 명세 | `/impl-screen-doc` |
+| 범용 단계별 구현 (FE·BE·화면 구분 불필요) | `/impl-doc` *(추가 예정)* |
 | 설계 확정 후 정밀 목업 | `/create-prototype` |
 | 실제 UI 컴포넌트 구현 | `/frontend-design` |
 | SFR 커버리지 점검 | `/sfr-trace` |
@@ -524,6 +545,7 @@ commit ✓                agent-sync ✓
 |------|---------|------|
 | `rfp-ingest` | **P0** | Flow B 진입점. 없으면 RFP → design-doc 연결이 수동 |
 | `impl-screen-doc` | **P0** | HTML 목업 → 실제 구현 브릿지. 없으면 create-prototype이 참고용으로만 끝남 |
+| `impl-doc` | **P0** | 범용 단계별 구현 스킬. impl-fe-be-doc·impl-screen-doc 외 경우를 커버 |
 | `sfr-trace` | **P1** | 납품 프로젝트에서 SFR 누락은 계약 리스크 |
 | `rfp-compliance-review` | **P1** | sfr-trace는 매핑, compliance-review는 요구사항 준수 — 역할 다름 |
 | `acceptance-test-doc` | **P2** | 반복 납품 시 SFR별 인수 기준 자동화 |
@@ -557,7 +579,7 @@ commit ✓                agent-sync ✓
 | 처음 쓰는 기술 조사 (웹 검색 포함) | ✅ | — |
 | 우려 사항 고도화 인터뷰 | ✅ | — |
 | Context 문서 생성 | ✅ 템플릿 | ✅ `/context-doc` |
-| 작업지침서 도출 | ✅ 템플릿 | ✅ `/impl-doc` |
+| 작업지침서 도출 | ✅ 템플릿 | ✅ `/impl-fe-be-doc` 또는 `/impl-screen-doc` |
 | 실제 코드 작성 | — | ✅ |
 | 코드 리뷰·주석·커밋 | — | ✅ |
 | 문서 동기화·괴리 분석 | — | ✅ |
