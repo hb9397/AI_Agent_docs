@@ -7,24 +7,15 @@ description: >
   "프로토타입 만들어줘", "화면 설계", "UI 프로토타입", "HTML 화면", "화면 구현",
   "SFR 화면", "REQ 화면", "목업", "화면 시안" 등의 요청에도 반드시 이 스킬을 사용한다.
   화면이나 프로토타입이라는 단어가 포함된 요청이면 거의 항상 이 스킬을 쓴다.
-allowed-tools: Read, Write, Glob, Task
+allowed-tools: Read, Write, Glob
 ---
 
 # Create Prototype — HTML UI 프로토타입 생성기
 
 요구사항 번호(기본 PREFIX: `SFR`, 커스텀 PREFIX 허용)를 기반으로 인터랙티브 UI 프로토타입을 생성하는 스킬이다.
-Tailwind CSS CDN과 Noto Sans KR 폰트를 사용하며, VS Code Go Live 서버로 바로 확인할 수 있다.
+Tailwind CSS CDN과 Noto Sans KR 폰트를 사용하며, VS Code Go Live 서버 또는 파일 직접 열기로 바로 확인할 수 있다.
 
----
-
-## 환경별 처리 방식
-
-| 환경 | Task 툴 | 분리 구조 처리 |
-|---|---|---|
-| Claude Code / Codex | 가능 | 병렬 subagent |
-| Claude.ai | 불가 | 메인 파일 → 조각 파일 순차 생성 |
-
-Task 툴 호출 실패 시 자동으로 순차 생성으로 전환한다.
+> **단일 파일 원칙**: 모든 산출물은 CSS·JS 인라인의 단일 HTML 파일로 생성한다. 분리 구조(fetch + 조각 파일)는 사용하지 않는다.
 
 ## 워크플로우
 
@@ -86,114 +77,21 @@ Task 툴 호출 실패 시 자동으로 순차 생성으로 전환한다.
 1. `references/html-template.md` — HTML 기본 골격과 CSS 체계
 2. `references/color-system.md` — 메인 색상에서 전체 팔레트 파생 규칙
 3. `examples/SFR-018.html` — 코드 스타일 참고 (전체 읽기 금지)
-   - `<style>` 블록 중심 상단 범위만 읽기 (`head -120` 수준)
-   - 탭 전환 JS 함수 주변만 추출 (`showScreen`, `loadScreen`)
-   - 필요한 컴포넌트 패턴이 있는 섹션만 추가 추출
+   - 파일 상단의 **섹션 인덱스 주석**을 먼저 읽고, 필요한 줄 범위만 선택적으로 읽기
+   - 기본: 상위 ~130줄 (:root + 공통 CSS) + showScreen 함수 주변 (~1583줄)
+   - 모달/패널 등 특정 컴포넌트가 필요하면 인덱스에서 해당 줄 범위를 찾아 추출
 
-#### 파일 구조 결정 (단일 파일 vs 분리 구조)
+#### 파일 구조 — 항상 단일 파일
 
-생성 전에 아래 기준으로 구조를 먼저 결정한다:
-
-| 조건 | 구조 |
-|---|---|
-| 화면 수 3개 이하 **AND** 예상 700줄 이하 | **단일 파일**: `{PREFIX}-{번호}.html` |
-| 화면 수 4개 이상 **OR** 예상 700줄 초과 | **분리 구조**: `{PREFIX}-{번호}/` 디렉토리 |
-
-#### 단일 파일 구조
+화면 수·줄 수에 관계없이 **항상 단일 HTML 파일**로 생성한다.
 
 ```text
 {PREFIX}-001.html    ← 단독 파일, CSS·JS 전부 인라인
 ```
 
-파일 저장: 사용자가 지정한 경로 또는 현재 작업 디렉토리에 `{PREFIX}-{번호}.html`로 저장.
+파일 저장: 사용자가 지정한 경로에 `{PREFIX}-{번호}.html`로 저장. 경로가 지정되지 않으면 현재 작업 디렉토리를 확인하고, 프로젝트 루트가 아닌 것 같으면 사용자에게 저장 경로를 확인한다.
 
-#### 분리 구조 (Go Live 서버 완전 호환)
-
-화면이 많거나 길어질 경우 디렉토리를 생성하고 화면별로 분리한다:
-
-```text
-{PREFIX}-001/
-├── {PREFIX}-001.html        ← 메인: 공통 CSS, nav, JS 로더
-├── {PREFIX}-001-1.html      ← 화면 1 HTML 조각 (div 내용만)
-├── {PREFIX}-001-2.html      ← 화면 2 HTML 조각
-└── {PREFIX}-001-3.html      ← 화면 3 HTML 조각 (필요 시)
-```
-
-**{PREFIX}-{번호}.html (메인 파일) 구조:**
-```html
-<!DOCTYPE html>
-<html lang="ko">
-<head>
-  <!-- 공통 스타일: :root CSS 변수, 기본 컴포넌트 전부 여기에 -->
-</head>
-<body>
-  <nav class="page-nav">
-    <div class="logo">{프로젝트명} <span>DEMO</span></div>
-    <button class="tab-btn active" onclick="loadScreen(1, this)">화면명1</button>
-    <button class="tab-btn" onclick="loadScreen(2, this)">화면명2</button>
-  </nav>
-
-  <div id="screen-container"><!-- fetch로 로드된 화면이 여기에 주입됨 --></div>
-
-  <script>
-    async function loadScreen(n, btn) {
-      document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
-      btn.classList.add('active');
-      const res = await fetch(`./{PREFIX}-001-${n}.html`);
-      document.getElementById('screen-container').innerHTML = await res.text();
-    }
-    loadScreen(1, document.querySelector('.tab-btn.active'));
-  </script>
-</body>
-</html>
-```
-
-**{PREFIX}-{번호}-N.html (화면 조각 파일) 구조:**
-```html
-<!-- 화면 1: 진입화면 — <!DOCTYPE>, <html>, <head> 없음. div 조각만 작성 -->
-<div class="screen-wrap">
-  <!-- 해당 화면 전체 내용 -->
-</div>
-<script>
-  /* 이 화면 전용 JS만 작성 */
-</script>
-```
-
-> **Go Live 호환 이유**: Go Live는 HTTP 서버이므로 `fetch('./{PREFIX}-001-1.html')`이 CORS 없이 완벽히 동작한다. 파일 이중 클릭(file:// 프로토콜)으로는 fetch가 차단되지만, Go Live 사용 시 항상 정상 작동한다.
-
-#### 분리 구조 생성 — 병렬 subagent (Claude Code / Codex)
-
-분리 구조로 결정됐을 때 **Task 툴이 사용 가능한 환경이면 병렬 subagent로 생성**한다.
-각 화면 조각 파일은 서로 독립적이므로 동시에 생성할 수 있다.
-
-**병렬 처리 순서:**
-
-1. 먼저 공통 컨텍스트를 확정한다 (CSS 변수 팔레트, nav 탭 목록, 화면별 기능 명세)
-2. **메인 파일 + 각 화면 조각 파일을 한 번에 병렬 subagent로 실행**
-
-```text
-병렬 실행 (동시):
-  subagent-0: {PREFIX}-001.html     ← 공통 CSS, nav, fetch 로더 생성
-  subagent-1: {PREFIX}-001-1.html   ← 화면 1 조각 생성
-  subagent-2: {PREFIX}-001-2.html   ← 화면 2 조각 생성
-  subagent-3: {PREFIX}-001-3.html   ← 화면 3 조각 생성 (있을 경우)
-```
-
-각 subagent에게 전달할 공통 컨텍스트:
-
-- CSS 변수 팔레트 (`--primary`, `--bg`, `--surface` 등 전체 목록)
-- 프로젝트명, PREFIX, 번호
-- 해당 화면의 기능 명세 (해당 조각만)
-- 화면 조각 파일 작성 규칙 (`<!DOCTYPE>` 없이 `<div class="screen-wrap">` 조각만)
-
-**환경별 fallback:**
-
-| 환경 | 처리 방식 |
-|---|---|
-| Claude Code, Codex (Task 툴 가능) | 병렬 subagent로 동시 생성 |
-| Claude.ai, 기타 (Task 툴 없음) | 메인 파일 → 조각 파일 순서대로 순차 생성 |
-
-Task 툴 호출이 실패하거나 미지원 환경이면 **순차 생성으로 자동 전환**한다.
+> 단일 파일은 file:// 직접 열기와 Go Live 서버 양쪽에서 모두 동작하며, 화면별 JS가 항상 정상 실행된다.
 
 ---
 
@@ -236,22 +134,22 @@ Task 툴 호출이 실패하거나 미지원 환경이면 **순차 생성으로 
 
 ### 인터랙션
 
-- 탭 전환: `showScreen(id)` 함수 (단일 파일) / `loadScreen(n, btn)` 함수 (분리 구조)
+- 탭 전환: `showScreen(id, btn)` 함수 — **반드시 `this`를 두 번째 인수로 전달**
 - 모달: `.modal-overlay` + `.modal-box`
 - 사이드 패널: `.slide-panel` 또는 `togglePanel()` 함수
 - 호버 효과: `transition: all .2s`
 - 더미 데이터: 한국어, 실무 맥락에 맞게 사실적으로
 - 미구현 기능: `alert('XX 기능은 준비중입니다.')`
 
-### 단일 파일 다중 화면 처리
+### 다중 화면 처리
 
-화면 수 3개 이하인 경우 단일 파일 내에서 탭으로 처리:
+화면이 여러 개인 경우 단일 파일 내에서 탭으로 처리한다. onclick에 반드시 `this`를 전달한다:
 
 ```html
 <nav class="page-nav">
   <div class="logo">{프로젝트명} <span>DEMO</span></div>
-  <button class="tab-btn active" onclick="showScreen('s001-entry')">진입화면</button>
-  <button class="tab-btn" onclick="showScreen('s001-list')">목록</button>
+  <button class="tab-btn active" onclick="showScreen('s001-entry', this)">진입화면</button>
+  <button class="tab-btn" onclick="showScreen('s001-list', this)">목록</button>
 </nav>
 
 <div id="s001-entry" class="screen active">...</div>
@@ -271,6 +169,25 @@ Task 툴 호출이 실패하거나 미지원 환경이면 **순차 생성으로 
 `examples/SFR-018.html`은 이 스킬이 목표로 하는 **품질 기준**이다. PREFIX가 달라도 동일한 파일 구조와 코드 패턴을 따른다.
 구조, 네이밍, 인터랙션 패턴, CSS 클래스명, 더미 데이터 스타일 등을 이 파일에서 참고한다.
 
+> **CSS 변수 주의**: 예제 파일(SFR-018.html)은 `--primary` 계열 변수를 사용한다. 생성 시 항상 `--primary`, `--primary-light`, `--primary-mid`, `--nav-bg` 변수명을 사용해야 한다.
+
+---
+
+## STEP 5 — Self-check (생성 직후 필수)
+
+HTML 파일 생성 후 아래 항목을 순서대로 확인하고, 문제가 있으면 즉시 수정한다.
+
+| 확인 항목 | 기준 |
+|---|---|
+| Tailwind CDN | `<script src="https://cdn.tailwindcss.com">` 가 `<head>` 안에 있는가 |
+| CSS 변수 완비 | `:root`에 `--primary`, `--primary-light`, `--primary-mid`, `--nav-bg` 4개가 모두 정의돼 있는가 |
+| 변수 이름 오염 | `--blue`, `--blue-light` 같은 색상명 변수가 없는가 |
+| showScreen 인수 | `onclick="showScreen('id', this)"` 형태로 `this`를 전달하는가 |
+| 첫 화면 표시 | 첫 번째 `.screen`에 `active` 클래스가 있고, 첫 번째 `.tab-btn`에도 `active`가 있는가 |
+| ID 일치 | `showScreen('id', this)` 인수와 `<div id="id">`가 정확히 일치하는가 |
+| 하드코딩 색상 | nav/label 배경에 HEX 직접 입력 대신 `var(--nav-bg)` 사용하는가. hover에도 HEX 대신 `filter: brightness(0.9)` 사용하는가 |
+| 모달 (해당 시) | 모달 `z-index`가 nav(100)보다 높은가. 닫기 버튼/오버레이 클릭에 닫기 함수가 연결돼 있는가 |
+
 ---
 
 ## 품질 기준
@@ -280,4 +197,4 @@ Task 툴 호출이 실패하거나 미지원 환경이면 **순차 생성으로 
 3. **데스크탑에서 깨지지 않는다** — 최소 1280px 이상에서 정상 표시
 4. **코드가 정리되어 있다** — `/* ── 섹션명 ── */` 주석으로 영역 구분, CSS 변수 일관성
 5. **인터랙티브하다** — 탭 전환, 모달, 호버, 패널 토글 등 동작하는 프로토타입
-6. **Go Live로 바로 확인 가능하다** — 단일 파일이든 분리 구조든 VS Code Go Live에서 정상 동작
+6. **어디서나 열린다** — 단일 파일이므로 file:// 직접 열기와 Go Live 서버 양쪽에서 정상 동작

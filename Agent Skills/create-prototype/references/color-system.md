@@ -152,29 +152,4 @@
 
 ## 버튼 색상 체계
 
-버튼은 항상 CSS 변수를 사용하여 테마에 맞게 자동 적용:
-
-```css
-.btn-primary {
-  background: var(--primary);
-  color: #fff;
-}
-.btn-primary:hover {
-  filter: brightness(0.9);
-}
-.btn-secondary {
-  background: var(--surface2);
-  color: var(--text-secondary);
-  border: 1px solid var(--border);
-}
-.btn-secondary:hover {
-  background: var(--border);
-}
-.btn-green {
-  background: var(--green);
-  color: #fff;
-}
-.btn-green:hover {
-  filter: brightness(0.9);
-}
-```
+버튼 CSS 클래스(`.btn-primary`, `.btn-secondary`, `.btn-green` 등)는 `html-template.md`에 정의되어 있다. 색상은 항상 CSS 변수를 사용하며, hover는 `filter: brightness(0.9)`로 처리한다.

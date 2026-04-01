@@ -277,12 +277,17 @@ body {
 ## 필수 JavaScript 함수
 
 ```javascript
-// 화면 전환 (다중 화면일 때)
-function showScreen(id) {
+// 화면 전환 (다중 화면일 때) — onclick="showScreen('id', this)" 형태로 호출
+function showScreen(id, btn) {
   document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
   document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
   document.getElementById(id).classList.add('active');
-  event.currentTarget.classList.add('active');
+  if (btn && btn.classList.contains('tab-btn')) {
+    btn.classList.add('active');
+  } else {
+    const tabBtn = document.querySelector(`.tab-btn[onclick*="${id}"]`);
+    if (tabBtn) tabBtn.classList.add('active');
+  }
 }
 
 // 패널 토글 (우측 사이드 패널 등)
@@ -304,12 +309,12 @@ function togglePanel(panelName) {
 <body>
   <nav class="page-nav">
     <div class="logo">{프로젝트명} <span>DEMO</span></div>
-    <button class="tab-btn active" onclick="showScreen('s001-main')">메인</button>
-    <button class="tab-btn" onclick="showScreen('s001-list')">목록</button>
+    <button class="tab-btn active" onclick="showScreen('s001-main', this)">메인</button>
+    <button class="tab-btn" onclick="showScreen('s001-list', this)">목록</button>
   </nav>
   <div id="s001-main" class="screen active">...</div>
   <div id="s001-list" class="screen">...</div>
-  <script>/* showScreen 함수 */</script>
+  <script>/* showScreen(id, btn) 함수 */</script>
 </body>
 ```
 
@@ -336,6 +341,78 @@ function togglePanel(panelName) {
     <!-- 콘텐츠 -->
   </div>
 </body>
+```
+
+---
+
+## 모달 패턴
+
+모달이 필요한 화면에서 사용하는 기본 구조. `z-index`는 nav(100)보다 높게 설정한다.
+
+```css
+/* ── 모달 ── */
+.modal-overlay {
+  display: none; position: fixed; top: 0; left: 0;
+  width: 100%; height: 100%;
+  background: rgba(0,0,0,0.5); z-index: 1000;
+  align-items: center; justify-content: center;
+}
+.modal-overlay.active { display: flex; }
+.modal-box {
+  background: var(--surface); width: 600px; max-width: 90%;
+  border-radius: 12px; overflow: hidden;
+  box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+}
+.modal-header {
+  padding: 16px 20px; border-bottom: 1px solid var(--border);
+  display: flex; justify-content: space-between; align-items: center;
+  background: var(--bg);
+}
+.modal-body { padding: 24px 20px; overflow-y: auto; }
+.modal-footer {
+  padding: 16px 20px; border-top: 1px solid var(--border);
+  display: flex; justify-content: flex-end; background: var(--bg);
+}
+```
+
+```html
+<div id="myModal" class="modal-overlay" onclick="if(event.target===this)closeModal()">
+  <div class="modal-box">
+    <div class="modal-header">
+      <h3 style="font-size:16px; font-weight:700;">제목</h3>
+      <button onclick="closeModal()" style="background:transparent; border:none; font-size:20px; cursor:pointer; color:var(--text-muted);">&times;</button>
+    </div>
+    <div class="modal-body">내용</div>
+    <div class="modal-footer">
+      <button class="btn btn-primary" onclick="closeModal()">확인</button>
+    </div>
+  </div>
+</div>
+```
+
+```javascript
+function openModal(id) { document.getElementById(id).classList.add('active'); }
+function closeModal(id) {
+  // id가 있으면 해당 모달, 없으면 모든 모달 닫기
+  if (id) { document.getElementById(id).classList.remove('active'); }
+  else { document.querySelectorAll('.modal-overlay').forEach(m => m.classList.remove('active')); }
+}
+```
+
+---
+
+## 슬라이드 패널 패턴
+
+우측에서 슬라이드로 열리는 상세 패널.
+
+```css
+/* ── 슬라이드 패널 ── */
+.slide-panel {
+  width: 320px; min-width: 320px; background: var(--surface);
+  border-left: 1px solid var(--border);
+  display: none; flex-direction: column; overflow-y: auto;
+}
+.slide-panel.active { display: flex; }
 ```
 
 ---
