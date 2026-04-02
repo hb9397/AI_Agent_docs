@@ -18,17 +18,20 @@
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
 <!-- Tailwind CSS CDN -->
 <script src="https://cdn.tailwindcss.com"></script>
+<!-- 공통 CSS (1개 파일로 통합) -->
+<link rel="stylesheet" href="{PREFIX}-001.css">
 <style>
-  /* CSS 변수와 커스텀 클래스 이 안에 정의 */
+  /* 이 화면 전용 CSS만 여기에 작성 */
 </style>
 </head>
 ```
 
 ---
 
-## 필수 CSS 클래스 정의
+## 필수 CSS 클래스 정의 — `{PREFIX}-001.css`
 
-아래는 `<style>` 블록 안에 **항상** 포함해야 할 기본 CSS이다.
+아래는 **공통 CSS 파일** (`{PREFIX}-001.css`)에 작성하는 내용이다.
+모든 HTML이 이 파일 하나를 `<link rel="stylesheet">`로 참조한다.
 색상 변수 부분은 `color-system.md`를 참고하여 메인색상에 맞게 채운다.
 
 ```css
@@ -93,13 +96,13 @@ body {
   font-size: 12.5px; font-weight: 500;
   padding: 6px 14px; border-radius: 6px;
   transition: all .2s;
+  text-decoration: none; /* <a> 태그용 */
 }
 .tab-btn:hover { background: rgba(255,255,255,.1); color: #fff; }
 .tab-btn.active { background: var(--primary); color: #fff; }
 
-/* ── 화면 전환 ── */
-.screen { display: none; }
-.screen.active {
+/* ── 화면 ── */
+.screen {
   display: flex; flex-direction: column;
   height: calc(100vh - 36px); overflow: hidden;
 }
@@ -274,10 +277,50 @@ body {
 
 ---
 
-## 필수 JavaScript 함수
+## 필수 JavaScript
+
+### 데이터 로드 (모든 화면 공통)
 
 ```javascript
-// 화면 전환 (다중 화면일 때) — onclick="showScreen('id', this)" 형태로 호출
+// JSON 데이터 로드 — 각 HTML 파일에 포함
+document.addEventListener('DOMContentLoaded', async () => {
+  try {
+    const res = await fetch('{PREFIX}-001-entry-data.json');
+    const data = await res.json();
+    renderData(data);
+  } catch (e) {
+    console.warn('데이터 파일 로드 실패 (Live Server에서 실행해주세요):', e);
+  }
+});
+
+// renderData는 화면마다 다르게 구현
+function renderData(data) {
+  // 예: 카드 목록 렌더링
+  const container = document.getElementById('card-container');
+  container.innerHTML = data.cards.map(card => `
+    <div class="list-card">
+      <div style="font-size:28px;">${card.icon}</div>
+      <h3>${card.title}</h3>
+      <p>${card.desc}</p>
+    </div>
+  `).join('');
+}
+```
+
+### 패널 토글 (필요 시)
+
+```javascript
+function togglePanel(panelName) {
+  const panel = document.querySelector('[data-panel="' + panelName + '"]');
+  if (panel) panel.classList.toggle('active');
+}
+```
+
+### 화면 내 서브탭 전환 (필요 시)
+
+단일 파일 내에서 서브탭이 필요한 경우에만 사용한다. 화면 간 이동은 `<a href>` 링크를 쓴다.
+
+```javascript
 function showScreen(id, btn) {
   document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
   document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
@@ -289,34 +332,33 @@ function showScreen(id, btn) {
     if (tabBtn) tabBtn.classList.add('active');
   }
 }
-
-// 패널 토글 (우측 사이드 패널 등)
-function togglePanel(panelName) {
-  const activeScreen = document.querySelector('.screen.active');
-  if (!activeScreen) return;
-  // panelName에 해당하는 패널 찾아서 .active 토글
-  const panel = activeScreen.querySelector('[data-panel="' + panelName + '"]');
-  if (panel) panel.classList.toggle('active');
-}
 ```
 
 ---
 
 ## 화면 유형별 body 구조
 
-### 유형 A: 다중 화면 (탭 전환)
+### 유형 A: 다중 화면 (링크 이동 — 각 파일)
+
+각 HTML 파일이 독립 완성 파일이며, `<a href>` 상대경로로 이동한다.
+
 ```html
+<!-- SFR-001-entry.html -->
 <body>
   <nav class="page-nav">
     <div class="logo">{프로젝트명} <span>DEMO</span></div>
-    <button class="tab-btn active" onclick="showScreen('s001-main', this)">메인</button>
-    <button class="tab-btn" onclick="showScreen('s001-list', this)">목록</button>
+    <a class="tab-btn active" href="SFR-001-entry.html">진입화면</a>
+    <a class="tab-btn" href="SFR-001-list.html">목록</a>
+    <a class="tab-btn" href="SFR-001-detail.html">상세</a>
   </nav>
-  <div id="s001-main" class="screen active">...</div>
-  <div id="s001-list" class="screen">...</div>
-  <script>/* showScreen(id, btn) 함수 */</script>
+  <div class="screen active" style="height:calc(100vh - 36px); overflow:auto;">
+    <div id="card-container"><!-- JSON 데이터로 렌더링 --></div>
+  </div>
+  <script>/* fetch + renderData */</script>
 </body>
 ```
+
+> `active` 클래스는 현재 페이지에 해당하는 `<a>` 태그에만 부여. `showScreen()` 불필요.
 
 ### 유형 B: 단일 화면 (앱 셸)
 ```html
@@ -327,9 +369,12 @@ function togglePanel(panelName) {
     </div>
     <div class="app-shell">
       <aside class="sidebar">...</aside>
-      <main class="main">...</main>
+      <main class="main">
+        <div id="data-container"><!-- JSON 데이터로 렌더링 --></div>
+      </main>
     </div>
   </div>
+  <script>/* fetch + renderData */</script>
 </body>
 ```
 
@@ -338,8 +383,9 @@ function togglePanel(panelName) {
 <body style="background: var(--bg);">
   <div style="padding: 30px 40px; max-width: 1200px; margin: 0 auto;">
     <h1>...</h1>
-    <!-- 콘텐츠 -->
+    <div id="data-container"><!-- JSON 데이터로 렌더링 --></div>
   </div>
+  <script>/* fetch + renderData */</script>
 </body>
 ```
 

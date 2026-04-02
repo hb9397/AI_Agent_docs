@@ -34,7 +34,8 @@ Claude Code 같은 IDE 내 Agent에서 `/skill명` 형태로 호출해서 쓰는
 | `impl-fe-be-doc` | 설계 문서 → FE/BE 페어 Phase별 작업지침서 생성 (구 `impl-doc`) |
 | `impl-screen-doc` | 설계 문서 → RFP SFR 기반 화면 단위 구현 지침서 생성 *(추가 예정)* |
 | `impl-doc` | 범용 단계별 구현 지침 — FE/BE·화면 구분 없이 사용 *(추가 예정)* |
-| `create-prototype` | 설계 기반 HTML 프로토타입 생성 |
+| `design-prototype-docs` | 기능요구사항 → 화면 설계 문서(.md) 생성 (create-prototype 입력) |
+| `create-prototype` | 설계 기반 HTML 프로토타입 생성 (다중 파일 + JSON 데이터 분리) |
 | `frontend-design` | 고품질·개성 있는 프론트엔드 UI 코드 생성 |
 | `agent-sync` | Agent 문서·Skill 변경 감지 및 동기화 |
 | `code-comment` | 변경된 코드 파일에 한글 주석 자동 작성 |
@@ -59,10 +60,11 @@ Gemini Gems 또는 Claude Project에 넣어서 쓰는 인터뷰 템플릿 문서
 ## 2. 전체 스킬 맵
 
 ```text
-[RFP 해석 계열]          [설계 계열]           [구현 지침 계열 — 하나만 선택]   [목업·구현 계열]
-rfp-ingest ✗            design-doc ✓          impl-fe-be-doc ✓              create-prototype ✓
-rfp-compliance-         context-doc ✓         impl-screen-doc ✗  (예정)     frontend-design ✓
-review ✗                sfr-trace ✗           impl-doc ✗         (예정)     code-comment ✓
+[RFP 해석 계열]          [설계 계열]              [구현 지침 계열 — 하나만 선택]   [목업·구현 계열]
+rfp-ingest ✗            design-doc ✓             impl-fe-be-doc ✓              create-prototype ✓
+rfp-compliance-         design-prototype-docs ✓  impl-screen-doc ✗  (예정)     frontend-design ✓
+review ✗                context-doc ✓            impl-doc ✗         (예정)     code-comment ✓
+                        sfr-trace ✗
 
 [품질 게이트 계열]        [메타·하네스 계열]
 multi-review ✓          skill-designer ✓
@@ -140,14 +142,25 @@ commit ✓                agent-sync ✓
   ├─ 기술 스택 불확실성, 핵심 로직 구현 가능성 점검
   └─ 설계 문서에 대안·주의사항 보완
   │
-  ├──────────────────────────────────────────────┐
-  ▼                                              ▼
-[Step 3-A] /context-doc                   [Step 3-B] create-prototype (선택)
-  ├─ CLAUDE.md 생성                          └─ 초기 UI 개념 목업
-  └─ basic-instruction.md 생성                  (화면 아이디어 확인용)
-  │
-  ▼
-[Step 4] 구현 지침 스킬 — 아래 중 하나 선택 (셋 다 순차 실행하지 않음)
+  ├──────────────────────────┐
+  ▼                          ▼
+[Step 3-A] /context-doc    [Step 3-B] 프로토타입 파이프라인 (선택 — impl 전 or 후)
+  ├─ CLAUDE.md 생성
+  └─ basic-instruction.md       ┌──────────────────────────────────┐
+  │                              │  /design-prototype-docs          │
+  │                              │    ├─ 화면 분리·기능 배치        │
+  │                              │    ├─ 기능 흐름 도식화           │
+  │                              │    └─ 목업디자인.md 생성         │
+  │                              │        │                         │
+  │                              │        ▼                         │
+  │                              │  /create-prototype               │
+  │                              │    ├─ 화면별 HTML + CSS + JSON   │
+  │                              │    └─ 서브에이전트 병렬 (선택)   │
+  │                              └──────────────────────────────────┘
+  │                                     ▲                   │
+  │                                     │                   ▼
+  ▼                              (impl 전에 실행 가능)  (impl 후에도 실행 가능)
+[Step 4] 구현 지침 스킬 — 아래 중 하나 선택
   │
   ├──────────────────────────┬──────────────────────────────────────────┐
   ▼                          ▼                                          ▼
@@ -164,11 +177,9 @@ commit ✓                agent-sync ✓
                                │
   ┌────────────────────────────┘
   │
-  ├──────────────────────────┐
-  ▼                          ▼
-/create-prototype         /frontend-design
-  └─ 설계 확정 후 정밀      └─ 실제 컴포넌트 구현
-     HTML 프로토타입
+  ▼
+/frontend-design
+  └─ 실제 컴포넌트 구현
   │
   ▼  (Phase 1개 완료마다 반복)
 /doc-audit  ──  /multi-review
@@ -183,12 +194,22 @@ commit ✓                agent-sync ✓
 
 > **`impl-doc` (추가 예정)**: FE/BE 구분도, 화면 중심 분류도 맞지 않는 경우 — 내부 도구, 자동화 스크립트, 단독 기능 단위 구현 등에 사용할 범용 구현 지침 스킬.
 
+### 프로토타입 파이프라인 — 실행 시점 선택
+
+`design-prototype-docs → create-prototype`은 **impl-* 전후 어느 시점에든** 실행 가능하다.
+
+| 시점 | 언제 선택하는가 | 특징 |
+|------|----------------|------|
+| **impl 전** | 화면 구성을 먼저 확정하고 싶을 때. 고객 확인용 목업이 필요할 때 | 프로토타입 기반으로 impl 지침이 더 구체적으로 나옴 |
+| **impl 후** | 구현 설계가 확정된 뒤 정밀 프로토타입이 필요할 때 | API·데이터 구조가 반영된 정밀 목업 |
+| **양쪽 다** | 제안 단계 → 추상 목업, 구현 단계 → 정밀 목업 | 나중 버전이 이전 버전을 덮어씀 |
+
 ### Flow A 스케일별 단축 경로
 
 | 스케일 | 생략 가능한 단계 |
 |--------|----------------|
 | 프로젝트 | 전 단계 필수 |
-| 화면 단위 | context-doc 선택. 구현 지침은 impl-fe-be-doc 또는 impl-screen-doc 중 선택 |
+| 화면 단위 | context-doc 선택. 프로토타입은 impl 전에 먼저 뽑는 것이 효과적 |
 | 기능 단위 | context-doc 선택. 구현 지침 스킬은 상황에 맞게 하나 선택 |
 | 세부 로직 | design-doc만 하고 바로 구현 가능 |
 
@@ -211,15 +232,22 @@ commit ✓                agent-sync ✓
   ├─ 불명확 항목 인라인 확인 질문
   └─ rfp-design-input-{SFR}.md 생성
         │
-        │  ◀──────────────────────────────────────────────────┐
-        │  [제안 단계 분기]                                     │
-        │  설계 확정 전 추상 목업이 필요한 경우                    │
-        ├──────────────────────────────────────────────────►  │
-        │                                         /create-prototype
-        │                                           ├─ rfp-design-input-*.md 기반
-        │                                           ├─ 화면 흐름 미확정 상태 허용
-        │                                           └─ SFR 번호 기반 HTML 목업
-        │                                              (설계 확정 시 재생성)
+        │  ◀─────────────────────────────────────────────────────────┐
+        │  [제안 단계 분기]                                            │
+        │  설계 확정 전 추상 목업이 필요한 경우                           │
+        ├─────────────────────────────────────────────────────────►  │
+        │                                                            │
+        │                              /design-prototype-docs        │
+        │                                ├─ rfp-design-input-*.md 기반
+        │                                ├─ 화면 분리·기능 배치·흐름 도식화
+        │                                └─ SFR-XXX_목업디자인.md 생성
+        │                                    │
+        │                                    ▼
+        │                              /create-prototype
+        │                                ├─ 목업디자인.md 기반 HTML 생성
+        │                                ├─ 화면별 독립 HTML + 공통 CSS + JSON
+        │                                └─ 서브에이전트 병렬 (사용자 선택)
+        │                                   (설계 확정 시 재생성)
         │
         ▼  [설계·구현 단계]
 [Step 2] /design-doc
@@ -231,6 +259,21 @@ commit ✓                agent-sync ✓
 [Step 3-A] /context-doc            [Step 3-B] /sfr-trace (선택)
   ├─ CLAUDE.md                       ├─ SFR ↔ 화면 ↔ API 매핑 매트릭스
   └─ basic-instruction.md            └─ 누락·충돌 항목 리포트
+        │
+        │   ┌──────────────────────────────────────────────┐
+        │   │  프로토타입 파이프라인 (impl 전 or 후)         │
+        │   │  /design-prototype-docs                       │
+        │   │    ├─ 화면 분리·기능 배치·흐름 도식화          │
+        │   │    └─ SFR-XXX_목업디자인.md                    │
+        │   │        │                                      │
+        │   │        ▼                                      │
+        │   │  /create-prototype                            │
+        │   │    ├─ 화면별 HTML + CSS + JSON                │
+        │   │    └─ 서브에이전트 병렬 (사용자 선택)          │
+        │   └──────────────────────────────────────────────┘
+        │          ▲                         │
+        │          │                         ▼
+        │   (impl 전에 실행 가능)     (impl 후에도 실행 가능)
         │
         ▼
 [Step 4] 구현 지침 스킬 — 아래 중 하나 선택 (셋 다 순차 실행하지 않음)
@@ -247,12 +290,11 @@ commit ✓                agent-sync ✓
         │                          │                                          │
         └──────────────────────────┴──────────────────────────────────────────┘
                                    │
-        ├──────────────────────────┐│
-        ▼                          ▼│
-[Step 5-A]                    [Step 5-B]
-/create-prototype             /frontend-design
-  └─ 설계 확정 후 정밀            └─ 실제 컴포넌트 구현
-     HTML 프로토타입
+        ┌──────────────────────────┘
+        │
+        ▼
+/frontend-design
+  └─ 실제 컴포넌트 구현
         │
         ▼  (Phase 1개 완료마다 반복)
 /doc-audit  ──  /multi-review
@@ -269,14 +311,18 @@ commit ✓                agent-sync ✓
 
 > **`impl-doc` (추가 예정)**: FE/BE 페어도 화면 중심도 아닌 범용 단계별 구현이 필요한 경우 사용.
 
-### Flow B create-prototype 두 가지 시점
+### Flow B 프로토타입 파이프라인 — 실행 시점 선택
 
-| 시점 | 단계 | 상태 | 목적 |
+`design-prototype-docs → create-prototype`은 Flow A와 마찬가지로 **impl-* 전후 어느 시점에든** 실행 가능하다.
+
+| 시점 | 흐름 | 상태 | 목적 |
 |------|------|------|------|
-| **제안 단계** | rfp-ingest 직후 | 설계 미확정 허용 | 발주처 설득용 추상 목업 |
-| **구현 단계** | impl-fe-be-doc / impl-screen-doc / impl-doc 이후 | 설계 확정 기반 | 정밀 프로토타입, 개발 기준 |
+| **제안 단계** | rfp-ingest → **design-prototype-docs** → create-prototype | 설계 미확정 허용 | 발주처 설득용 추상 목업 |
+| **impl 전** | design-doc → **design-prototype-docs** → create-prototype → impl-* | 화면 확정 우선 | 프로토타입으로 화면 확정 후 구현 지침 작성 |
+| **impl 후** | impl-* → **design-prototype-docs** → create-prototype | 설계 확정 기반 | API·데이터 반영된 정밀 프로토타입 |
 
-> 같은 SFR에 대해 두 번 실행이 정상. 구현 단계 버전이 제안 단계 버전을 덮어씀.
+> 같은 SFR에 대해 여러 번 실행이 정상. 나중 버전이 이전 버전을 덮어씀.
+> `design-prototype-docs`는 어느 시점에서든 `create-prototype`의 선행 스킬로 동작한다.
 
 ---
 
@@ -427,7 +473,12 @@ commit ✓                agent-sync ✓
                     ├──► impl-screen-doc ──► impl-screen-{화면}.md (화면별 명세)
                     └──► impl-doc (예정) ──► 범용 Phase 작업지침서
                               │
-                      create-prototype ──► SFR-{번호}.html
+                    design-prototype-docs ──► SFR-XXX_목업디자인.md
+                              │
+                      create-prototype ──► {PREFIX}-XXX/
+                              │               ├─ {PREFIX}-XXX.css (공통 CSS 1개)
+                              │               ├─ {PREFIX}-XXX-{화면}.html (화면별)
+                              │               └─ {PREFIX}-XXX-{화면}-data.json (데이터별)
                               │
                       frontend-design ──► 컴포넌트 코드
                               │
@@ -449,7 +500,7 @@ commit ✓                agent-sync ✓
 | 스킬 | 병렬화 대상 | 효과 |
 |------|------------|------|
 | `multi-review` | 보안·성능·유지보수·테스트 4 페르소나 | 리뷰 시간 1/4 |
-| `create-prototype` | 화면 조각 파일 (SFR-001-1.html 등) | 화면 수만큼 병렬 |
+| `create-prototype` | 화면별 독립 HTML + JSON (사용자가 모델·개수 선택) | 화면 수만큼 병렬 (opus/sonnet/haiku 선택) |
 | `doc-audit` | 분석 관점별 (의존성·패턴·규칙 위반) | 분석 시간 단축 |
 | `impl-fe-be-doc` | fork 모드 실행 | 컨텍스트 격리 |
 
@@ -521,13 +572,14 @@ commit ✓                agent-sync ✓
 | 지금 이 상황 | 실행 스킬 |
 |------------|-----------|
 | 새 SFR 작업 시작 | `/rfp-ingest SFR-xxx` |
-| 제안 단계 추상 목업 필요 | `/create-prototype` (rfp-ingest 직후) |
+| 요구사항 → 화면 설계 문서 | `/design-prototype-docs` |
+| 제안 단계 추상 목업 필요 | `/design-prototype-docs` → `/create-prototype` |
 | 아이디어 → 설계 문서 | `/design-doc` |
 | 설계 완료 → AI 컨텍스트 파일 | `/context-doc` |
 | FE/BE 페어 Phase 분할 구현 | `/impl-fe-be-doc` (구 `impl-doc`) |
 | RFP SFR 기반 화면 단위 구현 명세 | `/impl-screen-doc` |
 | 범용 단계별 구현 (FE·BE·화면 구분 불필요) | `/impl-doc` *(추가 예정)* |
-| 설계 확정 후 정밀 목업 | `/create-prototype` |
+| 설계 확정 후 정밀 목업 | `/design-prototype-docs` → `/create-prototype` |
 | 실제 UI 컴포넌트 구현 | `/frontend-design` |
 | SFR 커버리지 점검 | `/sfr-trace` |
 | Phase 완료 후 코드 리뷰 | `/multi-review` |
@@ -564,7 +616,8 @@ commit ✓                agent-sync ✓
 5. **게이트 포지셔닝**: 게이트는 언제, 무엇을 막는지로 구분.
    - `pre-commit`: 코드 규칙 게이트 (커밋 전)
    - `rfp-compliance-review`: 요구사항 게이트 (납품 전)
-6. **프로토타입 이중 사용**: `create-prototype`은 제안 단계(추상)와 구현 단계(정밀) 모두에서 실행. 나중 버전이 덮어씀.
+6. **프로토타입 유동 배치**: `design-prototype-docs` → `create-prototype` 파이프라인은 impl-* 전·후·양쪽 어디든 실행 가능. 화면을 먼저 보고 impl을 쓸지, impl을 먼저 확정하고 정밀 목업을 뽑을지는 상황에 따라 선택.
+7. **서브에이전트 사용자 위임**: 병렬 서브에이전트 사용 여부·모델·개수는 스킬이 강제하지 않고 사용자가 선택.
 
 ---
 
@@ -699,6 +752,8 @@ Claude Code에서는 `/clear`로 대화 히스토리를 비우되, 참조 문서
 - [ ] 필요 시 고도화 인터뷰
 - [ ] 기존 CLAUDE.md 갱신 필요 여부 확인
 - [ ] 해당 기능 작업지침서 도출
+- [ ] 화면 설계 문서 도출 (`/design-prototype-docs`)
+- [ ] HTML 프로토타입 생성 (`/create-prototype`)
 - [ ] 구현 진행
 
 ### Phase 구현 완료 시
