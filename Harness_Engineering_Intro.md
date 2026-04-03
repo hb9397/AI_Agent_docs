@@ -1,4 +1,4 @@
-# 왜 이 스킬셋으로 시작해야 하는가
+# 왜 스킬셋 같은 것을 구성해서 시작하는지
 
 > AI Agent Harness Engineering 소개 문서  
 > 참조 문서: [v2.md](./v2.md)
