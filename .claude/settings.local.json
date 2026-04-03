@@ -1,7 +1,8 @@
 {
   "permissions": {
     "allow": [
-      "Bash(python3:*)"
+      "Bash(python3:*)",
+      "Bash(ls -d \"C:/dev_workspace/AI_Agent_docs/Agent Skills\"/*/)"
     ]
   }
 }

@@ -1,0 +1,170 @@
+---
+name: rfp-ingest
+description: >
+  RFP(제안요청서)에서 SFR(기능요구사항)을 추출하고 화면 후보를 매핑하여
+  design-doc 인터뷰 입력용 중간 문서를 생성한다.
+  '/rfp-ingest SFR-019', 'SFR 분석해줘', 'RFP에서 요구사항 뽑아줘',
+  '제안요청서 분석', 'SFR 추출' 요청이 오면 반드시 이 스킬을 사용한다.
+  RFP 기반 개발 워크플로우(Flow B)의 진입점이며,
+  산출물은 design-doc·create-prototype의 입력이 된다.
+allowed-tools: Read, Write, Glob, Grep, Bash, Agent
+---
+
+# RFP 요구사항 분석 (rfp-ingest)
+
+RFP 파일에서 지정된 SFR 번호의 기능요구사항을 추출·분석하고,
+화면 후보 목록과 요구사항-화면 매핑을 포함하는 중간 문서를 생성한다.
+
+생성 전 반드시 사용자 확인을 거친다. 파일을 무단으로 생성하지 않는다.
+
+> 이 스킬의 산출물(`rfp-design-input-*.md`)은 design-doc 인터뷰의 입력,
+> create-prototype의 화면 설계 기반이 된다.
+> 요구사항 해석이 부정확하면 이후 전체 파이프라인이 틀어진다.
+> 불명확한 항목은 반드시 이 단계에서 사용자에게 확인한다.
+
+## 스킬 연계
+
+```
+@RFP 파일 (PDF)
+    ↓
+rfp-ingest  ← 지금 여기
+    ↓
+rfp-design-input-{SFR}.md
+    ├─→ design-doc         →  설계문서.md
+    ├─→ design-prototype-docs → create-prototype  →  HTML 프로토타입
+    └─→ (직접 참조)         →  제안서 작성 등
+```
+
+---
+
+## 입력 형식
+
+```
+/rfp-ingest SFR-019
+/rfp-ingest SFR-019,SFR-021
+/rfp-ingest SFR-019 SFR-021 SFR-023
+```
+
+- RFP 파일은 `@` 태그로 사전 지정되어 있어야 한다.
+- RFP 원본 저장 루트: `D:\Dev_Workspace\pre_working\`
+- SFR 번호는 쉼표 또는 공백으로 구분 가능.
+
+---
+
+## 워크플로우
+
+### Step 1 — RFP 파일 확인 및 SFR 추출
+
+RFP 파일이 `@`로 지정되지 않은 경우 요청한다.
+
+> "분석할 RFP 파일을 `@` 태그로 지정해 주세요.
+> 예: `@D:\Dev_Workspace\pre_working\프로젝트명\제안요청서.pdf`"
+
+RFP 파일에서 요청된 SFR 번호에 해당하는 기능요구사항을 찾아 추출한다.
+추출 규칙은 `prompts/sfr-extraction.md` 참조.
+
+**SFR이 여러 개인 경우**: 각 SFR을 병렬 서브에이전트로 분석할 수 있다.
+사용자에게 확인한다:
+
+> "SFR {N}개를 분석합니다. 병렬로 처리할까요, 순차로 처리할까요?"
+
+---
+
+### Step 2 — 기능 단위 해석
+
+각 SFR에 대해 `prompts/sfr-extraction.md`의 **해석 프레임(5관점)**으로 분석한다.
+분석 항목과 품질 기준은 해당 prompts 파일 참조.
+
+---
+
+### Step 3 — 화면 후보 매핑
+
+`prompts/screen-mapping.md`의 규칙에 따라 화면 후보를 도출한다.
+
+- SFR의 기능을 수행하기 위해 필요한 화면을 예측한다.
+- 화면 후보별: 화면명, 목적, 주요 액션, 우선순위를 정리한다.
+- SFR ↔ 화면 매핑 표를 작성한다.
+- 화면 간 이동 흐름을 도식화한다.
+
+---
+
+### Step 4 — 불명확 항목 확인
+
+`prompts/clarification.md`의 판단 기준에 따라 불명확 항목을 식별한다.
+
+**인라인으로 사용자에게 확인한다** (별도 스킬 호출 없음).
+최대 5개까지 한 번에 묻는다.
+
+> "분석 중 아래 항목이 불명확합니다. 확인 부탁드립니다:
+> 1. [항목]: [왜 불명확한지] — 선택지: A / B / 기타
+> 2. ..."
+
+확인된 내용은 즉시 Step 2~3 결과에 반영한다.
+
+---
+
+### Step 5 — 중간 문서 생성 및 확인
+
+`templates/rfp-design-input.md` 양식으로 중간 문서 초안을 작성한다.
+
+초안을 대화창에 출력하고 승인을 요청한다.
+
+> "위 분석 결과를 검토해 주세요.
+> 화면 후보나 기능 해석 중 수정할 부분이 있으면 말씀해 주세요."
+
+수정 요청 시 해당 섹션만 재작성한다.
+
+승인 시 파일 저장:
+```
+rfp-design-input-{SFR번호}.md
+예: rfp-design-input-SFR-019.md
+예: rfp-design-input-SFR-019_SFR-021.md
+```
+
+---
+
+### Step 6 — 다음 단계 안내
+
+저장 완료 후 사용자에게 다음 단계를 안내한다.
+
+> "중간 문서가 생성되었습니다. 다음 단계를 선택해 주세요:
+> 1. `/design-doc` — 이 문서를 기반으로 설계 문서 도출
+> 2. `/design-prototype-docs` → `/create-prototype` — 추상 화면 목업 먼저 생성
+> 3. 추가 SFR 분석 — `/rfp-ingest SFR-XXX`"
+
+---
+
+## 서브에이전트 전략
+
+SFR이 2개 이상일 때 병렬 분석이 가능하다.
+
+```
+/rfp-ingest SFR-019, SFR-021, SFR-023
+  │
+  ├── subagent-A: SFR-019 분석 (입력/처리/출력/예외/연계)
+  ├── subagent-B: SFR-021 분석
+  └── subagent-C: SFR-023 분석
+        │
+        ▼ (오케스트레이터 병합)
+  rfp-design-input-SFR-019_021_023.md
+```
+
+각 서브에이전트에게 전달하는 컨텍스트:
+- RFP 파일 전체 (공통)
+- 담당 SFR 번호
+- `prompts/sfr-extraction.md` 해석 프레임
+- `prompts/screen-mapping.md` 화면 매핑 규칙
+
+오케스트레이터가 병합할 때 처리:
+- 중복 화면 후보 통합
+- SFR 간 연계 관계 교차 검증
+- 화면 간 이동 흐름 통합 도식
+
+---
+
+## 운영 규칙
+
+1. **RFP 전체를 한 번에 처리하지 않는다.** 필요한 SFR만 선택해서 실행한다.
+2. **불명확 항목은 이 단계에서 해결한다.** 다음 스킬로 넘기지 않는다.
+3. **화면 후보는 예측이다.** design-doc 단계에서 확정된다. 이 단계에서는 "후보"로 표기한다.
+4. **같은 SFR을 다시 실행하면 이전 산출물을 덮어쓴다.**

@@ -1,5 +1,5 @@
 ---
-name: impl-doc
+name: impl-fe-be-doc
 description: >
   설계가 끝난 뒤 구현 순서와 작업 단위를 정리할 때 사용한다.
   '작업지침서 만들어줘', '구현 계획 세워줘', 'Phase 나눠줘',
