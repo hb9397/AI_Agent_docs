@@ -122,7 +122,7 @@ AI가 바로 코드부터 쓰게 하지 않는다.
 
 ### 2. Agent가 읽을 고정 맥락을 만든다
 
-`CLAUDE.md`(프로젝트 팩트 + 인덱스)와 주제별로 분리된 `.instruction/*-instruction.md`(아키텍처·코드 스타일·프레임워크·API·통신·파일 생성·Agent 전용 규칙)로 프로젝트의 규칙과 아키텍처를 고정한다.
+루트 가이드 문서(`CLAUDE.md`, `AGENTS.md`, `GEMINI.md`)와 주제별로 분리된 `.instruction/*-instruction.md`(아키텍처·코드 스타일·프레임워크·API·통신·파일 생성·Agent 전용 규칙)로 프로젝트의 규칙과 아키텍처를 고정한다.
 
 ### 3. 구현은 작은 단위로 쪼갠다
 
@@ -140,65 +140,6 @@ Phase, 화면, 기능, 모듈 같은 단위로 끊는다.
 
 ---
 
-## 전체 스킬셋 지도
-
-```mermaid
-flowchart TD
-    A["입력"]
-    A1["아이디어 / 내부 기획"]
-    A2["@RFP PDF / SFR"]
-
-    B["설계 계열"]
-    B1["design-doc"]
-    B2["rfp-ingest"]
-    B3["context-doc"]
-
-    C["프로토타입 계열"]
-    C1["design-prototype-docs"]
-    C2["create-prototype"]
-    C3["frontend-design"]
-
-    D["구현 지침 계열"]
-    D1["impl-fe-be-doc"]
-    D2["impl-screen-doc"]
-    D3["impl-doc"]
-
-    E["운영 / 품질 계열"]
-    E1["multi-review"]
-    E2["pre-commit"]
-    E3["commit"]
-    E4["doc-audit"]
-    E5["agent-sync"]
-    E6["code-comment"]
-
-    F["메타 계열"]
-    F1["skill-designer"]
-
-    A --> A1
-    A --> A2
-    A1 --> B1
-    A2 --> B2
-    B2 --> B1
-    B1 --> B3
-    B1 --> C1
-    C1 --> C2
-    B1 --> D1
-    B1 --> D2
-    B1 --> D3
-    D1 --> C3
-    D2 --> C3
-    D3 --> E1
-    C3 --> E1
-    E1 --> E4
-    E4 --> E2
-    E2 --> E6
-    E6 --> E3
-    E4 --> E5
-    F1 --> F
-```
-
----
-
 ## 각 스킬의 역할 소개 및 요약
 
 ### 1. 분석·설계·컨텍스트 계열
@@ -207,7 +148,7 @@ flowchart TD
 | ------------------- | ----------------------------------------------------------------------- | -------------------------------------------------- |
 | `rfp-ingest`        | RFP에서 특정 SFR을 뽑아 해석하고 화면 후보로 정리                       | RFP 기반 프로젝트를 시작할 때                      |
 | `design-doc`        | 인터뷰를 통해 구조화된 설계 문서 생성                                   | 아이디어를 실제 작업 문서로 바꿀 때                |
-| `context-doc`       | 얇은 `CLAUDE.md`(프로젝트 팩트 + 인덱스) + 주제별 `.instruction/*` 생성 | 설계가 끝나고 Agent가 계속 참고할 기준이 필요할 때 |
+| `context-doc`       | 얇은 루트 가이드 문서(`CLAUDE.md`/`AGENTS.md`/`GEMINI.md`) + 주제별 `.instruction/*` 생성 | 설계가 끝나고 Agent가 계속 참고할 기준이 필요할 때 |
 | `harness-bootstrap` | 기존 코드베이스 → 설계 문서 + 컨텍스트 문서 역추출                      | 문서가 없는 레거시/기존 프로젝트에 하네스 처음 도입 시 |
 
 ### 2. 프로토타입·UI 계열
@@ -286,6 +227,33 @@ flowchart LR
 - 구현이 끝났다 → `multi-review`
 - 커밋할 준비를 한다 → `pre-commit` → `commit`
 - 코드와 문서가 안 맞는 느낌이다 → `doc-audit`
+
+---
+
+## 도구별 가이드 문서와 스킬 위치 메모
+
+하네스를 여러 Agent에 걸쳐 쓰다 보면 가장 자주 헷갈리는 것은  
+"어떤 파일을 루트 가이드로 두고, 스킬과 커맨드를 어디에 둘 것인가"다.
+
+예전에는 도구별로 `CLAUDE.md`, `AGENTS.md`, `GEMINI.md`, `.claude/*`, `.gemini/*`, `.agent/*`를 따로 관리하는 경우가 많았다.  
+하지만 2026년 4월 5일 기준 공식 문서를 기준으로 보면, 지금은 **Claude는 Claude 방식**, **Codex는 `AGENTS.md` 중심**, **Gemini는 `GEMINI.md`를 기본으로 하되 스킬은 `.agents` 별칭도 공식 지원**으로 이해하면 된다.
+
+즉, 이 문서에서는 아래처럼 단순하게 운영하는 것을 권장한다.
+
+| 도구 | 주 진입 문서 | 실무적으로 보면 되는 위치 | 메모 |
+| --- | --- | --- | --- |
+| Claude Code | `CLAUDE.md` | 프로젝트 가이드: 루트 `CLAUDE.md` 또는 `.claude/CLAUDE.md` / 커맨드: `.claude/commands/*.md` / 재사용 스킬: `~/.claude/skills/*/SKILL.md` | Claude는 여전히 자기 경로 체계를 유지하는 편이 가장 안전하다. |
+| OpenAI Codex | `AGENTS.md` | 공용 규칙: 루트 `AGENTS.md` / 공용 스킬: `.agents/skills/*/SKILL.md` | Codex 계열은 `AGENTS.md`를 기준 문서로 두고 보는 것이 가장 직관적이다. |
+| Gemini CLI / Gemini Code Assist | `GEMINI.md` 기본, 필요 시 `AGENTS.md`도 사용 가능 | 공용 스킬: `.agents/skills/*/SKILL.md` / Gemini 전용 커맨드: `.gemini/commands/*.toml` | Gemini는 스킬 쪽에서 `.agents`를 공식 지원하지만, 커맨드는 아직 `.gemini/commands`를 따로 쓰는 편이 맞다. |
+| Google Antigravity | 공개 자료만 보면 별도 파일명보다 플랫폼 구조 설명이 중심 | Gemini/Codex와 공유할 자산은 우선 `.agents` 기준으로 두고, 전용 구조는 별도 검증 후 추가 | 공개 블로그 기준으로는 `.agent`/`.agents` 경로를 과하게 단정하지 않는 편이 안전하다. |
+| VS Code | 각 확장/에이전트가 읽는 파일명을 그대로 사용 | 별도 VS Code 전용 문서보다 원본 한 벌 유지 | VS Code에서는 보통 Claude, Codex, Gemini 확장이 각자 자기 체계를 그대로 읽는다. |
+
+실무적으로는 이렇게 기억하면 충분하다.
+
+- Claude는 `CLAUDE.md`와 `.claude/*`를 그대로 쓴다.
+- 그 외 공용 규칙과 공용 스킬은 가능하면 `AGENTS.md`와 `.agents/skills` 기준으로 맞춘다.
+- Gemini만 예외적으로 전용 슬래시 커맨드가 필요할 때 `.gemini/commands`를 추가한다.
+- 같은 스킬을 `.agents`, `.gemini`, `.agent`에 중복 복사해 두는 방식은 가능한 한 피한다.
 
 ---
 
