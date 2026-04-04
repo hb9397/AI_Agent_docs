@@ -3,6 +3,7 @@
 AI 에이전트 환경(Claude Code, Gemini CLI, Gemini GEMS 등)에서 팀이 일관된 결과물을 만들 수 있도록 설계된 **문서 템플릿·자동화 스킬 저장소**입니다.
 
 > 왜 이런 스킬셋이 필요한지: [`Harness_Engineering_Intro.md`](./Harness_Engineering_Intro.md)
+
 > 현재 저장소 기준 운영 가이드: [`Harness_Engineering_v2.md`](./Harness_Engineering_v2.md)
 
 ---
