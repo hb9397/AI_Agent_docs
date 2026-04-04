@@ -122,7 +122,7 @@ AI가 바로 코드부터 쓰게 하지 않는다.
 
 ### 2. Agent가 읽을 고정 맥락을 만든다
 
-`CLAUDE.md`, `basic-instruction.md` 같은 문서로 프로젝트의 규칙과 아키텍처를 고정한다.
+`CLAUDE.md`(프로젝트 팩트 + 인덱스)와 주제별로 분리된 `.instruction/*-instruction.md`(아키텍처·코드 스타일·프레임워크·API·통신·파일 생성·Agent 전용 규칙)로 프로젝트의 규칙과 아키텍처를 고정한다.
 
 ### 3. 구현은 작은 단위로 쪼갠다
 
@@ -203,11 +203,12 @@ flowchart TD
 
 ### 1. 분석·설계·컨텍스트 계열
 
-| 스킬          | 역할                                              | 언제 쓰는가                                        |
-| ------------- | ------------------------------------------------- | -------------------------------------------------- |
-| `rfp-ingest`  | RFP에서 특정 SFR을 뽑아 해석하고 화면 후보로 정리 | RFP 기반 프로젝트를 시작할 때                      |
-| `design-doc`  | 인터뷰를 통해 구조화된 설계 문서 생성             | 아이디어를 실제 작업 문서로 바꿀 때                |
-| `context-doc` | `CLAUDE.md`, `basic-instruction.md` 생성          | 설계가 끝나고 Agent가 계속 참고할 기준이 필요할 때 |
+| 스킬                | 역할                                                                    | 언제 쓰는가                                        |
+| ------------------- | ----------------------------------------------------------------------- | -------------------------------------------------- |
+| `rfp-ingest`        | RFP에서 특정 SFR을 뽑아 해석하고 화면 후보로 정리                       | RFP 기반 프로젝트를 시작할 때                      |
+| `design-doc`        | 인터뷰를 통해 구조화된 설계 문서 생성                                   | 아이디어를 실제 작업 문서로 바꿀 때                |
+| `context-doc`       | 얇은 `CLAUDE.md`(프로젝트 팩트 + 인덱스) + 주제별 `.instruction/*` 생성 | 설계가 끝나고 Agent가 계속 참고할 기준이 필요할 때 |
+| `harness-bootstrap` | 기존 코드베이스 → 설계 문서 + 컨텍스트 문서 역추출                      | 문서가 없는 레거시/기존 프로젝트에 하네스 처음 도입 시 |
 
 ### 2. 프로토타입·UI 계열
 
@@ -250,6 +251,7 @@ flowchart TD
 flowchart LR
     A["지금 어떤 상황인가?"] --> B["RFP가 있다"]
     A --> C["아이디어만 있다"]
+    A --> G["문서 없는 기존 코드가 있다"]
     A --> D["이미 구현 중이다"]
     A --> E["커밋 직전이다"]
     A --> F["문서가 낡았다"]
@@ -259,6 +261,9 @@ flowchart LR
 
     C --> C1["design-doc"]
     C1 --> C2["context-doc"]
+
+    G --> G1["harness-bootstrap"]
+    G1 --> G2["design-doc / context-doc 재실행으로 보강"]
 
     D --> D1["impl-fe-be-doc / impl-screen-doc / impl-doc"]
     D1 --> D2["frontend-design"]
@@ -275,6 +280,7 @@ flowchart LR
 
 - 요구사항을 해석하는 중이다 → `rfp-ingest` 또는 `design-doc`
 - 설계를 Agent 규칙으로 고정하고 싶다 → `context-doc`
+- 문서가 전혀 없는 기존 코드에 하네스를 처음 도입한다 → `harness-bootstrap`
 - 화면부터 보고 싶다 → `design-prototype-docs` → `create-prototype`
 - 실제 작업 순서를 정하고 싶다 → `impl-*`
 - 구현이 끝났다 → `multi-review`
@@ -343,6 +349,7 @@ flowchart LR
 
 1. **슬래시 커맨드처럼 직접 스킬 호출**
 2. **`@` 태그와 파일 컨텍스트를 붙여 더 디테일하게 요청**
+3. **기존 코드베이스 → 하네스 부팅**: `/harness-bootstrap` 으로 레거시 프로젝트에 처음 하네스 도입
 
 환경에 따라 호출 문법은 조금 다를 수 있지만, 실전에서는 아래 패턴으로 이해하면 된다.
 
@@ -571,6 +578,7 @@ flowchart LR
 
 - `design-doc`
 - `context-doc`
+- `harness-bootstrap` (문서 없는 기존 코드베이스에 진입할 때)
 - `impl-fe-be-doc` 또는 `impl-doc`
 - `multi-review`
 - `pre-commit`

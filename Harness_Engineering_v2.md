@@ -1,8 +1,7 @@
 # Harness Engineering Guide v2
 
-> 2026-04-03 기준 현재 저장소 스킬셋을 기준으로 다시 정리한 AI Agent 하네스 운영 가이드.
-> `Harness_Engineering_v1.md`를 현재 상태에 맞게 갱신한 버전이며, 실제로 존재하는 스킬과 문서만 기준으로 작성했다.
-> `v1`에서 예정으로 적혀 있던 `rfp-ingest`, `impl-screen-doc`, `impl-doc`은 이제 구현 완료 기준으로 반영했고, 아직 없는 항목은 별도 갭으로 분리했다.
+> 2026-04-03 기준 현재 저장소의 스킬과 문서를 기준으로 정리한 AI Agent 하네스 운영 가이드.
+> 아래 내용은 `Agent Skills/`, `Docs Skills/`, `example/`, `README.md`, 각 `SKILL.md`에 있는 정보를 기준으로 작성했다.
 
 ---
 
@@ -16,39 +15,30 @@
 2. **Agent가 계속 참조할 고정 컨텍스트를 만든다.**
 3. **구현 단위를 작게 쪼개고 품질 게이트를 사이사이에 둔다.**
 
-`v2`는 이 흐름을 현재 저장소 기준으로 다시 정리한다.
+이 문서는 현재 저장소 기준의 흐름과 구성을 정리한다.
 
 ---
 
-## 2. 이번 버전에서 달라진 점
+## 2. 현재 저장소 기준 구성 요약
 
-- `design-doc`는 이제 `INPUT_V2` / `OUTPUT_V2` 중심 체계다.
-- `Flow B`의 진입점인 `rfp-ingest`가 실제 구현되어 있다.
-- 구현 지침 계열이 이제 실제로 **3종**이다.
-  - `impl-fe-be-doc`
-  - `impl-screen-doc`
-  - `impl-doc`
-- 프로토타입 브리지가 명확하다.
-  - `design-prototype-docs` → `create-prototype`
-- 운영 스킬 축이 선명해졌다.
-  - `doc-audit`, `multi-review`, `pre-commit`, `commit`, `agent-sync`, `code-comment`
-- 반대로 아래 항목은 아직 저장소에 없다.
-  - `sfr-trace`
-  - `rfp-compliance-review`
-  - `acceptance-test-doc`
-  - `artifact-pack`
+- `design-doc`는 `Agent Skills/design-doc/templates/INPUT_V2.md`, `OUTPUT_V2.md` 템플릿을 포함한다.
+- `rfp-ingest`는 `rfp-design-input-{SFR}.md` 형식의 중간 문서 생성을 정의한다.
+- 프로토타입 흐름은 `design-prototype-docs` → `create-prototype`으로 연결된다.
+- 구현 지침 계열 디렉토리는 `impl-fe-be-doc`, `impl-screen-doc`, `impl-doc` 3개가 존재한다.
+- 품질·운영 계열 디렉토리는 `multi-review`, `pre-commit`, `commit`, `code-comment`, `doc-audit`, `agent-sync`가 존재한다.
 
 ---
 
-## 3. 저장소 최신 지도
+## 3. 저장소 구조
 
 ```text
 AI_Agent_docs/
 ├── Agent Skills/   ← IDE 안의 Agent가 직접 호출하는 스킬
 ├── Docs Skills/    ← 웹 AI/Gems/Project에 넣어 쓰는 템플릿 문서
 ├── example/        ← 산출물 예시
-├── Harness_Engineering_v1.md
-└── v2.md
+├── Harness_Engineering_Intro.md
+├── Harness_Engineering_v2.md
+└── README.md
 ```
 
 ### 3-1. Agent Skills — 현재 활성 스킬
@@ -59,7 +49,8 @@ AI_Agent_docs/
 |--------|----------|------|-----------|-------------|
 | `rfp-ingest` | `Agent Skills/rfp-ingest` | RFP에서 지정 SFR 추출·해석·화면 후보 매핑 | `@RFP PDF`, `SFR-019` 등 | `rfp-design-input-{SFR}.md` |
 | `design-doc` | `Agent Skills/design-doc` | 인터뷰 기반 설계 문서 도출 | 아이디어, 기존 문서, RFP 중간 문서 | `OUTPUT_V2` 형식 설계 문서 |
-| `context-doc` | `Agent Skills/context-doc` | Agent용 컨텍스트 문서 생성 | `design-doc` 결과물 | `CLAUDE.md`, `.instruction/basic-instruction.md` |
+| `context-doc` | `Agent Skills/context-doc` | Agent용 컨텍스트 문서 생성 (다중 분할) | `design-doc` 결과물 | 얇은 `CLAUDE.md` + 주제별 `.instruction/*-instruction.md` 7종 |
+| `harness-bootstrap` | `Agent Skills/harness-bootstrap` | 기존 코드베이스 → 설계 + 컨텍스트 문서 역추출 | 문서 없는 기존 코드베이스 | `design-doc OUTPUT_V2` + `context-doc` 결과물 일괄 |
 
 #### B. 프로토타입·UI 계열
 
@@ -96,17 +87,15 @@ AI_Agent_docs/
 
 ### 3-2. Docs Skills — 웹 AI용 템플릿
 
-| 경로 | 현재 상태 | 용도 |
+| 경로 | 포함 항목 | 용도 |
 |------|-----------|------|
-| `Docs Skills/설계문서_도출/v4/INPUT_V2.md` | **현재 권장** | 웹 AI 인터뷰 입력 양식 |
-| `Docs Skills/설계문서_도출/v4/OUTPUT_V2.md` | **현재 권장** | 설계 산출물 양식 |
-| `Docs Skills/설계문서_도출/v1~v3` | 레거시/참고용 | 과거 버전 호환 또는 예시 참조 |
-| `Docs Skills/구현작업_지시서_도출/v1/Impl_workflow_doc.md` | 현재도 존재 | 웹 AI에서 구현 지침서를 수동 도출할 때 사용 |
-| `Docs Skills/스킬_도출/skill-design-guide.md` | 현재도 존재 | 스킬 설계 원칙 참고 |
-
-> 현재 저장소를 보면 설계 문서 체계는 `v4`까지 정리돼 있고, 구현 지침 문서 템플릿은 Docs Skills 쪽보다 Agent Skills 쪽이 더 세분화돼 있다.  
-> 따라서 **웹 AI는 설계 탐색**, **IDE Agent는 구현 지침·코드 작업**에 쓰는 분업이 가장 자연스럽다.  
-> 위 해석은 저장소 구조를 바탕으로 한 운영 권장안이다.
+| `Docs Skills/설계문서_도출/v4/INPUT_V2.md` | 파일 존재 | 웹 AI 인터뷰 입력 양식 |
+| `Docs Skills/설계문서_도출/v4/OUTPUT_V2.md` | 파일 존재 | 설계 산출물 양식 |
+| `Docs Skills/설계문서_도출/v1/` | 디렉토리 존재 | 설계 문서 도출 예시/양식 |
+| `Docs Skills/설계문서_도출/v2/` | 디렉토리 존재 | 설계 문서 도출 예시/양식 |
+| `Docs Skills/설계문서_도출/v3/` | 디렉토리 존재 | 설계 문서 도출 예시/양식 |
+| `Docs Skills/구현작업_지시서_도출/v1/Impl_workflow_doc.md` | 파일 존재 | 구현 지침서 템플릿 |
+| `Docs Skills/스킬_도출/skill-design-guide.md` | 파일 존재 | 스킬 설계 가이드 |
 
 ---
 
@@ -118,6 +107,7 @@ AI_Agent_docs/
 |------|------|
 | 아이디어/내부 기획만 있는가? | `Flow A` |
 | RFP/PDF/SFR 번호가 이미 있는가? | `Flow B` |
+| 문서 없는 기존/레거시 코드베이스에 처음 도입하는가? | `Flow C` |
 
 ### 4-2. 작업 스케일
 
@@ -233,6 +223,40 @@ rfp-design-input-{SFR}.md
 
 ---
 
+## 6-B. Flow C — 레거시/기존 코드베이스 부트스트랩 흐름
+
+```text
+기존 코드베이스 (AI 문서 없음)
+        │
+        ▼
+/harness-bootstrap
+        │
+        ├─ 저장소 스캔 (매니페스트·엔트리포인트·라우터·ORM·env·스크립트)
+        ├─ 최소 인터뷰 (도메인·목적·사용자, 최대 2회)
+        │
+        ▼
+design-doc OUTPUT_V2 초안 + CLAUDE.md + .instruction/*-instruction.md
+        │
+        ▼
+사용자 검토 & 보강
+        │
+        └─→ (필요 시) /design-doc · /context-doc 재실행으로
+              금지 패턴·팀 규칙 추가
+        │
+        ▼
+이후 Flow A 정규 루프 진입
+```
+
+### Flow C에서 기억할 점
+
+- **관찰 기반 서술**: 코드에서 보이는 것만 기록. 설계 의도·비즈니스 근거는 추측하지 않는다.
+- **자동 추출 한계**: 금지 패턴·팀 규칙은 코드에서 역추출이 어렵다. 뼈대만 생성되므로 이후 사용자가 보강해야 한다.
+- **인터뷰 최소화**: 코드에서 알 수 없는 도메인 목적·사용자만 최대 2회 묻는다.
+- **템플릿 재사용**: `design-doc`의 `OUTPUT_V2.md`와 `context-doc`의 템플릿을 그대로 사용한다.
+- **Flow A로 자연스럽게 합류**: 부트스트랩 이후는 정규 플로우를 그대로 따른다.
+
+---
+
 ## 7. 구현 지침 3종 선택 기준
 
 | 항목 | `impl-fe-be-doc` | `impl-screen-doc` | `impl-doc` |
@@ -274,6 +298,11 @@ rfp-design-input-{SFR}.md
                 ├─→ /impl-doc
                 └─→ /design-prototype-docs
 
+기존 코드베이스 (문서 없음)
+  └─→ /harness-bootstrap
+        ├─→ OUTPUT_V2 설계 문서 (역추출)
+        └─→ CLAUDE.md + .instruction/*-instruction.md 7종
+
 /design-prototype-docs
   └─→ {PREFIX}-{번호}_목업디자인.md
         └─→ /create-prototype
@@ -295,12 +324,20 @@ Agent 문서 / Skills 변경
 
 #### `context-doc`로 넘어가는 매핑
 
+`context-doc`는 얇은 `CLAUDE.md`(프로젝트 팩트 + 인덱스) + 주제별 `.instruction/*-instruction.md` 7종으로 분할 생성한다.
+
 | `design-doc OUTPUT_V2` 섹션 | 사용처 |
 |-----------------------------|--------|
-| 01 개요, 05 데이터 설계, 06 파일 구성 | `CLAUDE.md`의 프로젝트 맥락 / 구조 |
-| 02 동작 흐름, 07 라이브러리 및 외부 구성 | `CLAUDE.md`의 통신 규칙 / 기술 스택 |
-| 03 집중 로직, 04 인터페이스 설계 | `basic-instruction.md`의 아키텍처 제약 |
-| 10 주의사항, 12 열린 결정 사항 | `basic-instruction.md`의 금지/주의/미결 |
+| 01 개요, 05 데이터 설계, 07 라이브러리 | `CLAUDE.md` 프로젝트 팩트 |
+| 06 파일 구성 | `CLAUDE.md` 트리 + `architecture-instruction.md` + `file-convention-instruction.md` |
+| 02 동작 흐름 | `comm-instruction.md` |
+| 03 집중 로직 | `architecture-instruction.md` + `framework-instruction.md` |
+| 04 인터페이스 설계 | `api-instruction.md` + `comm-instruction.md` |
+| 07 라이브러리 (규칙 측면) | `framework-instruction.md` |
+| 10 주의사항 | `code-style-instruction.md` / `agent-instruction.md` / 각 주제 금지 목록 |
+| 12 열린 결정 사항 | 해당 주제 파일의 `미정` 섹션 |
+
+> 생성되는 instruction 파일: `architecture` / `code-style` / `framework` / `api` / `comm` / `file-convention` / `agent` 중 설계 문서에 해당 내용이 있는 것만. `agent-instruction.md`는 항상 생성.
 
 #### `impl-fe-be-doc`으로 넘어가는 매핑
 
@@ -422,28 +459,11 @@ Agent 문서 / Skills 변경
 
 ---
 
-## 12. 현재 저장소 기준 남아 있는 갭
+## 12. Docs Skills 디렉토리 현황
 
-### 12-1. 아직 없는 스킬
-
-| 항목 | 우선순위 | 필요한 이유 |
-|------|---------|-------------|
-| `sfr-trace` | P0 | RFP 요구사항과 설계/구현/테스트 간 추적성 확보 |
-| `rfp-compliance-review` | P0 | 납품 직전 요구사항 커버리지 점검 |
-| `acceptance-test-doc` | P1 | SFR별 인수 기준 표준화 |
-| `artifact-pack` | P2 | 납품 산출물 패키징 자동화 |
-
-### 12-2. 문서 체계 갭
-
-- `Docs Skills/설계문서_도출`는 `v4`까지 올라와 있지만,
-- `Docs Skills/구현작업_지시서_도출`는 아직 `v1` 단일 구조다.
-
-즉, 웹 AI용 설계 문서 체계는 최신화되어 있지만, 웹 AI용 구현 지침 체계는 Agent Skills의 `impl-* 3종`만큼 세분화되어 있지는 않다.
-
-실무적으로는 아래처럼 운영하는 편이 낫다.
-
-- 설계 인터뷰: 웹 AI 또는 `design-doc`
-- 구현 지침: 가능하면 IDE Agent의 `impl-fe-be-doc` / `impl-screen-doc` / `impl-doc`
+- `Docs Skills/설계문서_도출` 하위에는 `v1`, `v2`, `v3`, `v4` 디렉토리가 존재한다.
+- `Docs Skills/구현작업_지시서_도출` 하위에는 `v1` 디렉토리와 `README.md`가 존재한다.
+- `Docs Skills/스킬_도출` 하위에는 `skill-design-guide.md`가 존재한다.
 
 ---
 
@@ -510,6 +530,7 @@ Agent 문서 / Skills 변경
 
 | 지금 상황 | 먼저 쓸 것 | 다음 선택지 |
 |-----------|------------|-------------|
+| 문서 없는 기존 코드에 하네스를 처음 도입한다 | `harness-bootstrap` | `design-doc`·`context-doc` 보강 |
 | 아이디어를 구조화하고 싶다 | `design-doc` | `context-doc`, `impl-*` |
 | RFP의 특정 SFR만 풀고 싶다 | `rfp-ingest` | `design-doc` 또는 `design-prototype-docs` |
 | 요구사항을 화면 설계 문서로 만들고 싶다 | `design-prototype-docs` | `create-prototype` |
@@ -528,8 +549,9 @@ Agent 문서 / Skills 변경
 
 ### 새 프로젝트 시작
 
+- [ ] 문서 없는 기존 코드베이스라면 먼저 `harness-bootstrap`으로 뼈대 추출.
 - [ ] `design-doc`로 `OUTPUT_V2` 설계 문서를 만든다.
-- [ ] 프로젝트 단위면 `context-doc`로 `CLAUDE.md`와 `basic-instruction.md`를 만든다.
+- [ ] 프로젝트 단위면 `context-doc`로 `CLAUDE.md`와 주제별 `.instruction/*-instruction.md`를 만든다.
 - [ ] 구현 단위에 맞는 `impl-*` 1종을 고른다.
 - [ ] 화면 불확실성이 크면 `design-prototype-docs → create-prototype`을 먼저 돌린다.
 
@@ -560,7 +582,7 @@ Agent 문서 / Skills 변경
 
 ## 16. 한 줄 결론
 
-현재 저장소의 최신 하네스는 아래 한 줄로 요약된다.
+현재 저장소의 하네스 구조는 아래 한 줄로 요약된다.
 
 > `rfp-ingest` 또는 `design-doc`로 시작해서, `OUTPUT_V2`를 중심 허브로 삼고, 상황에 맞는 `impl-*` 하나로 구현 단위를 고른 뒤, `multi-review`·`pre-commit`·`doc-audit`로 품질을 닫는 구조다.
 
