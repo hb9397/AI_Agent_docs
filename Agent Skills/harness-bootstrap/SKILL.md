@@ -1,0 +1,196 @@
+---
+name: harness-bootstrap
+description: >
+  AI 하네스 문서가 전혀 없는 기존 코드베이스에 처음으로 하네스를 부팅할 때 사용한다.
+  '하네스 부팅', '기존 코드 분석해서 문서 만들어줘', '레거시 프로젝트 문서화',
+  'CLAUDE.md 없는데 생성', '설계 문서 역추출', 'AI 문서 부트스트랩',
+  '기존 프로젝트에 하네스 도입' 요청이 오면 이 스킬을 사용한다.
+  기존 코드베이스 → design-doc OUTPUT_V2 형식 설계 문서 + context-doc 결과물(CLAUDE.md + .instruction/*) 자동 도출.
+  프레임워크 자동 감지. 최소 인터뷰(2회 이하)로 코드에서 추출 불가능한 도메인 맥락만 보충.
+allowed-tools: Read, Glob, Grep, Bash, Write
+agent: fork
+---
+
+# 하네스 부트스트랩 (harness-bootstrap)
+
+기존 코드베이스만 있고 AI 하네스 문서(CLAUDE.md, 설계 문서, instruction 등)가 전혀 없을 때,
+코드를 직접 분석해서 다음 두 산출물을 한 번에 도출한다.
+
+1. **`design-doc` OUTPUT_V2 형식 설계 문서** (프로젝트 설계 스냅샷)
+2. **`context-doc` 결과물** — `CLAUDE.md` + `.instruction/*-instruction.md`
+
+생성 전 반드시 사용자 확인을 거친다. 파일을 무단으로 생성하지 않는다.
+
+> 이 스킬은 "레거시/기존 프로젝트에 AI 하네스를 처음 도입"하는 진입점이다.
+> 이후부터는 `design-doc` → `context-doc` 정규 플로우를 그대로 쓰면 된다.
+
+---
+
+## 설계 원칙
+
+1. **코드에서 추출 가능한 건 모두 자동 추출**. 질문하지 않는다.
+2. **코드에서 알 수 없는 것만 인터뷰**. 도메인 목적·사용자·상위 비즈니스 맥락.
+3. **인터뷰는 최대 2회**. 그 이상은 `미정 — [이유]` 로 남긴다.
+4. **템플릿은 재사용한다**. `design-doc`의 `OUTPUT_V2.md`와 `context-doc`의 템플릿을 그대로 참조하며, 이 스킬 안에 중복 생성하지 않는다.
+5. **프레임워크 중립**. 매니페스트 파일 기반으로 자동 감지한다.
+
+---
+
+## 스킬 연계
+
+```
+기존 코드베이스 (AI 문서 없음)
+        │
+        ▼
+/harness-bootstrap
+        │
+        ├─ Step 1~4: 코드 스캔 + 최소 인터뷰
+        │
+        ├─ Step 5: design-doc OUTPUT_V2 산출
+        │            └── 저장: {project}/docs/DESIGN.md (또는 사용자 지정)
+        │
+        └─ Step 6~7: context-doc 파이프라인 실행
+                     └── 저장: CLAUDE.md + .instruction/*-instruction.md
+```
+
+이후 작업은 정규 플로우를 따른다.
+- 설계 변경 시 → `design-doc`로 OUTPUT 갱신 후 → `context-doc`로 하네스 갱신
+- 문서-코드 괴리 검증 → `doc-audit`
+- 구현 지침이 필요하면 → `impl-fe-be-doc` / `impl-screen-doc` / `impl-doc`
+
+---
+
+## 워크플로우
+
+### Step 1 — 저장소 스캔 및 매니페스트 감지
+
+`prompts/code-scan.md`·`prompts/stack-detection.md` 기준으로 저장소를 스캔한다.
+
+- 루트의 매니페스트 파일 자동 탐색 (`package.json`, `requirements.txt`, `pyproject.toml`, `build.gradle*`, `pom.xml`, `Cargo.toml`, `go.mod`, `composer.json`, `Gemfile` 등)
+- 매니페스트에서 **기술 스택 + 버전** 추출
+- 모노레포/멀티 프로젝트 여부 판정 (루트에 매니페스트 없고 하위 디렉토리에 있음)
+
+매니페스트를 찾지 못하면 사용자에게 확인한다.
+
+> "루트에서 매니페스트 파일을 찾지 못했습니다.
+> 기술 스택 정보가 있는 파일 경로를 알려주시거나, 루트를 지정해 주세요."
+
+---
+
+### Step 2 — 코드베이스 인벤토리 추출
+
+다음을 자동 추출한다. 전부 **코드·설정 파일 기반**이며 추측 금지.
+
+| 항목 | 추출 소스 |
+|------|----------|
+| 디렉토리 트리 | 루트 스캔, 역할 있는 폴더만 |
+| 엔트리포인트 | `main.*`, `app.*`, `index.*`, `server.*` 등 |
+| 라우터/엔드포인트 목록 | 라우트 정의 패턴 grep (FastAPI `@router`, Express `app.get`, Spring `@GetMapping` 등) |
+| WebSocket/통신 채널 | `websocket`, `ws`, `socket.io`, `stomp` 등 키워드 grep |
+| DB 테이블/모델 | ORM 모델 파일 (`models.py`, `entity/*.ts`, `@Entity` 등) |
+| 환경 변수 | `.env*`, `os.getenv`, `process.env`, `System.getenv` grep |
+| 실행 스크립트 | `scripts` 필드, `Makefile`, `start.sh`, `Dockerfile`, `docker-compose*` |
+| 외부 서비스/라이브러리 | 매니페스트 의존성 분류 |
+
+추출 결과는 **요약 보고서**로 사용자에게 먼저 보여준다. 잘못 읽은 것이 있으면 수정받는다.
+
+---
+
+### Step 3 — 최소 인터뷰 (최대 2회)
+
+코드에서 **절대 알 수 없는 것**만 묻는다.
+
+**필수 질문 1** — 도메인·목적·사용자
+> "이 프로젝트는 어떤 사용자가, 어떤 문제를 해결하기 위해 쓰는 시스템인가요?
+> 2~3줄로 설명해 주세요."
+
+**선택 질문 2** — 상위 맥락/제약 (필요시에만)
+> "이 프로젝트가 속한 상위 시스템이 있거나, 반드시 지켜야 할 운영 제약이 있으면 알려주세요.
+> 없으면 '없음'이라고만 답해 주세요."
+
+**묻지 않는 것**:
+- 기술 스택 (매니페스트에서 이미 알 수 있음)
+- 디렉토리 구조, API 목록, 환경 변수 목록 (코드에서 추출)
+- 코딩 컨벤션 세부 (코드 스타일에서 역추론)
+
+답변이 없거나 불충분하면 `미정 — 사용자 미제공` 으로 표시하고 진행한다.
+
+---
+
+### Step 4 — OUTPUT_V2 섹션 매핑
+
+`prompts/extraction-mapping.md` 기준으로 Step 2 인벤토리 + Step 3 인터뷰 답변을
+`design-doc`의 `OUTPUT_V2.md` 섹션에 매핑한다.
+
+| OUTPUT_V2 섹션 | 채우는 소스 |
+|----------------|------------|
+| 01 개요 | 인터뷰 + 매니페스트 프로젝트명·버전 |
+| 02 동작 흐름 | 엔트리포인트 → 라우터/핸들러 체인 역추적 |
+| 03 집중 로직 | 엔트리포인트 주변 핵심 모듈 분석 |
+| 04 인터페이스 | 추출된 API/WebSocket 목록 |
+| 05 데이터 | ORM 모델 / 스키마 파일 |
+| 06 파일 구성 | 디렉토리 트리 |
+| 07 라이브러리 | 매니페스트 의존성 |
+| 10 주의사항 | 환경 변수 분기·Dockerfile·README 패턴 |
+| 12 열린 결정 | 코드에서 TODO/FIXME/주석 추출 |
+
+코드에서 역추출한 정보는 **관찰 기반**이므로, 설계 의도를 추측하지 않는다.
+"현재 코드는 이렇게 구성돼 있다"로만 서술한다.
+
+---
+
+### Step 5 — design-doc OUTPUT 초안 생성 및 확인
+
+`../design-doc/templates/OUTPUT_V2.md` 양식을 그대로 사용해 설계 문서 초안을 생성한다.
+
+- 작성 지침(주석)은 제거한 상태로 출력
+- 해당하지 않는 스케일 섹션은 삭제
+- 불명확한 항목은 `미정 — [이유]` 로 표시
+
+초안을 대화창에 출력하고 확인받는다.
+
+> "위 설계 문서를 검토해 주세요.
+> 수정할 부분이 있으면 말씀해 주시고, 이상 없으면 `context-doc` 단계로 진행합니다.
+> 저장 경로는 `docs/DESIGN.md` 로 하겠습니다. 변경 원하시면 알려주세요."
+
+---
+
+### Step 6 — context-doc 파이프라인 실행
+
+Step 5 OUTPUT을 입력으로 삼아 `context-doc` 스킬의 워크플로우를 그대로 실행한다.
+
+- `../context-doc/prompts/analysis-claude.md` 기준으로 CLAUDE.md 초안 작성
+- `../context-doc/prompts/analysis-instruction.md` 기준으로 주제별 instruction 파일 분류
+- `../context-doc/templates/CLAUDE.md.template` + 각 `*-instruction.md.template` 활용
+- 모노레포 감지 시 `.instruction/` 배치 질문 (context-doc의 Step 2와 동일)
+
+이 단계에서는 **새로운 인터뷰를 추가하지 않는다**. Step 3 답변 + Step 5 OUTPUT으로 충분하다.
+
+---
+
+### Step 7 — 미리보기 및 일괄 저장
+
+생성된 모든 파일 초안을 대화창에 순서대로 출력하고 승인을 요청한다.
+
+출력 순서:
+1. `docs/DESIGN.md` (또는 사용자 지정 경로)
+2. `CLAUDE.md`
+3. `.instruction/architecture-instruction.md`
+4. `.instruction/code-style-instruction.md`
+5. `.instruction/framework-instruction.md`
+6. `.instruction/api-instruction.md`
+7. `.instruction/comm-instruction.md`
+8. `.instruction/file-convention-instruction.md`
+9. `.instruction/agent-instruction.md`
+
+(단, 설계 문서에 해당 주제가 없으면 instruction 파일은 생성하지 않는다 — context-doc 원칙 그대로)
+
+> "위 파일들을 검토해 주세요.
+> 이상 없으면 한꺼번에 저장하겠습니다. 수정 사항이 있으면 알려주세요."
+
+승인 시:
+- `.instruction/` 디렉토리가 없으면 생성
+- 설계 문서 저장 폴더(`docs/` 등)가 없으면 생성
+- 모든 파일 일괄 저장
+- CLAUDE.md의 `@.instruction/*` 참조가 실제 파일과 1:1 일치하는지 검증
+- 이미 존재하는 파일이 있으면 덮어쓰기 전에 사용자에게 알림
