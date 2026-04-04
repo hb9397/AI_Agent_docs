@@ -22,7 +22,30 @@
 - `axios 직접 import` → API 호출 분산 시 유지보수 불가 → `src/api/client.js` 함수 사용
 - `sync def 라우터` → uvicorn ASGI에서 블로킹 발생 → `async def` 사용
 
-누락 시 **반드시 사용자에게 확인**한다. (이것만은 예외적으로 질문 가능)
+누락 시 **Step 3-B의 단일 질문 할당분 안에서만** 사용자에게 확인한다.
+이미 질문 예산이 소진되었다면 추측하지 말고 `미정 — 금지 이유/대안 확인 필요`로 남긴다.
+
+---
+
+## 경계가 겹치는 규칙 처리
+
+한 규칙이 여러 파일 후보에 걸쳐 보이면 **가장 구체적인 1개 파일에만** 넣는다.
+같은 내용을 두 파일에 복제하지 않는다.
+
+| 규칙 유형 | 우선 배치 파일 | 메모 |
+|-----------|----------------|------|
+| 레이어 경계, 책임 분리, 의존 방향 | `architecture-instruction.md` | 구조 규칙 |
+| 언어 레벨 async/await, 예외 전파, 네이밍, 타입, 로그 | `code-style-instruction.md` | 프레임워크 비특정 규칙 |
+| 특정 라이브러리 API 사용법, 훅/DI/세션 패턴, 재시도 옵션 | `framework-instruction.md` | 라이브러리 명이 규칙의 핵심일 때 |
+| HTTP 엔드포인트, 요청/응답 스키마, 인증/인가, 버전 | `api-instruction.md` | HTTP 규약 |
+| WebSocket/MQ/RPC 메시지 포맷, 이벤트 순서, 재연결 | `comm-instruction.md` | 비-HTTP 통신 |
+| 파일 위치, 네이밍, 진입점 파일에 넣으면 안 되는 코드 | `file-convention-instruction.md` | 저장 위치/배치 규칙 |
+| Agent의 응답 방식, 승인 절차, 자동 실행 금지 | `agent-instruction.md` | AI 행동 규칙 |
+
+예시:
+- 일반적인 `async` 에러 전파 규칙 → `code-style-instruction.md`
+- `React Query`의 `retry`/`queryClient` 사용 규칙 → `framework-instruction.md`
+- `FastAPI` 라우터는 항상 `async def`여야 함 → 라이브러리 결합이 강하면 `framework-instruction.md`, 그렇지 않으면 `code-style-instruction.md`
 
 ---
 
@@ -121,9 +144,20 @@
 
 ---
 
+## 관찰 기반 bootstrap 입력 예외
+
+입력 문서가 `harness-bootstrap`처럼 **관찰 기반으로 역추출된 설계 문서**라면,
+규범적 이유와 대안이 문서/코드/README에 없을 수 있다.
+
+- 이 경우 금지 이유·대안을 **추정해서 채우지 않는다**.
+- 관찰 사실만 있고 규범 근거가 없으면 `미정 — bootstrap 산출물에는 규범 근거 없음`으로 남긴다.
+- 필요하면 `12 열린 결정 사항` 또는 각 파일의 `미정` 항목으로 올려 후속 `design-doc` 보강 대상으로 표시한다.
+
+---
+
 ## 누락 항목 처리
 
 - 주제별 규칙 본문이 없으면 해당 파일 **생성하지 않음** (빈 파일 금지)
-- 금지 항목의 이유/대안이 없으면 **반드시 사용자에게 확인**
+- 금지 항목의 이유/대안이 없으면 질문 예산 안에서만 확인, 아니면 `미정` 처리
 - 항목이 부분적으로 있으면 `미정 — [이유]` 로 표시하고 파일은 생성
 - analysis-claude에서 이미 질문했으면 이 단계에서는 질문 금지 (금지 삼위일체 누락 제외)

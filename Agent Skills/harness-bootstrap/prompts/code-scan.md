@@ -31,6 +31,8 @@
 - 관례 파일명 검색: `main.*`, `app.*`, `index.*`, `server.*`, `__main__.py`, `cmd/**/main.go`, `Application.java`, `Program.cs`
 - 매니페스트의 `main`/`scripts.start`/`entry-point` 필드 확인
 - Dockerfile의 `CMD`/`ENTRYPOINT` 확인
+- 관례 파일명이 없으면 **실행 스크립트가 가리키는 파일**과 **서버/CLI 부트스트랩 코드**를 후보로 수집한다.
+- 후보가 여러 개면 모두 나열하고, 이후 동작 흐름 추적은 **확정 가능한 후보**에서만 시작한다.
 
 ### 3. 라우터/엔드포인트
 
@@ -108,6 +110,17 @@ grep 키워드: `websocket`, `WebSocket`, `\.on\(['\"]message`, `@WebSocketGatew
 
 ---
 
+## 멀티 런타임 루트 감지
+
+루트에 `package.json` + `pyproject.toml`처럼
+**서로 다른 에코시스템 매니페스트가 2개 이상** 공존하면 단일 프로젝트로 단정하지 않는다.
+
+- 이 경우 `멀티 런타임 루트`로 표시하고 deployable unit 후보를 분리한다.
+- 후보 분리 기준: 매니페스트 경로, Dockerfile, 실행 스크립트, 엔트리포인트 묶음
+- 저장 단위가 불명확하면 사용자에게 **1회만** 확인한다.
+
+---
+
 ## 출력 형식 (Step 2 요약 보고서)
 
 사용자에게 보여줄 요약은 아래 형식:
@@ -115,7 +128,7 @@ grep 키워드: `websocket`, `WebSocket`, `\.on\(['\"]message`, `@WebSocketGatew
 ```markdown
 ## 스캔 결과 요약
 
-- 프로젝트 유형: [단일 / 모노레포]
+- 프로젝트 유형: [단일 / 모노레포 / 멀티 런타임 루트]
 - 언어/프레임워크: [자동 감지 결과]
 - 엔트리포인트: [파일 경로]
 - API 엔드포인트: [N개 발견]
