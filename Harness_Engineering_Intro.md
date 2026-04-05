@@ -236,24 +236,29 @@ flowchart LR
 "어떤 파일을 루트 가이드로 두고, 스킬과 커맨드를 어디에 둘 것인가"다.
 
 예전에는 도구별로 `CLAUDE.md`, `AGENTS.md`, `GEMINI.md`, `.claude/*`, `.gemini/*`, `.agent/*`를 따로 관리하는 경우가 많았다.  
-하지만 2026년 4월 5일 기준 공식 문서를 기준으로 보면, 지금은 **Claude는 Claude 방식**, **Codex는 `AGENTS.md` 중심**, **Gemini는 `GEMINI.md`를 기본으로 하되 스킬은 `.agents` 별칭도 공식 지원**으로 이해하면 된다.
+하지만 하네스를 여러 Agent에 공통으로 태우려면 운영 규칙은 더 단순해야 한다.
 
-즉, 이 문서에서는 아래처럼 단순하게 운영하는 것을 권장한다.
+이 문서에서의 기준은 하나다.  
+**재사용 가능한 스킬, 프롬프트, 커맨드 본문, 예시, 실행 스크립트는 모두 `.agents/skills/*`를 단일 원천(source of truth)으로 둔다.**  
+실무에서는 가능하면 각 도구에서도 이 위치를 그대로 쓰고, 같은 내용을 도구별 폴더에 중복 복사하지 않는다.
 
-| 도구 | 주 진입 문서 | 실무적으로 보면 되는 위치 | 메모 |
+즉, 이 문서에서는 아래처럼 운영하는 것을 권장한다.
+
+| 도구 | 주 진입 문서 | 하네스 기준 실제 관리 위치 | 메모 |
 | --- | --- | --- | --- |
-| Claude Code | `CLAUDE.md` | 프로젝트 가이드: 루트 `CLAUDE.md` 또는 `.claude/CLAUDE.md` / 커맨드: `.claude/commands/*.md` / 재사용 스킬: `~/.claude/skills/*/SKILL.md` | Claude는 여전히 자기 경로 체계를 유지하는 편이 가장 안전하다. |
-| OpenAI Codex | `AGENTS.md` | 공용 규칙: 루트 `AGENTS.md` / 공용 스킬: `.agents/skills/*/SKILL.md` | Codex 계열은 `AGENTS.md`를 기준 문서로 두고 보는 것이 가장 직관적이다. |
-| Gemini CLI / Gemini Code Assist | `GEMINI.md` 기본, 필요 시 `AGENTS.md`도 사용 가능 | 공용 스킬: `.agents/skills/*/SKILL.md` 중심 / 필요 시 Gemini 엔트리만 `.gemini/commands/*.toml` | 공식 커맨드 위치는 `.gemini/commands`지만, 실무에서는 개발자 편의상 스킬과 작업 자산을 `.agents`에 몰아두고 필요할 때만 Gemini용 얇은 엔트리를 두는 편이 가장 낫다. |
-| Google Antigravity | 공개 자료만 보면 별도 파일명보다 플랫폼 구조 설명이 중심 | Gemini/Codex와 공유할 자산은 우선 `.agents` 기준으로 두고, 전용 구조는 별도 검증 후 추가 | 공개 블로그 기준으로는 `.agent`/`.agents` 경로를 과하게 단정하지 않는 편이 안전하다. |
-| VS Code | 각 확장/에이전트가 읽는 파일명을 그대로 사용 | 별도 VS Code 전용 문서보다 원본 한 벌 유지 | VS Code에서는 보통 Claude, Codex, Gemini 확장이 각자 자기 체계를 그대로 읽는다. |
+| Claude Code | `CLAUDE.md` | Claude가 직접 읽는 문서는 `CLAUDE.md`, `.claude/commands/*.md`, `~/.claude/skills/*/SKILL.md`를 따른다. | Claude는 네이티브 경로 체계가 분명하므로 직접 읽는 엔트리는 Claude 방식으로 유지하되, 공용 자산의 원본은 가능하면 `.agents/skills`에 한 번만 둔다. |
+| OpenAI Codex | `AGENTS.md` | 공용 규칙: 루트 `AGENTS.md` / 공용 스킬과 관련 자산: `.agents/skills/*/SKILL.md` | Codex 계열은 `AGENTS.md`와 `.agents/skills`를 그대로 기준으로 보면 된다. |
+| Gemini CLI / Gemini Code Assist | `GEMINI.md` | 스킬, 프롬프트, 커맨드 본문, 실행 예시는 모두 `.agents/skills/*`에 둔다. | 이 문서에서는 Gemini 계열의 기준 문서를 `GEMINI.md`로 맞추고, 공용 자산 관리는 `.agents/skills` 기준으로 통일한다. |
+| Google Antigravity | `GEMINI.md` | 하네스에서 공유하는 스킬과 커맨드 자산은 Gemini/Codex와 동일하게 모두 `.agents/skills/*`에 둔다. | Antigravity도 `GEMINI.md`를 읽는 기준으로 보고, 워크스페이스 자산 관리는 `.agents` 계열로 이해한다. 이 하네스에서는 스킬과 커맨드도 `.agents/skills` 기준으로 관리한다. |
+| VS Code | 각 확장/에이전트가 읽는 파일명을 그대로 사용 | 확장별 진입 파일이 다르더라도 공용 스킬/커맨드 자산은 `.agents/skills/*`를 우선 원본으로 둔다. | VS Code에서는 각 확장이 자기 체계를 읽더라도, 팀이 관리하는 실제 내용은 한 곳에 모아두는 편이 유지보수에 유리하다. |
 
 실무적으로는 이렇게 기억하면 충분하다.
 
-- Claude는 `CLAUDE.md`와 `.claude/*`를 그대로 쓴다.
-- 그 외 공용 규칙과 공용 스킬은 가능하면 `AGENTS.md`와 `.agents/skills` 기준으로 맞춘다.
-- Gemini도 가능한 한 `.agents`를 기준으로 맞추고, `.gemini/commands`는 원래 공식 위치가 여기라는 점만 알고 필요할 때 얇게 연결하는 정도로 쓴다.
-- 같은 스킬을 `.agents`, `.gemini`, `.agent`에 중복 복사해 두는 방식은 가능한 한 피한다.
+- 팀이 유지보수하는 스킬, 프롬프트, 커맨드 본문, 예시, 스크립트의 원본은 항상 `.agents/skills`에 둔다.
+- `Gemini CLI`, `Gemini Code Assist`, `Antigravity`, `Codex`에서 공용으로 쓰는 스킬과 커맨드도 모두 `.agents/skills` 기준으로 동작한다고 보고 설계한다.
+- Gemini 계열과 Antigravity는 이 문서에서는 `GEMINI.md`와 `.agents/skills` 기준으로 정리한다.
+- 같은 스킬이나 커맨드 본문을 `.agents`, `.gemini`, 기타 도구 전용 폴더에 중복 복사해 두는 방식은 피한다.
+- Claude처럼 네이티브 경로가 강한 도구는 직접 읽는 엔트리만 해당 도구 규칙을 따르고, 공용 내용의 원본은 가능하면 `.agents/skills`에 한 번만 둔다.
 
 ---
 
