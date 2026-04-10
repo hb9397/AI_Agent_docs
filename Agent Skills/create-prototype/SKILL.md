@@ -156,7 +156,7 @@ Tailwind CSS CDN과 Noto Sans KR 폰트를 사용하며, `file://` 직접 열기
 | 화면별 CSS | `css/{PREFIX}-001-{slug}.css` | 해당 화면 전용 레이아웃만, 화면마다 1개 필수 |
 
 - **`<style>` 블록 전면 금지**: HTML 내부에 `<style>` 태그를 작성하지 않는다
-- 인라인 `style=""` 속성은 소규모 1회성 조정에 한해 허용
+- **인라인 `style=""` 원칙적 금지**: 모든 스타일은 CSS 파일에 클래스로 정의한다. `style=""` 속성은 JS로 동적으로 값을 주입하는 경우처럼 CSS 파일로 표현이 불가능한 경우에만 허용한다
 
 #### JS 분리 규칙
 
@@ -308,7 +308,7 @@ function renderData(data) {
 - Google Fonts: `Noto Sans KR` (본문) + `JetBrains Mono` (코드/숫자)
 - **Tailwind CSS CDN**: `<script src="https://cdn.tailwindcss.com"></script>` — `<head>` 맨 앞에 배치
 - CSS 변수(`:root`)로 색상 체계 관리 — Tailwind 유틸리티는 **보조**로만 사용
-- **`<style>` 블록 사용 금지** — 모든 CSS는 `css/` 폴더의 파일에 작성
+- **CSS-first 원칙** — 모든 스타일은 `css/` 폴더의 파일에 클래스로 정의한다. `<style>` 블록 금지, 인라인 `style=""` 원칙적 금지 (JS 동적 주입 등 불가피한 경우만 허용)
 - **HTML 내 `<script>` 블록 금지** — `<script type="application/json" id="page-data">` 하나만 허용
 - **모든 `<script src>` 는 `<head>`에 선언** — `<head>` 선언 순서: Tailwind CDN → 공통 CSS → 화면별 CSS → 공통 JS (선택) → 화면별 JS
 
@@ -374,7 +374,8 @@ function renderData(data) {
 | Tailwind CDN | 모든 HTML의 `<head>` 맨 앞에 Tailwind CDN `<script>`가 있는가 |
 | JS head 선언 | 모든 `<script src>` 태그가 `<head>` 안에 있는가 (body 안에 `<script src>` 없는가) |
 | JS 선언 순서 | `<head>` 내 순서: Tailwind CDN → 공통 JS → 화면별 JS |
-| `<style>` 블록 없음 | 모든 HTML에 `<style>` 태그가 없는가 (`style=""` 속성은 허용) |
+| `<style>` 블록 없음 | 모든 HTML에 `<style>` 태그가 없는가 |
+| 인라인 style 남용 | `style=""` 속성이 레이아웃·컴포넌트 스타일에 사용되지 않았는가 (JS 동적 주입 외 사용 시 CSS 파일로 이동) |
 | HTML 내 `<script>` | `<body>` 안에 `<script type="application/json" id="page-data">` 외 다른 `<script>` 태그가 없는가 |
 | DOMContentLoaded | 모든 화면별 JS 파일이 `document.addEventListener('DOMContentLoaded', ...)` 안에서 DOM을 조작하는가 |
 | fetch() 없음 | 모든 파일에 `fetch(` 문자열이 없는가 |
