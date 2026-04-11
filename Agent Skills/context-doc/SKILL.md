@@ -13,6 +13,29 @@ agent: fork
 
 # Context 문서 생성 (context-doc)
 
+---
+
+## STEP 0 — 플랫폼 및 실행 방식 확인
+
+`prompts/parallel-setup.md`의 [플랫폼 확인] → [모델 목록 표시] → [실행 방식 선택 — 선호도만 저장] 절차를 따른다.
+
+병렬 선호 시 아래 Task 후보 목록을 미리 안내한다.
+실제 생성할 파일은 Step 3-B 분석 후 확정되며, 확정 시점에 `prompts/parallel-setup.md`의 [모델 확정] 절차를 실행한다.
+
+| # | Task (instruction 파일) | 생성 조건 |
+|---|------------------------|----------|
+| 1 | `architecture-instruction.md` | 모듈·레이어 경계·의존성 규칙이 있을 때 |
+| 2 | `code-style-instruction.md` | 네이밍·예외처리·주석 규칙이 있을 때 |
+| 3 | `framework-instruction.md` | 라이브러리별 사용 규칙이 있을 때 |
+| 4 | `api-instruction.md` | API 엔드포인트·요청/응답 규약이 있을 때 |
+| 5 | `comm-instruction.md` | WebSocket·메시지큐 등 통신 규약이 있을 때 |
+| 6 | `file-convention-instruction.md` | 파일 위치·네이밍 규칙이 있을 때 |
+| 7 | `agent-instruction.md` | 항상 생성 |
+
+순차 선택 시 Step 1로 직접 진행한다.
+
+---
+
 design-doc 스킬의 OUTPUT 또는 별도 설계 문서를 입력받아
 AI Agent가 개발에 활용할 수 있는 Context 문서 세트를 생성한다.
 
@@ -147,6 +170,15 @@ design-doc OUTPUT의 각 섹션은 아래와 같이 매핑된다.
 
 > "핵심 설계 정보가 부족해 현재 상태로는 `CLAUDE.md`와 instruction 문서를 고정 맥락으로 저장하기 어렵습니다.
 > 우선 01/03/06/07/10/11 중 비어 있는 섹션을 보강해 주세요."
+
+---
+
+### Step 3-D — 병렬 모델 확정 (STEP 0에서 병렬 선호 시에만)
+
+STEP 0에서 병렬을 선택한 경우, Step 3-B에서 확정된 생성 파일 목록을 사용하여
+`prompts/parallel-setup.md`의 [모델 확정] 절차를 실행한다.
+
+순차를 선택했거나 STEP 0에서 기타(4)를 선택한 경우 이 Step을 건너뛴다.
 
 ---
 
