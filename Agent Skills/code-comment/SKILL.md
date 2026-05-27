@@ -12,6 +12,17 @@ agent: fork
 
 ---
 
+## STEP 0 — 플랫폼 및 실행 방식 확인
+
+`prompts/parallel-setup.md`의 [플랫폼 확인] → [모델 목록 표시] → [실행 방식 선택 — 선호도만 저장] 절차를 따른다.
+
+병렬 선호 시: Task 목록(대상 파일 목록)은 Step 2에서 확정된다.
+파일 목록 확정 후 Task별 병렬 처리에 앞서 `prompts/parallel-setup.md`의 [모델 확정] 절차를 실행한다.
+
+순차 선택 시 아래 진입 분기로 직접 진행한다.
+
+---
+
 ## 진입 분기
 
 | 상황 | Step 2 진입 경로 |
@@ -50,8 +61,8 @@ git rev-parse --is-inside-work-tree 2>/dev/null
 
 대상 파일이 여러 개인 경우:
 
-- sub-agent 지원 환경: 각 파일에 대해 Step 3~5를 병렬 처리
-- 미지원 환경: 파일 하나씩 순차 처리
+- STEP 0에서 병렬을 선택한 경우: 파일 목록을 Task 목록으로 제시하고 `prompts/parallel-setup.md`의 [모델 확정] 절차를 실행한 뒤 각 파일에 대해 Step 3~5를 병렬 처리
+- STEP 0에서 순차를 선택하거나 플랫폼이 기타인 경우: 파일 하나씩 순차 처리
 
 ---
 

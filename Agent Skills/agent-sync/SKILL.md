@@ -12,6 +12,22 @@ agent: fork
 
 ---
 
+## STEP 0 — 플랫폼 및 실행 방식 확인
+
+`prompts/parallel-setup.md`의 [플랫폼 확인] → [모델 목록 표시] → [실행 방식 선택] 절차를 따른다.
+
+병렬 선택 시 아래 Task 목록을 제시한 뒤 `prompts/parallel-setup.md`의 [모델 확정] 절차를 따른다.
+
+| # | Task | 내용 |
+|---|------|------|
+| A | docs-sync | CLAUDE.md / AGENTS.md / GEMINI.md 등 Agent 문서 동기화 |
+| B | skills-sync | Skills 디렉토리 동기화 |
+
+> 진입 분기에서 단일 Task만 실행하는 경우(Docs만 / Skills만)에는 해당 Task만 제시한다.
+> 순차 선택 시 아래 진입 분기로 직접 진행한다.
+
+---
+
 ## 진입 분기
 
 | 상황 | 실행할 Task |
