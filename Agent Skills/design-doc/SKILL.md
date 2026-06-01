@@ -25,8 +25,10 @@ agent: fork
 
 ```
 design-doc OUTPUT
-    ├─→ context-doc  →  CLAUDE.md + .instruction/basic-instruction.md
-    └─→ impl-doc     →  FE/BE 페어 작업지침서
+    ├─→ context-doc      →  CLAUDE.md + AGENTS.md + .instruction/*-instruction.md
+    ├─→ impl-fe-be-doc   →  FE/BE 페어 작업지침서
+    ├─→ impl-screen-doc  →  화면 단위 구현 지침서
+    └─→ impl-doc         →  범용 단계별 구현 지침서
 ```
 
 OUTPUT 문서를 저장했다면 해당 파일을 그대로 다음 스킬에 넘기면 된다.

@@ -39,9 +39,8 @@ agent: fork
 | 문서 | 설명 |
 |------|------|
 | `README.md` | 프로젝트 개요 및 전체 구조 (핵심) |
-| `CLAUDE.md` | Claude AI 전용 지침 |
-| `AGENTS.md` | 범용 Agent 지침 (있는 경우) |
-| `GEMINI.md` | Gemini AI 전용 지침 (있는 경우) |
+| `CLAUDE.md` | Claude / 공통 Agent 지침 |
+| `AGENTS.md` | Codex/OpenAI Agent 지침 (`CLAUDE.md`와 동일 본문 권장) |
 | `.instruction/**/*.md` | 세부 코딩 규칙, 아키텍처 가이드 등 (있는 경우) |
 
 ---

@@ -5,7 +5,7 @@ description: >
   '하네스 부팅', '기존 코드 분석해서 문서 만들어줘', '레거시 프로젝트 문서화',
   'CLAUDE.md 없는데 생성', '설계 문서 역추출', 'AI 문서 부트스트랩',
   '기존 프로젝트에 하네스 도입' 요청이 오면 이 스킬을 사용한다.
-  기존 코드베이스 → design-doc OUTPUT_V2 형식 설계 문서 + context-doc 결과물(CLAUDE.md + .instruction/*) 자동 도출.
+  기존 코드베이스 → design-doc OUTPUT_V2 형식 설계 문서 + context-doc 결과물(CLAUDE.md + AGENTS.md + .instruction/*) 자동 도출.
   프레임워크 자동 감지. 최소 인터뷰(2회 이하)로 코드에서 추출 불가능한 도메인 맥락만 보충.
 allowed-tools: Read, Glob, Grep, Bash, Write
 agent: fork
@@ -13,11 +13,11 @@ agent: fork
 
 # 하네스 부트스트랩 (harness-bootstrap)
 
-기존 코드베이스만 있고 AI 하네스 문서(CLAUDE.md, 설계 문서, instruction 등)가 전혀 없을 때,
+기존 코드베이스만 있고 AI 하네스 문서(CLAUDE.md, AGENTS.md, 설계 문서, instruction 등)가 전혀 없을 때,
 코드를 직접 분석해서 다음 두 산출물을 한 번에 도출한다.
 
 1. **`design-doc` OUTPUT_V2 형식 설계 문서** (프로젝트 설계 스냅샷)
-2. **`context-doc` 결과물** — `CLAUDE.md` + `.instruction/*-instruction.md`
+2. **`context-doc` 결과물** — `CLAUDE.md` + 동일 내용의 `AGENTS.md` + `.instruction/*-instruction.md`
 
 생성 전 반드시 사용자 확인을 거친다. 파일을 무단으로 생성하지 않는다.
 
@@ -59,7 +59,7 @@ agent: fork
         │            └── 저장: {project}/docs/DESIGN.md (또는 사용자 지정)
         │
         └─ Step 6~7: context-doc 파이프라인 실행
-                     └── 저장: CLAUDE.md + .instruction/*-instruction.md
+                     └── 저장: CLAUDE.md + AGENTS.md + .instruction/*-instruction.md
 ```
 
 이후 작업은 정규 플로우를 따른다.
@@ -184,7 +184,7 @@ agent: fork
 
 Step 5 OUTPUT을 입력으로 삼아 `context-doc` 스킬의 워크플로우를 그대로 실행한다.
 
-- `../context-doc/prompts/analysis-claude.md` 기준으로 CLAUDE.md 초안 작성
+- `../context-doc/prompts/analysis-claude.md` 기준으로 CLAUDE.md / AGENTS.md 공통 본문 초안 작성
 - `../context-doc/prompts/analysis-instruction.md` 기준으로 주제별 instruction 파일 분류
 - `../context-doc/templates/CLAUDE.md.template` + 각 `*-instruction.md.template` 활용
 - 모노레포 감지 시 `.instruction/` 배치 질문 (context-doc의 Step 2와 동일)
@@ -205,13 +205,14 @@ Step 5 OUTPUT을 입력으로 삼아 `context-doc` 스킬의 워크플로우를 
 출력 순서:
 1. `docs/DESIGN.md` (또는 사용자 지정 경로)
 2. `CLAUDE.md`
-3. `.instruction/architecture-instruction.md`
-4. `.instruction/code-style-instruction.md`
-5. `.instruction/framework-instruction.md`
-6. `.instruction/api-instruction.md`
-7. `.instruction/comm-instruction.md`
-8. `.instruction/file-convention-instruction.md`
-9. `.instruction/agent-instruction.md`
+3. `AGENTS.md` (`CLAUDE.md`와 동일 내용)
+4. `.instruction/architecture-instruction.md`
+5. `.instruction/code-style-instruction.md`
+6. `.instruction/framework-instruction.md`
+7. `.instruction/api-instruction.md`
+8. `.instruction/comm-instruction.md`
+9. `.instruction/file-convention-instruction.md`
+10. `.instruction/agent-instruction.md`
 
 (단, 설계 문서에 해당 주제가 없으면 instruction 파일은 생성하지 않는다 — context-doc 원칙 그대로)
 
@@ -222,5 +223,6 @@ Step 5 OUTPUT을 입력으로 삼아 `context-doc` 스킬의 워크플로우를 
 - `.instruction/` 디렉토리가 없으면 생성
 - 설계 문서 저장 폴더(`docs/` 등)가 없으면 생성
 - 모든 파일 일괄 저장
-- CLAUDE.md의 `@.instruction/*` 참조가 실제 파일과 1:1 일치하는지 검증
+- CLAUDE.md / AGENTS.md의 `@.instruction/*` 참조가 실제 파일과 1:1 일치하는지 검증
+- AGENTS.md 본문이 CLAUDE.md와 동일한지 검증
 - 이미 존재하는 파일이 있으면 덮어쓰기 전에 사용자에게 알림
