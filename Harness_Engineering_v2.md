@@ -49,7 +49,7 @@ AI_Agent_docs/
 |--------|----------|------|-----------|-------------|
 | `rfp-ingest` | `Agent Skills/rfp-ingest` | RFP에서 지정 SFR 추출·해석·화면 후보 매핑 | `@RFP PDF`, `SFR-019` 등 | `rfp-design-input-{SFR}.md` |
 | `design-doc` | `Agent Skills/design-doc` | 인터뷰 기반 설계 문서 도출 | 아이디어, 기존 문서, RFP 중간 문서 | `OUTPUT_V2` 형식 설계 문서 |
-| `context-doc` | `Agent Skills/context-doc` | Agent용 컨텍스트 문서 생성 (다중 분할) | `design-doc` 결과물 | 얇은 `CLAUDE.md` + 주제별 `.instruction/*-instruction.md` 7종 |
+| `context-doc` | `Agent Skills/context-doc` | Agent용 컨텍스트 문서 생성 (다중 분할) | `design-doc` 결과물 | 얇은 `CLAUDE.md` + 동일 내용의 `AGENTS.md` + 주제별 `.instruction/*-instruction.md` 7종 |
 | `harness-bootstrap` | `Agent Skills/harness-bootstrap` | 기존 코드베이스 → 설계 + 컨텍스트 문서 역추출 | 문서 없는 기존 코드베이스 | `design-doc OUTPUT_V2` + `context-doc` 결과물 일괄 |
 
 #### B. 프로토타입·UI 계열
@@ -235,7 +235,7 @@ rfp-design-input-{SFR}.md
         ├─ 최소 인터뷰 (도메인·목적·사용자, 최대 2회)
         │
         ▼
-design-doc OUTPUT_V2 초안 + CLAUDE.md + .instruction/*-instruction.md
+design-doc OUTPUT_V2 초안 + CLAUDE.md + AGENTS.md + .instruction/*-instruction.md
         │
         ▼
 사용자 검토 & 보강
@@ -301,7 +301,7 @@ design-doc OUTPUT_V2 초안 + CLAUDE.md + .instruction/*-instruction.md
 기존 코드베이스 (문서 없음)
   └─→ /harness-bootstrap
         ├─→ OUTPUT_V2 설계 문서 (역추출)
-        └─→ CLAUDE.md + .instruction/*-instruction.md 7종
+        └─→ CLAUDE.md + AGENTS.md + .instruction/*-instruction.md 7종
 
 /design-prototype-docs
   └─→ {PREFIX}-{번호}_목업디자인.md
@@ -324,12 +324,12 @@ Agent 문서 / Skills 변경
 
 #### `context-doc`로 넘어가는 매핑
 
-`context-doc`는 얇은 `CLAUDE.md`(프로젝트 팩트 + 인덱스) + 주제별 `.instruction/*-instruction.md` 7종으로 분할 생성한다.
+`context-doc`는 얇은 `CLAUDE.md`와 동일 내용의 `AGENTS.md`(프로젝트 팩트 + 인덱스) + 주제별 `.instruction/*-instruction.md` 7종으로 분할 생성한다.
 
 | `design-doc OUTPUT_V2` 섹션 | 사용처 |
 |-----------------------------|--------|
-| 01 개요, 05 데이터 설계, 07 라이브러리 | `CLAUDE.md` 프로젝트 팩트 |
-| 06 파일 구성 | `CLAUDE.md` 트리 + `architecture-instruction.md` + `file-convention-instruction.md` |
+| 01 개요, 05 데이터 설계, 07 라이브러리 | `CLAUDE.md` / `AGENTS.md` 프로젝트 팩트 |
+| 06 파일 구성 | `CLAUDE.md` / `AGENTS.md` 트리 + `architecture-instruction.md` + `file-convention-instruction.md` |
 | 02 동작 흐름 | `comm-instruction.md` |
 | 03 집중 로직 | `architecture-instruction.md` + `framework-instruction.md` |
 | 04 인터페이스 설계 | `api-instruction.md` + `comm-instruction.md` |
@@ -379,7 +379,7 @@ Agent 문서 / Skills 변경
 | `multi-review` | Phase/화면 구현 직후 | 보안, 성능, 유지보수, 테스트 누락 |
 | `pre-commit` | 커밋 직전 | 빈 catch, 타임아웃 누락, 민감 정보, TODO 형식, 테스트 부재 |
 | `code-comment` | 가독성 보완이 필요할 때 | 변경 파일 문맥 전달 실패 |
-| `doc-audit` | 코드와 문서가 어긋난 느낌이 날 때 | 낡은 `CLAUDE.md`, 낡은 규칙 문서 |
+| `doc-audit` | 코드와 문서가 어긋난 느낌이 날 때 | 낡은 `CLAUDE.md` / `AGENTS.md`, 낡은 규칙 문서 |
 | `agent-sync` | Agent 문서/스킬 변경 후 | 환경별 문서 불일치 |
 | `commit` | 스테이징 후 | 메시지 품질 저하, 변경 이유 미정리 |
 
@@ -488,7 +488,7 @@ Agent 문서 / Skills 변경
 [참조 문서]
 - 설계문서: ...
 - 작업지침서: ...
-- CLAUDE.md / basic-instruction.md: ...
+- CLAUDE.md / AGENTS.md / basic-instruction.md: ...
 
 [이번 턴 범위]
 - Phase 2의 BE-03만 구현
@@ -551,7 +551,7 @@ Agent 문서 / Skills 변경
 
 - [ ] 문서 없는 기존 코드베이스라면 먼저 `harness-bootstrap`으로 뼈대 추출.
 - [ ] `design-doc`로 `OUTPUT_V2` 설계 문서를 만든다.
-- [ ] 프로젝트 단위면 `context-doc`로 `CLAUDE.md`와 주제별 `.instruction/*-instruction.md`를 만든다.
+- [ ] 프로젝트 단위면 `context-doc`로 `CLAUDE.md`, 동일 내용의 `AGENTS.md`와 주제별 `.instruction/*-instruction.md`를 만든다.
 - [ ] 구현 단위에 맞는 `impl-*` 1종을 고른다.
 - [ ] 화면 불확실성이 크면 `design-prototype-docs → create-prototype`을 먼저 돌린다.
 
