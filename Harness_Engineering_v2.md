@@ -24,7 +24,7 @@
 - `design-doc`는 `Agent Skills/design-doc/templates/INPUT_V2.md`, `OUTPUT_V2.md` 템플릿을 포함한다.
 - `rfp-ingest`는 `rfp-design-input-{SFR}.md` 형식의 중간 문서 생성을 정의한다.
 - 프로토타입 흐름은 `design-prototype-docs` → `create-prototype`으로 연결된다.
-- 구현 지침 계열 디렉토리는 `impl-fe-be-doc`, `impl-screen-doc`, `impl-doc` 3개가 존재한다.
+- 구현 지침 계열 디렉토리는 `impl-fe-be-doc`, `impl-screen-doc`, `impl-doc` 3개가 존재한다. 신규 흐름에서는 화면 중심 구현도 `impl-fe-be-doc`로 흡수하고, `impl-screen-doc`은 레거시 분리형 지침으로 본다.
 - 품질·운영 계열 디렉토리는 `multi-review`, `pre-commit`, `commit`, `code-comment`, `doc-audit`, `agent-sync`가 존재한다.
 
 ---
@@ -64,8 +64,8 @@ AI_Agent_docs/
 
 | 호출명 | 디렉토리 | 역할 | 중심 축 | 적합한 대상 |
 |--------|----------|------|---------|-------------|
-| `impl-fe-be-doc` | `Agent Skills/impl-fe-be-doc` | FE/BE 페어 Phase 작업지침서 | 역할 분리 | 일반 웹앱, FE/BE 병행 개발 |
-| `impl-screen-doc` | `Agent Skills/impl-screen-doc` | 화면 단위 구현 지침서 | 화면 1개 = 1 Phase | RFP/SFR 기반, 화면 중심 구현 |
+| `impl-fe-be-doc` | `Agent Skills/impl-fe-be-doc` | FE/BE 페어 또는 화면 중심 Phase 작업지침서 | 역할 분리 + 화면 1개 = 1 Phase | 일반 웹앱, FE/BE 병행 개발, RFP/SFR 화면 중심 구현 |
+| `impl-screen-doc` | `Agent Skills/impl-screen-doc` | 레거시 분리형 화면 단위 구현 지침서 | 화면 | 기존 산출물 호환용 |
 | `impl-doc` | `Agent Skills/impl-doc` | 범용 단계별 구현 지침서 | 기능/모듈/파이프라인 | CLI, 자동화, 라이브러리, 백엔드 단독 |
 
 #### D. 품질·운영 계열
@@ -114,7 +114,7 @@ AI_Agent_docs/
 | 스케일 | 예시 | 기본 권장 |
 |--------|------|-----------|
 | 프로젝트 전체 | 신규 서비스, 신규 서브시스템 | `design-doc` → `context-doc` → `impl-*` |
-| 화면 단위 | 대시보드, 설정 화면 | `design-doc` → `design-prototype-docs` 또는 `impl-screen-doc` |
+| 화면 단위 | 대시보드, 설정 화면 | `design-doc` → `design-prototype-docs` 또는 `impl-fe-be-doc` 화면 중심 모드 |
 | 기능 단위 | 로그인, 예약 실행, 분석 실행 | `design-doc` → `impl-fe-be-doc` 또는 `impl-doc` |
 | 컴포넌트/로직 단위 | 훅, 파서, 재시도 로직 | `design-doc`만 쓰거나 바로 구현 |
 
@@ -123,7 +123,7 @@ AI_Agent_docs/
 | 질문 | 선택할 스킬 |
 |------|-------------|
 | FE/BE를 한 Phase 안에서 같이 끝내야 하는가? | `impl-fe-be-doc` |
-| 화면별 컴포넌트/API/상태 명세가 중심인가? | `impl-screen-doc` |
+| 화면별 컴포넌트/API/상태 명세가 중심인가? | `impl-fe-be-doc` 화면 중심 모드 |
 | 웹앱이 아니라 도구/스크립트/라이브러리인가? | `impl-doc` |
 
 ---
@@ -147,7 +147,6 @@ AI_Agent_docs/
         ▼
 구현 지침 3종 중 하나 선택
   ├─ /impl-fe-be-doc
-  ├─ /impl-screen-doc
   └─ /impl-doc
         │
         ▼
@@ -198,7 +197,6 @@ rfp-design-input-{SFR}.md
         ├─ (선택) /design-prototype-docs → /create-prototype
         ▼
 구현 지침 3종 중 하나 선택
-  ├─ /impl-screen-doc
   ├─ /impl-fe-be-doc
   └─ /impl-doc
         │
@@ -216,9 +214,9 @@ rfp-design-input-{SFR}.md
 
 - `rfp-ingest`는 **RFP 전체 일괄 처리용이 아니라 선택 SFR 분석용**이다.
 - `rfp-ingest` 산출물의 화면 후보는 확정안이 아니라 **후보**다. 확정은 `design-doc` 또는 `design-prototype-docs`에서 한다.
-- RFP 기반이라고 무조건 `impl-screen-doc`만 쓰는 건 아니다.
-  - 화면 중심이면 `impl-screen-doc`
-  - FE/BE 페어 Phase가 더 중요하면 `impl-fe-be-doc`
+- RFP 기반이라고 무조건 화면 분리형으로 만들 필요는 없다.
+  - 화면 중심이면 `impl-fe-be-doc`의 화면 중심 모드
+  - FE/BE 페어 Phase가 더 중요해도 `impl-fe-be-doc`
   - 실제 구현 대상이 내부 도구/배치라면 `impl-doc`
 
 ---
@@ -261,16 +259,16 @@ design-doc OUTPUT_V2 초안 + CLAUDE.md + AGENTS.md + .instruction/*-instruction
 
 | 항목 | `impl-fe-be-doc` | `impl-screen-doc` | `impl-doc` |
 |------|------------------|-------------------|------------|
-| 중심 축 | FE/BE 역할 | 화면 | 기능/모듈 |
-| Phase 단위 | BE+FE 페어 기능 | 화면 1개 | 입출력 파이프라인/모듈 |
+| 중심 축 | FE/BE 역할 또는 화면 | 화면 | 기능/모듈 |
+| Phase 단위 | BE+FE 페어 기능 또는 화면 1개 | 화면 1개 | 입출력 파이프라인/모듈 |
 | 태스크 ID | `INF-XX`, `BE-XX`, `FE-XX` | 화면 중심 통합 태스크(`SCR-XX` 개념) | `INIT`, `CORE`, `IO`, `TEST`, `PKG` |
-| 적합 대상 | 일반 웹앱, FE/BE 담당 분리 | RFP/SFR 화면 구현, 1인 풀스택 | CLI, 스크립트, 서비스, 라이브러리 |
-| 핵심 검증 | FE→API→DB 통합 | 화면 렌더링, 상태, API, 인터랙션 | 실행 명령, 입출력, 테스트, 패키징 |
+| 적합 대상 | 일반 웹앱, FE/BE 담당 분리, RFP/SFR 화면 구현 | 기존 화면 지침 산출물 호환 | CLI, 스크립트, 서비스, 라이브러리 |
+| 핵심 검증 | FE→API→DB 통합, 화면 렌더링, 상태, API, 인터랙션 | 화면 렌더링, 상태, API, 인터랙션 | 실행 명령, 입출력, 테스트, 패키징 |
 
 ### 빠른 선택 규칙
 
 - "이 Phase가 끝나면 BE와 FE가 같이 살아 있어야 한다" → `impl-fe-be-doc`
-- "이 화면 하나를 완성 단위로 보고 싶다" → `impl-screen-doc`
+- "이 화면 하나를 완성 단위로 보고 싶다" → `impl-fe-be-doc` 화면 중심 모드
 - "이건 화면이 아니라 도구/백엔드/자동화다" → `impl-doc`
 
 ---
@@ -294,7 +292,6 @@ design-doc OUTPUT_V2 초안 + CLAUDE.md + AGENTS.md + .instruction/*-instruction
         └─→ OUTPUT_V2 설계 문서
                 ├─→ /context-doc
                 ├─→ /impl-fe-be-doc
-                ├─→ /impl-screen-doc
                 ├─→ /impl-doc
                 └─→ /design-prototype-docs
 
@@ -350,7 +347,7 @@ Agent 문서 / Skills 변경
 | 06 파일 구성 | `[NEW]` / `[MODIFY]` 범위 판단 |
 | 10 주의사항, 12 열린 결정 사항 | 전역 주의사항 / 미결 사항 |
 
-#### `impl-screen-doc`으로 넘어가는 매핑
+#### `impl-fe-be-doc` 화면 중심 모드로 넘어가는 매핑
 
 - 화면 목록
 - 화면 간 이동 흐름
@@ -536,7 +533,7 @@ Agent 문서 / Skills 변경
 | 요구사항을 화면 설계 문서로 만들고 싶다 | `design-prototype-docs` | `create-prototype` |
 | 실제 HTML 목업이 필요하다 | `create-prototype` | `frontend-design` 참고 |
 | FE/BE Phase 순서를 정하고 싶다 | `impl-fe-be-doc` | 실제 구현 |
-| 화면별 명세가 필요하다 | `impl-screen-doc` | `frontend-design`, 실제 구현 |
+| 화면별 명세가 필요하다 | `impl-fe-be-doc` 화면 중심 모드 | `frontend-design`, 실제 구현 |
 | 도구/스크립트 구현 계획이 필요하다 | `impl-doc` | 실제 구현 |
 | 코드와 문서가 어긋난 것 같다 | `doc-audit` | 승인 후 `agent-sync` |
 | 커밋 전 품질 점검이 필요하다 | `pre-commit` | `commit` |
@@ -559,7 +556,7 @@ Agent 문서 / Skills 변경
 
 - [ ] 화면/기능/로직 중 스케일을 먼저 정한다.
 - [ ] 기존 설계 문서에 붙일지, 새 설계를 만들지 결정한다.
-- [ ] 화면 중심이면 `impl-screen-doc`, FE/BE 페어면 `impl-fe-be-doc`, 범용이면 `impl-doc`.
+- [ ] 화면 중심 또는 FE/BE 페어면 `impl-fe-be-doc`, 범용이면 `impl-doc`.
 - [ ] UI 감도가 중요하면 `frontend-design` 기준을 같이 적용한다.
 
 ### 구현 완료 직후

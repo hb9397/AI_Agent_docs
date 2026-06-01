@@ -26,8 +26,7 @@ agent: fork
 ```
 design-doc OUTPUT
     ├─→ context-doc      →  CLAUDE.md + AGENTS.md + .instruction/*-instruction.md
-    ├─→ impl-fe-be-doc   →  FE/BE 페어 작업지침서
-    ├─→ impl-screen-doc  →  화면 단위 구현 지침서
+    ├─→ impl-fe-be-doc   →  FE/BE 페어 또는 화면 중심 작업지침서
     └─→ impl-doc         →  범용 단계별 구현 지침서
 ```
 
