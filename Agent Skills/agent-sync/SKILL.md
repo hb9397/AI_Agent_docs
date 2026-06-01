@@ -1,6 +1,6 @@
 ---
 name: agent-sync
-description: "Agent 문서(CLAUDE.md/AGENTS.md/GEMINI.md) 또는 Skills를 동기화할 때, 변경된 Agent 관련 파일을 다른 에이전트에도 반영할 때, 스킬을 동기화·복사할 때, sync·동기화를 요청할 때 호출한다."
+description: "Agent 문서(CLAUDE.md/AGENTS.md) 또는 Skills를 동기화할 때, 변경된 Agent 관련 파일을 다른 에이전트에도 반영할 때, 스킬을 동기화·복사할 때, sync·동기화를 요청할 때 호출한다."
 allowed-tools: Read, Write, Glob, Grep, Bash, Task
 agent: fork
 ---
@@ -20,7 +20,7 @@ agent: fork
 
 | # | Task | 내용 |
 |---|------|------|
-| A | docs-sync | CLAUDE.md / AGENTS.md / GEMINI.md 등 Agent 문서 동기화 |
+| A | docs-sync | CLAUDE.md / AGENTS.md 등 Agent 문서 동기화 |
 | B | skills-sync | Skills 디렉토리 동기화 |
 
 > 진입 분기에서 단일 Task만 실행하는 경우(Docs만 / Skills만)에는 해당 Task만 제시한다.

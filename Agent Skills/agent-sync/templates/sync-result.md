@@ -4,7 +4,7 @@
 
 ---
 
-## 📄 1. 문서 동기화 결과 (CLAUDE.md / AGENTS.md / GEMINI.md)
+## 📄 1. 문서 동기화 결과 (CLAUDE.md / AGENTS.md)
 
 | 항목 | 값 |
 |------|-----|
@@ -19,7 +19,6 @@
 | 파일 경로 | 상태 | 비고 |
 |-----------|------|------|
 | `be/AGENTS.md` | ✅ 생성됨 | 기준: `be/CLAUDE.md` |
-| `be/GEMINI.md` | ✅ 업데이트됨 | 기준: `be/CLAUDE.md` |
 | `fe/AGENTS.md` | ⏭️ 스킵 | 내용 동일 |
 
 ---

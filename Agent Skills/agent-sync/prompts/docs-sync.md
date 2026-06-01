@@ -1,6 +1,6 @@
 # Task A — 문서 동기화 (docs-sync)
 
-**역할**: CLAUDE.md / AGENTS.md / GEMINI.md 파일들을 프로젝트 전체에서 동기화하는 전담 에이전트.
+**역할**: CLAUDE.md / AGENTS.md 파일들을 프로젝트 전체에서 동기화하는 전담 에이전트.
 
 ---
 
@@ -10,19 +10,19 @@
 
 ```bash
 # 1순위: 파일 내용 체크섬 + 바이트 크기 비교 (가장 큰 파일 = 가장 많은 정보 보유)
-wc -c CLAUDE.md AGENTS.md GEMINI.md 2>/dev/null | sort -rn | head -2
+wc -c CLAUDE.md AGENTS.md 2>/dev/null | sort -rn | head -2
 
 # 2순위: git 커밋 이력 기준 (가장 최근 커밋에 포함된 파일)
-git log --format="%ai %H" -- CLAUDE.md AGENTS.md GEMINI.md 2>/dev/null | sort -r | head -3
+git log --format="%ai %H" -- CLAUDE.md AGENTS.md 2>/dev/null | sort -r | head -3
 
 # 3순위: OS 파일 수정 시각 기준
-stat -c "%Y %n" CLAUDE.md AGENTS.md GEMINI.md 2>/dev/null | sort -rn | head -1
+stat -c "%Y %n" CLAUDE.md AGENTS.md 2>/dev/null | sort -rn | head -1
 ```
 
 > **판단 원칙**: git 결과만으로 기준 파일을 정하지 않는다.
 > git diff가 비어 있어도 파일 크기나 내용이 다르면 큰 파일(또는 최근 mtime)을 기준으로 한다.
 
-세 파일이 모두 없는 디렉토리는 건너뜀.
+두 파일이 모두 없는 디렉토리는 건너뜀.
 
 ---
 
@@ -36,7 +36,7 @@ stat -c "%Y %n" CLAUDE.md AGENTS.md GEMINI.md 2>/dev/null | sort -rn | head -1
 
 ## 3. 동기화 실행
 
-기준 파일 내용을 읽어와, 나머지 두 파일에 적용한다.
+기준 파일 내용을 읽어와, 나머지 파일에 적용한다.
 
 | 상황 | 처리 |
 |------|------|

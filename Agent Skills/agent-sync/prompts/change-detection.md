@@ -46,8 +46,8 @@ git diff --name-only --cached 2>/dev/null | grep -E "(\.agents|\.claude)/skills/
 **Doc 파일 필터 (Task A 입력)**
 
 ```bash
-git diff --name-only HEAD 2>/dev/null | grep -E "(CLAUDE|AGENTS|GEMINI)\.md$"
-git diff --name-only --cached 2>/dev/null | grep -E "(CLAUDE|AGENTS|GEMINI)\.md$"
+git diff --name-only HEAD 2>/dev/null | grep -E "(CLAUDE|AGENTS)\.md$"
+git diff --name-only --cached 2>/dev/null | grep -E "(CLAUDE|AGENTS)\.md$"
 ```
 
 - 결과가 비어 있으면: "변경된 Agent 문서가 감지되지 않았습니다."
@@ -72,7 +72,7 @@ uname -s 2>/dev/null || powershell -Command "echo Windows" 2>/dev/null
 powershell -Command "Get-ChildItem -Recurse -Filter 'SKILL.md' -Path '.agents/skills','.claude/skills' -ErrorAction SilentlyContinue | Sort-Object LastWriteTime -Descending | Select-Object -First 10 FullName, LastWriteTime" 2>/dev/null
 
 # 최근 수정된 Doc 파일 목록
-powershell -Command "Get-ChildItem -Recurse -Include 'CLAUDE.md','AGENTS.md','GEMINI.md' -ErrorAction SilentlyContinue | Where-Object { $_.FullName -notmatch 'node_modules|venv|__pycache__' } | Sort-Object LastWriteTime -Descending | Select-Object -First 5 FullName, LastWriteTime" 2>/dev/null
+powershell -Command "Get-ChildItem -Recurse -Include 'CLAUDE.md','AGENTS.md' -ErrorAction SilentlyContinue | Where-Object { $_.FullName -notmatch 'node_modules|venv|__pycache__' } | Sort-Object LastWriteTime -Descending | Select-Object -First 5 FullName, LastWriteTime" 2>/dev/null
 ```
 
 수정 시각 기준으로 변경이 의심되는 파일 목록을 구성한다.
@@ -88,7 +88,7 @@ find .agents/skills .claude/skills -name "SKILL.md" -type f 2>/dev/null \
   | xargs stat -c "%Y %n" 2>/dev/null | sort -rn | head -10
 
 # 최근 수정된 Doc 파일
-find . -maxdepth 4 \( -name "CLAUDE.md" -o -name "AGENTS.md" -o -name "GEMINI.md" \) \
+find . -maxdepth 4 \( -name "CLAUDE.md" -o -name "AGENTS.md" \) \
   -type f 2>/dev/null \
   | grep -v "node_modules\|venv\|__pycache__" \
   | xargs stat -c "%Y %n" 2>/dev/null | sort -rn | head -5
