@@ -1376,9 +1376,9 @@ VoltAgent는 역할 기반 subagent를 큰 직무 카테고리로 나눈다.
 
 이 문서는 외부 레포의 구성을 파악하는 데서 멈춘다. 다음 단계에서 별도 문서 또는 후속 섹션으로 다룰 수 있는 항목은 다음과 같다.
 
-- 현재 저장소 `Agent Skills/`와 외부 레포 스킬의 1:1 또는 1:N 매핑
+- 현재 저장소 `skills/`와 외부 레포 스킬의 1:1 또는 1:N 매핑
 - 기존 스킬 개선안
 - 신규 도입 후보
 - 도입하지 않을 항목
-- `Agent Skills/skill-design` 또는 `skill-designer` v2 설계 기준
+- `skills/skill-design` 또는 `skill-designer` v2 설계 기준
 - 스킬 작성 템플릿과 eval 루프

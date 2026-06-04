@@ -4,7 +4,7 @@ description: >
   FE/BE 구분이나 화면 중심이 아닌 범용 단계별 구현 지침서를 생성한다.
   '범용 구현 지침', '작업 순서 정리', '구현 계획', '자동화 구현 가이드',
   '스크립트 구현 지침', '도구 구현 계획' 요청이 오면 이 스킬을 사용한다.
-  impl-fe-be-doc(FE/BE 페어)이나 impl-screen-doc(화면 중심)이 맞지 않는 경우,
+  impl-fe-be-doc(FE/BE 페어 또는 화면 중심)이 맞지 않는 경우,
   내부 도구, 자동화 스크립트, CLI 도구, 단독 기능, 라이브러리 등
   범용 프로젝트의 Phase별 구현 지침을 만든다.
 allowed-tools: Read, Write, Glob, Grep, Bash
@@ -20,7 +20,7 @@ FE/BE 구분도, 화면 중심 분류도 맞지 않는 프로젝트에 사용한
 
 생성 전 반드시 사용자 확인을 거친다. 파일을 무단으로 생성하지 않는다.
 
-> impl-fe-be-doc은 FE/BE 페어 기반, impl-screen-doc은 화면 기반이다.
+> impl-fe-be-doc은 FE/BE 페어 또는 화면 중심 구현 기반이다.
 > 이 스킬은 그 어느 쪽에도 맞지 않는 경우를 위한 범용 구현 지침이다.
 > 내부 도구, 자동화 스크립트, CLI, 라이브러리, 단독 백엔드 서비스,
 > 데이터 파이프라인 등이 대상이다.
@@ -43,7 +43,6 @@ impl-general-{프로젝트명}.md (범용 Phase별 작업지침서)
 | 스킬 | 선택 조건 |
 |------|----------|
 | `impl-fe-be-doc` | FE/BE 역할이 분리되고 Phase별 페어 작업이 필요한 경우 |
-| `impl-screen-doc` | RFP SFR 기반 화면 단위 명세가 중심인 경우 |
 | **`impl-doc`** | **FE/BE·화면 구분 없이 범용 단계별 구현이 필요한 경우** ← 이 스킬 |
 
 ---
@@ -63,7 +62,7 @@ impl-general-{프로젝트명}.md (범용 Phase별 작업지침서)
 
 ❌ 다른 스킬을 쓰는 경우
   - 웹 애플리케이션 (FE+BE) → impl-fe-be-doc
-  - RFP 기반 화면 개발 → impl-screen-doc
+  - RFP 기반 화면 개발 → impl-fe-be-doc 화면 중심 모드
 ```
 
 ---
@@ -167,12 +166,12 @@ impl-general-{프로젝트명}.md
 
 ---
 
-## impl-fe-be-doc / impl-screen-doc과의 차이
+## impl-fe-be-doc과의 차이
 
-| 관점 | impl-fe-be-doc | impl-screen-doc | impl-doc (이 스킬) |
-|------|---------------|----------------|-------------------|
-| **중심 축** | FE/BE 역할 | 화면 단위 | 기능/모듈 단위 |
-| **Phase 단위** | BE+FE 페어 기능 | 화면 1개 | 입출력 파이프라인 |
-| **태스크 ID** | BE-XX / FE-XX | SCR-XX | INIT/CORE/IO/TEST/PKG-XX |
-| **검증 방식** | FE→API→DB E2E | 화면 렌더링+API | CLI실행/테스트/빌드 |
-| **적합 대상** | 웹 앱(FE+BE) | RFP 화면 기반 | 도구, 스크립트, 라이브러리 |
+| 관점 | impl-fe-be-doc | impl-doc (이 스킬) |
+|------|---------------|-------------------|
+| **중심 축** | FE/BE 역할 또는 화면 단위 | 기능/모듈 단위 |
+| **Phase 단위** | BE+FE 페어 기능 또는 화면 1개 | 입출력 파이프라인 |
+| **태스크 ID** | INF/BE/FE 계열 | INIT/CORE/IO/TEST/PKG-XX |
+| **검증 방식** | FE→API→DB E2E, 화면 렌더링+API | CLI실행/테스트/빌드 |
+| **적합 대상** | 웹 앱(FE+BE), RFP 화면 기반 | 도구, 스크립트, 라이브러리 |

@@ -122,7 +122,7 @@ AI가 바로 코드부터 쓰게 하지 않는다.
 
 ### 2. Agent가 읽을 고정 맥락을 만든다
 
-루트 가이드 문서(`CLAUDE.md`, `AGENTS.md`, `GEMINI.md`)와 주제별로 분리된 `.instruction/*-instruction.md`(아키텍처·코드 스타일·프레임워크·API·통신·파일 생성·Agent 전용 규칙)로 프로젝트의 규칙과 아키텍처를 고정한다.
+루트 가이드 문서(`CLAUDE.md`, `AGENTS.md`)와 주제별로 분리된 `.instruction/*-instruction.md`(아키텍처·코드 스타일·프레임워크·API·통신·파일 생성·Agent 전용 규칙)로 프로젝트의 규칙과 아키텍처를 고정한다.
 
 ### 3. 구현은 작은 단위로 쪼갠다
 
@@ -148,7 +148,7 @@ Phase, 화면, 기능, 모듈 같은 단위로 끊는다.
 | ------------------- | ----------------------------------------------------------------------- | -------------------------------------------------- |
 | `rfp-ingest`        | RFP에서 특정 SFR을 뽑아 해석하고 화면 후보로 정리                       | RFP 기반 프로젝트를 시작할 때                      |
 | `design-doc`        | 인터뷰를 통해 구조화된 설계 문서 생성                                   | 아이디어를 실제 작업 문서로 바꿀 때                |
-| `context-doc`       | 얇은 루트 가이드 문서(`CLAUDE.md`/`AGENTS.md`/`GEMINI.md`) + 주제별 `.instruction/*` 생성 | 설계가 끝나고 Agent가 계속 참고할 기준이 필요할 때 |
+| `context-doc`       | 얇은 루트 가이드 문서(`CLAUDE.md`/`AGENTS.md`) + 주제별 `.instruction/*` 생성 | 설계가 끝나고 Agent가 계속 참고할 기준이 필요할 때 |
 | `harness-bootstrap` | 기존 코드베이스 → 설계 문서 + 컨텍스트 문서 역추출                      | 문서가 없는 레거시/기존 프로젝트에 하네스 처음 도입 시 |
 
 ### 2. 프로토타입·UI 계열
@@ -163,8 +163,7 @@ Phase, 화면, 기능, 모듈 같은 단위로 끊는다.
 
 | 스킬              | 역할                                    | 언제 쓰는가                                |
 | ----------------- | --------------------------------------- | ------------------------------------------ |
-| `impl-fe-be-doc`  | FE/BE 페어 기준 Phase별 작업지침서 생성 | 웹앱처럼 FE와 BE를 함께 끝내야 할 때       |
-| `impl-screen-doc` | 화면 단위 구현 지침 생성                | 화면별 API/상태/컴포넌트 명세가 중심일 때  |
+| `impl-fe-be-doc`  | FE/BE 페어 또는 화면 중심 Phase별 작업지침서 생성 | 웹앱처럼 FE/BE 또는 화면 단위 구현을 끝내야 할 때 |
 | `impl-doc`        | 범용 구현 지침 생성                     | CLI, 배치, 라이브러리, 자동화 도구 등일 때 |
 
 ### 4. 품질·운영 계열
@@ -206,7 +205,7 @@ flowchart LR
     G --> G1["harness-bootstrap"]
     G1 --> G2["design-doc / context-doc 재실행으로 보강"]
 
-    D --> D1["impl-fe-be-doc / impl-screen-doc / impl-doc"]
+    D --> D1["impl-fe-be-doc / impl-doc"]
     D1 --> D2["frontend-design"]
     D2 --> D3["multi-review"]
 
@@ -235,30 +234,27 @@ flowchart LR
 하네스를 여러 Agent에 걸쳐 쓰다 보면 가장 자주 헷갈리는 것은  
 "어떤 파일을 루트 가이드로 두고, 스킬과 커맨드를 어디에 둘 것인가"다.
 
-예전에는 도구별로 `CLAUDE.md`, `AGENTS.md`, `GEMINI.md`, `.claude/*`, `.gemini/*`, `.agent/*`를 따로 관리하는 경우가 많았다.  
+예전에는 도구별로 `CLAUDE.md`, `AGENTS.md`, `.claude/*`, `.agents/*`를 따로 관리하는 경우가 많았다.
 하지만 하네스를 여러 Agent에 공통으로 태우려면 운영 규칙은 더 단순해야 한다.
 
 이 문서에서의 기준은 하나다.  
-**재사용 가능한 스킬, 프롬프트, 커맨드 본문, 예시, 실행 스크립트는 모두 `.agents/skills/*`를 단일 원천(source of truth)으로 둔다.**  
+**재사용 가능한 스킬, 프롬프트, 커맨드 본문, 예시, 실행 스크립트는 모두 `skills/*`를 저장소 단일 원천(source of truth)으로 둔다.**
 실무에서는 가능하면 각 도구에서도 이 위치를 그대로 쓰고, 같은 내용을 도구별 폴더에 중복 복사하지 않는다.
 
 즉, 이 문서에서는 아래처럼 운영하는 것을 권장한다.
 
 | 도구 | 주 진입 문서 | 하네스 기준 실제 관리 위치 | 메모 |
 | --- | --- | --- | --- |
-| Claude Code | `CLAUDE.md` | Claude가 직접 읽는 문서는 `CLAUDE.md`, `.claude/commands/*.md`, `~/.claude/skills/*/SKILL.md`를 따른다. | Claude는 네이티브 경로 체계가 분명하므로 직접 읽는 엔트리는 Claude 방식으로 유지하되, 공용 자산의 원본은 가능하면 `.agents/skills`에 한 번만 둔다. |
-| OpenAI Codex | `AGENTS.md` | 공용 규칙: 루트 `AGENTS.md` / 공용 스킬과 관련 자산: `.agents/skills/*/SKILL.md` | Codex 계열은 `AGENTS.md`와 `.agents/skills`를 그대로 기준으로 보면 된다. |
-| Gemini CLI / Gemini Code Assist | `GEMINI.md` | 스킬, 프롬프트, 커맨드 본문, 실행 예시는 모두 `.agents/skills/*`에 둔다. | 기존에는 Gemini용 자산을 `.gemini/*` 계열, 특히 커맨드는 `.gemini/commands/*.toml` 쪽에 두는 흐름이 있었지만, 이 하네스에서는 관리 편의성을 위해 `.agents/skills`로 통합 관리한다. |
-| Google Antigravity | `GEMINI.md` | 하네스에서 공유하는 스킬과 커맨드 자산은 Gemini/Codex와 동일하게 모두 `.agents/skills/*`에 둔다. | Antigravity도 `GEMINI.md`를 읽는 기준으로 보고, 워크스페이스 자산 관리는 `.agents` 계열로 이해한다. 이 하네스에서는 스킬과 커맨드도 `.agents/skills` 기준으로 관리한다. |
-| VS Code | 각 확장/에이전트가 읽는 파일명을 그대로 사용 | 확장별 진입 파일이 다르더라도 공용 스킬/커맨드 자산은 `.agents/skills/*`를 우선 원본으로 둔다. | VS Code에서는 각 확장이 자기 체계를 읽더라도, 팀이 관리하는 실제 내용은 한 곳에 모아두는 편이 유지보수에 유리하다. |
+| Claude Code | `CLAUDE.md` | Claude가 직접 읽는 문서는 `CLAUDE.md`, `.claude/commands/*.md`, `~/.claude/skills/*/SKILL.md`를 따른다. | Claude 네이티브 엔트리는 Claude 방식으로 유지하되, 저장소 원본 스킬은 `skills/*`에 둔다. |
+| OpenAI Codex | `AGENTS.md` | 공용 규칙: 루트 `AGENTS.md` / 저장소 원본 스킬: `skills/*/SKILL.md` | Codex 계열은 `AGENTS.md`와 `skills/`를 기준으로 보면 된다. |
+| VS Code | 각 확장/에이전트가 읽는 파일명을 그대로 사용 | 확장별 진입 파일이 다르더라도 공용 스킬/커맨드 자산은 `skills/*`를 우선 원본으로 둔다. | VS Code에서는 각 확장이 자기 체계를 읽더라도, 팀이 관리하는 실제 내용은 한 곳에 모아두는 편이 유지보수에 유리하다. |
 
 실무적으로는 이렇게 기억하면 충분하다.
 
-- 팀이 유지보수하는 스킬, 프롬프트, 커맨드 본문, 예시, 스크립트의 원본은 항상 `.agents/skills`에 둔다.
-- `Gemini CLI`, `Gemini Code Assist`, `Antigravity`, `Codex`에서 공용으로 쓰는 스킬과 커맨드도 모두 `.agents/skills` 기준으로 동작한다고 보고 설계한다.
-- Gemini 계열은 기존 `.gemini/*`, 특히 `.gemini/commands/*.toml` 흐름을 알고 있되, 이 문서에서는 `GEMINI.md`와 `.agents/skills` 기준으로 통합 관리한다고 본다.
-- 같은 스킬이나 커맨드 본문을 `.agents`, `.gemini`, 기타 도구 전용 폴더에 중복 복사해 두는 방식은 피한다.
-- Claude처럼 네이티브 경로가 강한 도구는 직접 읽는 엔트리만 해당 도구 규칙을 따르고, 공용 내용의 원본은 가능하면 `.agents/skills`에 한 번만 둔다.
+- 팀이 유지보수하는 스킬, 프롬프트, 커맨드 본문, 예시, 스크립트의 원본은 항상 `skills/`에 둔다.
+- 설치 대상이 필요한 도구에는 `skills/`의 내용을 `.agents/skills` 또는 `.claude/skills` 같은 대상 경로로 동기화한다.
+- 같은 스킬이나 커맨드 본문을 `.agents`, `.claude`, 기타 도구 전용 폴더에 중복 편집하지 않는다.
+- Claude처럼 네이티브 경로가 강한 도구는 직접 읽는 엔트리만 해당 도구 규칙을 따르고, 공용 내용의 원본은 가능하면 `skills/`에 한 번만 둔다.
 
 ---
 
@@ -272,7 +268,7 @@ flowchart TD
     B --> C["context-doc"]
     B --> D["design-prototype-docs"]
     D --> E["create-prototype"]
-    B --> F["impl-fe-be-doc / impl-screen-doc / impl-doc"]
+    B --> F["impl-fe-be-doc / impl-doc"]
     F --> G["실제 구현"]
     G --> H["multi-review"]
     H --> I["doc-audit"]
@@ -289,7 +285,7 @@ flowchart TD
     C --> D["design-doc"]
     C --> E["design-prototype-docs"]
     D --> F["context-doc"]
-    D --> G["impl-fe-be-doc / impl-screen-doc / impl-doc"]
+    D --> G["impl-fe-be-doc / impl-doc"]
     E --> H["create-prototype"]
     G --> I["실제 구현"]
     I --> J["multi-review"]
@@ -306,9 +302,8 @@ flowchart TD
 flowchart LR
     A["design-doc OUTPUT_V2"] --> B["context-doc"]
     A --> C["impl-fe-be-doc"]
-    A --> D["impl-screen-doc"]
-    A --> E["impl-doc"]
-    A --> F["design-prototype-docs"]
+    A --> D["impl-doc"]
+    A --> E["design-prototype-docs"]
 ```
 
 즉, 설계 문서가 잘 만들어지면 이후 흐름 전체가 쉬워지고,  

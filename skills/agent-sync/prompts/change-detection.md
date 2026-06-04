@@ -36,8 +36,8 @@ git diff --name-only --cached 2>/dev/null
 **Skills 경로 필터 (Task B 입력)**
 
 ```bash
-git diff --name-only HEAD 2>/dev/null | grep -E "(\.agents|\.claude)/skills/"
-git diff --name-only --cached 2>/dev/null | grep -E "(\.agents|\.claude)/skills/"
+git diff --name-only HEAD 2>/dev/null | grep -E "(^skills/|\.agents/skills/|\.claude/skills/)"
+git diff --name-only --cached 2>/dev/null | grep -E "(^skills/|\.agents/skills/|\.claude/skills/)"
 ```
 
 - 결과에서 스킬 디렉토리명(`<skill-name>`)을 추출한다.
@@ -69,7 +69,7 @@ uname -s 2>/dev/null || powershell -Command "echo Windows" 2>/dev/null
 
 ```bash
 # 최근 수정된 Skills 파일 목록
-powershell -Command "Get-ChildItem -Recurse -Filter 'SKILL.md' -Path '.agents/skills','.claude/skills' -ErrorAction SilentlyContinue | Sort-Object LastWriteTime -Descending | Select-Object -First 10 FullName, LastWriteTime" 2>/dev/null
+powershell -Command "Get-ChildItem -Recurse -Filter 'SKILL.md' -Path 'skills','.agents/skills','.claude/skills' -ErrorAction SilentlyContinue | Sort-Object LastWriteTime -Descending | Select-Object -First 10 FullName, LastWriteTime" 2>/dev/null
 
 # 최근 수정된 Doc 파일 목록
 powershell -Command "Get-ChildItem -Recurse -Include 'CLAUDE.md','AGENTS.md' -ErrorAction SilentlyContinue | Where-Object { $_.FullName -notmatch 'node_modules|venv|__pycache__' } | Sort-Object LastWriteTime -Descending | Select-Object -First 5 FullName, LastWriteTime" 2>/dev/null
@@ -84,7 +84,7 @@ powershell -Command "Get-ChildItem -Recurse -Include 'CLAUDE.md','AGENTS.md' -Er
 
 ```bash
 # 최근 수정된 Skills 파일 (mtime 내림차순)
-find .agents/skills .claude/skills -name "SKILL.md" -type f 2>/dev/null \
+find skills .agents/skills .claude/skills -name "SKILL.md" -type f 2>/dev/null \
   | xargs stat -c "%Y %n" 2>/dev/null | sort -rn | head -10
 
 # 최근 수정된 Doc 파일

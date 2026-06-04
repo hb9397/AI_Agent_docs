@@ -1,7 +1,7 @@
 # Harness Engineering Guide v2
 
 > 2026-04-03 기준 현재 저장소의 스킬과 문서를 기준으로 정리한 AI Agent 하네스 운영 가이드.
-> 아래 내용은 `Agent Skills/`, `example/`, `README.md`, 각 `SKILL.md`에 있는 정보를 기준으로 작성했다.
+> 아래 내용은 `skills/`, `example/`, `README.md`, 각 `SKILL.md`에 있는 정보를 기준으로 작성했다.
 
 ---
 
@@ -21,10 +21,10 @@
 
 ## 2. 현재 저장소 기준 구성 요약
 
-- `design-doc`는 `Agent Skills/design-doc/templates/INPUT_V2.md`, `OUTPUT_V2.md` 템플릿을 포함한다.
+- `design-doc`는 `skills/design-doc/templates/INPUT_V2.md`, `OUTPUT_V2.md` 템플릿을 포함한다.
 - `rfp-ingest`는 `rfp-design-input-{SFR}.md` 형식의 중간 문서 생성을 정의한다.
 - 프로토타입 흐름은 `design-prototype-docs` → `create-prototype`으로 연결된다.
-- 구현 지침 계열 디렉토리는 `impl-fe-be-doc`, `impl-screen-doc`, `impl-doc` 3개가 존재한다. 신규 흐름에서는 화면 중심 구현도 `impl-fe-be-doc`로 흡수하고, `impl-screen-doc`은 레거시 분리형 지침으로 본다.
+- 구현 지침 계열 디렉토리는 `impl-fe-be-doc`, `impl-doc` 2개가 존재한다. 화면 중심 구현은 `impl-fe-be-doc`의 화면 중심 모드로 처리한다.
 - 품질·운영 계열 디렉토리는 `multi-review`, `pre-commit`, `commit`, `code-comment`, `doc-audit`, `agent-sync`가 존재한다.
 
 ---
@@ -33,7 +33,7 @@
 
 ```text
 AI_Agent_docs/
-├── Agent Skills/   ← IDE 안의 Agent가 직접 호출하는 스킬과 템플릿의 단일 소스
+├── skills/         ← IDE 안의 Agent가 직접 호출하는 스킬과 템플릿의 단일 소스
 ├── example/        ← 산출물 예시
 ├── Harness_Engineering_Intro.md
 ├── Harness_Engineering_v2.md
@@ -46,43 +46,42 @@ AI_Agent_docs/
 
 | 호출명 | 디렉토리 | 역할 | 대표 입력 | 대표 산출물 |
 |--------|----------|------|-----------|-------------|
-| `rfp-ingest` | `Agent Skills/rfp-ingest` | RFP에서 지정 SFR 추출·해석·화면 후보 매핑 | `@RFP PDF`, `SFR-019` 등 | `rfp-design-input-{SFR}.md` |
-| `design-doc` | `Agent Skills/design-doc` | 인터뷰 기반 설계 문서 도출 | 아이디어, 기존 문서, RFP 중간 문서 | `OUTPUT_V2` 형식 설계 문서 |
-| `context-doc` | `Agent Skills/context-doc` | Agent용 컨텍스트 문서 생성 (다중 분할) | `design-doc` 결과물 | 얇은 `CLAUDE.md` + 동일 내용의 `AGENTS.md` + 주제별 `.instruction/*-instruction.md` 7종 |
-| `harness-bootstrap` | `Agent Skills/harness-bootstrap` | 기존 코드베이스 → 설계 + 컨텍스트 문서 역추출 | 문서 없는 기존 코드베이스 | `design-doc OUTPUT_V2` + `context-doc` 결과물 일괄 |
+| `rfp-ingest` | `skills/rfp-ingest` | RFP에서 지정 SFR 추출·해석·화면 후보 매핑 | `@RFP PDF`, `SFR-019` 등 | `rfp-design-input-{SFR}.md` |
+| `design-doc` | `skills/design-doc` | 인터뷰 기반 설계 문서 도출 | 아이디어, 기존 문서, RFP 중간 문서 | `OUTPUT_V2` 형식 설계 문서 |
+| `context-doc` | `skills/context-doc` | Agent용 컨텍스트 문서 생성 (다중 분할) | `design-doc` 결과물 | 얇은 `CLAUDE.md` + 동일 내용의 `AGENTS.md` + 주제별 `.instruction/*-instruction.md` 7종 |
+| `harness-bootstrap` | `skills/harness-bootstrap` | 기존 코드베이스 → 설계 + 컨텍스트 문서 역추출 | 문서 없는 기존 코드베이스 | `design-doc OUTPUT_V2` + `context-doc` 결과물 일괄 |
 
 #### B. 프로토타입·UI 계열
 
 | 호출명 | 디렉토리 | 역할 | 대표 입력 | 대표 산출물 |
 |--------|----------|------|-----------|-------------|
-| `design-prototype-docs` | `Agent Skills/design-prototype-docs` | 프로토타입 입력용 화면 설계 문서 생성 | 요구사항, RFP, PRD | `{PREFIX}-{번호}_목업디자인.md` |
-| `create-prototype` | `Agent Skills/create-prototype` | HTML/CSS/JSON 프로토타입 생성 | 목업 디자인 문서, 화면 기능 설명 | `{PREFIX}-{번호}/` 프로토타입 폴더 |
-| `frontend-design` | `Agent Skills/frontend-design` | 실제 UI 구현 시 디자인 품질 기준 제공 | 화면 구현 요청 | 개성 있는 프론트 코드 |
+| `design-prototype-docs` | `skills/design-prototype-docs` | 프로토타입 입력용 화면 설계 문서 생성 | 요구사항, RFP, PRD | `{PREFIX}-{번호}_목업디자인.md` |
+| `create-prototype` | `skills/create-prototype` | HTML/CSS/JSON 프로토타입 생성 | 목업 디자인 문서, 화면 기능 설명 | `{PREFIX}-{번호}/` 프로토타입 폴더 |
+| `frontend-design` | `skills/frontend-design` | 실제 UI 구현 시 디자인 품질 기준 제공 | 화면 구현 요청 | 개성 있는 프론트 코드 |
 
 #### C. 구현 지침 계열
 
 | 호출명 | 디렉토리 | 역할 | 중심 축 | 적합한 대상 |
 |--------|----------|------|---------|-------------|
-| `impl-fe-be-doc` | `Agent Skills/impl-fe-be-doc` | FE/BE 페어 또는 화면 중심 Phase 작업지침서 | 역할 분리 + 화면 1개 = 1 Phase | 일반 웹앱, FE/BE 병행 개발, RFP/SFR 화면 중심 구현 |
-| `impl-screen-doc` | `Agent Skills/impl-screen-doc` | 레거시 분리형 화면 단위 구현 지침서 | 화면 | 기존 산출물 호환용 |
-| `impl-doc` | `Agent Skills/impl-doc` | 범용 단계별 구현 지침서 | 기능/모듈/파이프라인 | CLI, 자동화, 라이브러리, 백엔드 단독 |
+| `impl-fe-be-doc` | `skills/impl-fe-be-doc` | FE/BE 페어 또는 화면 중심 Phase 작업지침서 | 역할 분리 + 화면 1개 = 1 Phase | 일반 웹앱, FE/BE 병행 개발, RFP/SFR 화면 중심 구현 |
+| `impl-doc` | `skills/impl-doc` | 범용 단계별 구현 지침서 | 기능/모듈/파이프라인 | CLI, 자동화, 라이브러리, 백엔드 단독 |
 
 #### D. 품질·운영 계열
 
 | 호출명 | 디렉토리 | 역할 | 핵심 포인트 |
 |--------|----------|------|-------------|
-| `multi-review` | `Agent Skills/multi-review` | 4관점 병렬 코드 리뷰 | Security / Performance / Maintainability / Testing |
-| `pre-commit` | `Agent Skills/pre-commit` | 커밋 전 규칙 검사 | 에러 처리, 타임아웃, 민감 정보, TODO, 테스트 |
-| `commit` | `Agent Skills/commit` | Conventional Commits 기반 커밋 | 한글 description, scope 추론, why 중심 body |
-| `code-comment` | `Agent Skills/code-comment` | 변경 파일 한글 주석 작성·갱신 | 승인 전 파일 미수정 원칙 |
-| `doc-audit` | `Agent Skills/doc-audit` | 코드와 Agent 문서 괴리 분석 | 제안만 먼저 출력, 승인 후 반영 |
-| `agent-sync` | `Agent Skills/agent-sync` | Agent 문서/Skills 동기화 | Agent 문서와 Skills를 분리 또는 병렬 동기화 |
+| `multi-review` | `skills/multi-review` | 4관점 병렬 코드 리뷰 | Security / Performance / Maintainability / Testing |
+| `pre-commit` | `skills/pre-commit` | 커밋 전 규칙 검사 | 에러 처리, 타임아웃, 민감 정보, TODO, 테스트 |
+| `commit` | `skills/commit` | Conventional Commits 기반 커밋 | 한글 description, scope 추론, why 중심 body |
+| `code-comment` | `skills/code-comment` | 변경 파일 한글 주석 작성·갱신 | 승인 전 파일 미수정 원칙 |
+| `doc-audit` | `skills/doc-audit` | 코드와 Agent 문서 괴리 분석 | 제안만 먼저 출력, 승인 후 반영 |
+| `agent-sync` | `skills/agent-sync` | Agent 문서/Skills 동기화 | Agent 문서와 Skills를 분리 또는 병렬 동기화 |
 
 #### E. 메타 계열
 
 | 호출명 | 디렉토리 | 역할 | 비고 |
 |--------|----------|------|------|
-| `skill-designer` | `Agent Skills/skill-design` | 새 스킬 설계·생성·테스트·트리거 최적화 | 디렉토리명은 `skill-design`, 실제 name은 `skill-designer` |
+| `skill-designer` | `skills/skill-design` | 새 스킬 설계·생성·테스트·트리거 최적화 | 디렉토리명은 `skill-design`, 실제 name은 `skill-designer` |
 
 ## 4. 작업 시작 전에 먼저 정해야 할 3가지
 
@@ -130,7 +129,7 @@ AI_Agent_docs/
         │            └─→ /create-prototype
         │
         ▼
-구현 지침 3종 중 하나 선택
+구현 지침 2종 중 하나 선택
   ├─ /impl-fe-be-doc
   └─ /impl-doc
         │
@@ -181,7 +180,7 @@ rfp-design-input-{SFR}.md
         ├─ (권장) /context-doc
         ├─ (선택) /design-prototype-docs → /create-prototype
         ▼
-구현 지침 3종 중 하나 선택
+구현 지침 2종 중 하나 선택
   ├─ /impl-fe-be-doc
   └─ /impl-doc
         │
@@ -240,15 +239,15 @@ design-doc OUTPUT_V2 초안 + CLAUDE.md + AGENTS.md + .instruction/*-instruction
 
 ---
 
-## 7. 구현 지침 3종 선택 기준
+## 7. 구현 지침 2종 선택 기준
 
-| 항목 | `impl-fe-be-doc` | `impl-screen-doc` | `impl-doc` |
-|------|------------------|-------------------|------------|
-| 중심 축 | FE/BE 역할 또는 화면 | 화면 | 기능/모듈 |
-| Phase 단위 | BE+FE 페어 기능 또는 화면 1개 | 화면 1개 | 입출력 파이프라인/모듈 |
-| 태스크 ID | `INF-XX`, `BE-XX`, `FE-XX` | 화면 중심 통합 태스크(`SCR-XX` 개념) | `INIT`, `CORE`, `IO`, `TEST`, `PKG` |
-| 적합 대상 | 일반 웹앱, FE/BE 담당 분리, RFP/SFR 화면 구현 | 기존 화면 지침 산출물 호환 | CLI, 스크립트, 서비스, 라이브러리 |
-| 핵심 검증 | FE→API→DB 통합, 화면 렌더링, 상태, API, 인터랙션 | 화면 렌더링, 상태, API, 인터랙션 | 실행 명령, 입출력, 테스트, 패키징 |
+| 항목 | `impl-fe-be-doc` | `impl-doc` |
+|------|------------------|------------|
+| 중심 축 | FE/BE 역할 또는 화면 | 기능/모듈 |
+| Phase 단위 | BE+FE 페어 기능 또는 화면 1개 | 입출력 파이프라인/모듈 |
+| 태스크 ID | `INF-XX`, `BE-XX`, `FE-XX` | `INIT`, `CORE`, `IO`, `TEST`, `PKG` |
+| 적합 대상 | 일반 웹앱, FE/BE 담당 분리, RFP/SFR 화면 구현 | CLI, 스크립트, 서비스, 라이브러리 |
+| 핵심 검증 | FE→API→DB 통합, 화면 렌더링, 상태, API, 인터랙션 | 실행 명령, 입출력, 테스트, 패키징 |
 
 ### 빠른 선택 규칙
 
