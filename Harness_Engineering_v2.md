@@ -1,7 +1,7 @@
 # Harness Engineering Guide v2
 
 > 2026-04-03 기준 현재 저장소의 스킬과 문서를 기준으로 정리한 AI Agent 하네스 운영 가이드.
-> 아래 내용은 `Agent Skills/`, `Docs Skills/`, `example/`, `README.md`, 각 `SKILL.md`에 있는 정보를 기준으로 작성했다.
+> 아래 내용은 `Agent Skills/`, `example/`, `README.md`, 각 `SKILL.md`에 있는 정보를 기준으로 작성했다.
 
 ---
 
@@ -33,8 +33,7 @@
 
 ```text
 AI_Agent_docs/
-├── Agent Skills/   ← IDE 안의 Agent가 직접 호출하는 스킬
-├── Docs Skills/    ← 웹 AI/Gems/Project에 넣어 쓰는 템플릿 문서
+├── Agent Skills/   ← IDE 안의 Agent가 직접 호출하는 스킬과 템플릿의 단일 소스
 ├── example/        ← 산출물 예시
 ├── Harness_Engineering_Intro.md
 ├── Harness_Engineering_v2.md
@@ -77,27 +76,13 @@ AI_Agent_docs/
 | `commit` | `Agent Skills/commit` | Conventional Commits 기반 커밋 | 한글 description, scope 추론, why 중심 body |
 | `code-comment` | `Agent Skills/code-comment` | 변경 파일 한글 주석 작성·갱신 | 승인 전 파일 미수정 원칙 |
 | `doc-audit` | `Agent Skills/doc-audit` | 코드와 Agent 문서 괴리 분석 | 제안만 먼저 출력, 승인 후 반영 |
-| `agent-sync` | `Agent Skills/agent-sync` | Agent 문서/Skills 동기화 | Docs와 Skills를 분리 또는 병렬 동기화 |
+| `agent-sync` | `Agent Skills/agent-sync` | Agent 문서/Skills 동기화 | Agent 문서와 Skills를 분리 또는 병렬 동기화 |
 
 #### E. 메타 계열
 
 | 호출명 | 디렉토리 | 역할 | 비고 |
 |--------|----------|------|------|
 | `skill-designer` | `Agent Skills/skill-design` | 새 스킬 설계·생성·테스트·트리거 최적화 | 디렉토리명은 `skill-design`, 실제 name은 `skill-designer` |
-
-### 3-2. Docs Skills — 웹 AI용 템플릿
-
-| 경로 | 포함 항목 | 용도 |
-|------|-----------|------|
-| `Docs Skills/설계문서_도출/v4/INPUT_V2.md` | 파일 존재 | 웹 AI 인터뷰 입력 양식 |
-| `Docs Skills/설계문서_도출/v4/OUTPUT_V2.md` | 파일 존재 | 설계 산출물 양식 |
-| `Docs Skills/설계문서_도출/v1/` | 디렉토리 존재 | 설계 문서 도출 예시/양식 |
-| `Docs Skills/설계문서_도출/v2/` | 디렉토리 존재 | 설계 문서 도출 예시/양식 |
-| `Docs Skills/설계문서_도출/v3/` | 디렉토리 존재 | 설계 문서 도출 예시/양식 |
-| `Docs Skills/구현작업_지시서_도출/v1/Impl_workflow_doc.md` | 파일 존재 | 구현 지침서 템플릿 |
-| `Docs Skills/스킬_도출/skill-design-guide.md` | 파일 존재 | 스킬 설계 가이드 |
-
----
 
 ## 4. 작업 시작 전에 먼저 정해야 할 3가지
 
@@ -456,17 +441,9 @@ Agent 문서 / Skills 변경
 
 ---
 
-## 12. Docs Skills 디렉토리 현황
+## 12. 바이브코딩 운영 원칙
 
-- `Docs Skills/설계문서_도출` 하위에는 `v1`, `v2`, `v3`, `v4` 디렉토리가 존재한다.
-- `Docs Skills/구현작업_지시서_도출` 하위에는 `v1` 디렉토리와 `README.md`가 존재한다.
-- `Docs Skills/스킬_도출` 하위에는 `skill-design-guide.md`가 존재한다.
-
----
-
-## 13. 바이브코딩 운영 원칙
-
-### 13-1. 웹 AI와 IDE Agent는 역할이 다르다
+### 12-1. 웹 AI와 IDE Agent는 역할이 다르다
 
 | 상황 | 웹 AI가 강한 쪽 | IDE Agent가 강한 쪽 |
 |------|------------------|----------------------|
@@ -477,7 +454,7 @@ Agent 문서 / Skills 변경
 | 구현 지침 문서화 | △ | ✅ |
 | 코드 리뷰, 커밋, 동기화 | △ | ✅ |
 
-### 13-2. 대화 단위를 작게 유지한다
+### 12-2. 대화 단위를 작게 유지한다
 
 좋은 지시의 형태는 거의 항상 아래와 같다.
 
@@ -485,7 +462,7 @@ Agent 문서 / Skills 변경
 [참조 문서]
 - 설계문서: ...
 - 작업지침서: ...
-- CLAUDE.md / AGENTS.md / basic-instruction.md: ...
+- CLAUDE.md / AGENTS.md / .instruction/*-instruction.md: ...
 
 [이번 턴 범위]
 - Phase 2의 BE-03만 구현
@@ -496,13 +473,13 @@ Agent 문서 / Skills 변경
 - 검증 시나리오 1~3 통과 여부 보고
 ```
 
-### 13-3. 문서를 한 번 만들고 끝내지 않는다
+### 12-3. 문서를 한 번 만들고 끝내지 않는다
 
 - 구현 중 설계가 바뀌면 문서도 바뀌어야 한다.
 - 코드가 맞고 문서가 낡았으면 `doc-audit`로 괴리를 잡고,
 - 승인 후 `agent-sync` 또는 직접 수정으로 문서를 맞춘다.
 
-### 13-4. 컨텍스트가 오염되는 신호
+### 12-4. 컨텍스트가 오염되는 신호
 
 아래가 보이면 새 대화로 갈아타는 편이 낫다.
 
@@ -511,7 +488,7 @@ Agent 문서 / Skills 변경
 - 수정 범위를 자꾸 벗어난다.
 - 설계 문서와 다른 계층 구조를 만들기 시작한다.
 
-### 13-5. 반복 작업은 스킬화 후보다
+### 12-5. 반복 작업은 스킬화 후보다
 
 같은 워크플로우를 세 번 이상 반복하면 `skill-designer` 후보로 본다.
 
@@ -523,7 +500,7 @@ Agent 문서 / Skills 변경
 
 ---
 
-## 14. 자주 쓰는 런타임 치트시트
+## 13. 자주 쓰는 런타임 치트시트
 
 | 지금 상황 | 먼저 쓸 것 | 다음 선택지 |
 |-----------|------------|-------------|
@@ -542,7 +519,7 @@ Agent 문서 / Skills 변경
 
 ---
 
-## 15. 빠른 운영 체크리스트
+## 14. 빠른 운영 체크리스트
 
 ### 새 프로젝트 시작
 
@@ -573,11 +550,11 @@ Agent 문서 / Skills 변경
 - [ ] 이번 턴 범위를 다시 좁힌다.
 - [ ] 참조 문서와 수정 파일 범위를 다시 명시한다.
 - [ ] 문서가 낡았다면 `doc-audit`를 먼저 돌린다.
-- [ ] 같은 문제가 반복되면 `basic-instruction.md`에 금지 패턴을 보강한다.
+- [ ] 같은 문제가 반복되면 관련 `.instruction/*-instruction.md`에 금지 패턴을 보강한다.
 
 ---
 
-## 16. 한 줄 결론
+## 15. 한 줄 결론
 
 현재 저장소의 하네스 구조는 아래 한 줄로 요약된다.
 

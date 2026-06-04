@@ -1,5 +1,5 @@
 # prompts/design-principles.md
-# 역할: 스킬 파일 작성 시 적용할 설계 원칙 (skill-design-guide.md 기반)
+# 역할: 스킬 파일 작성 시 적용할 설계 원칙
 
 ---
 
