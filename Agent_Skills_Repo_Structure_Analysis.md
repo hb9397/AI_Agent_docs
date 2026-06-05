@@ -18,18 +18,19 @@
   - [1-4. Claude Code subagent 배치](#1-4-claude-code-subagent-배치)
   - [1-5. Plugin과 직접 폴더 설치의 차이](#1-5-plugin과-직접-폴더-설치의-차이)
 - [2. 비공식 스킬·서브에이전트 레포 개요](#2-비공식-스킬서브에이전트-레포-개요)
-  - [2-1. 분석 대상 요약](#2-1-분석-대상-요약)
-  - [2-2. 비공식 레포 한 줄 카드](#2-2-비공식-레포-한-줄-카드)
-  - [2-3. 성격 분류](#2-3-성격-분류)
-  - [2-4. 내부 skills와 외부 중복 매트릭스](#2-4-내부-skills와-외부-중복-매트릭스)
-  - [2-5. 워크플로우 요약](#2-5-워크플로우-요약)
-    - [2-5-1. 본 저장소 skills/ 16개](#2-5-1-본-저장소-skills-16개)
-    - [2-5-2. obra/superpowers](#2-5-2-obrasuperpowers)
-    - [2-5-3. multica-ai/andrej-karpathy-skills](#2-5-3-multica-aiandrej-karpathy-skills)
-    - [2-5-4. garrytan/gstack](#2-5-4-garrytangstack)
-    - [2-5-5. VoltAgent/awesome-claude-code-subagents](#2-5-5-voltagentawesome-claude-code-subagents)
-    - [2-5-6. huggingface/skills](#2-5-6-huggingfaceskills)
-  - [2-6. 통합 권장](#2-6-통합-권장)
+  - [2-1. 분석 대상](#2-1-분석-대상)
+  - [2-2. 본 저장소 skills/ 16개 한글 요약](#2-2-본-저장소-skills-16개-한글-요약)
+  - [2-3. 비공식 레포 한 줄 카드](#2-3-비공식-레포-한-줄-카드)
+  - [2-4. 성격 분류](#2-4-성격-분류)
+  - [2-5. 레포별 겹치는 의도](#2-5-레포별-겹치는-의도)
+  - [2-6. 워크플로우 요약](#2-6-워크플로우-요약)
+    - [2-6-1. 본 저장소 skills/ 16개](#2-6-1-본-저장소-skills-16개)
+    - [2-6-2. obra/superpowers](#2-6-2-obrasuperpowers)
+    - [2-6-3. multica-ai/andrej-karpathy-skills](#2-6-3-multica-aiandrej-karpathy-skills)
+    - [2-6-4. garrytan/gstack](#2-6-4-garrytangstack)
+    - [2-6-5. VoltAgent/awesome-claude-code-subagents](#2-6-5-voltagentawesome-claude-code-subagents)
+    - [2-6-6. huggingface/skills](#2-6-6-huggingfaceskills)
+  - [2-7. 조합 선택지](#2-7-조합-선택지)
 - [3. 비공식 스킬 레포 상세](#3-비공식-스킬-레포-상세)
   - [3-1. obra/superpowers](#3-1-obrasuperpowers)
   - [3-2. multica-ai/andrej-karpathy-skills](#3-2-multica-aiandrej-karpathy-skills)
@@ -178,13 +179,15 @@ my-repo/
 
 ## 2. 비공식 스킬·서브에이전트 레포 개요
 
-본 저장소는 자체 `skills/` 디렉토리의 16개 내부 스킬을 단일 원천으로 운영한다. 외부에도 같은 의도, 즉 설계→구현→리뷰 워크플로우, 행동 규범, 역할 분리, 반복 가능한 agent 운영을 서로 다른 방식으로 풀어낸 유명 레포가 다수 존재한다. 이 섹션은 내부 스킬을 대체하기 위한 목록이 아니라, 외부 자원을 언제 보조 레이어로 써야 하는지 판단하기 위한 지도다.
+본 저장소는 자체 `skills/` 디렉토리에 16개 내부 스킬을 두고 운영한다. 외부에도 비슷한 의도, 즉 설계→구현→리뷰 워크플로우, 행동 규범, 역할 분리, 반복 가능한 agent 운영을 다른 방식으로 풀어낸 유명 레포가 여럿 있다. 이 섹션은 "이렇게 써야 한다"를 정하는 가이드가 아니라, **무엇이 있고 어디가 겹치는지를 펼쳐 둔 지도**다. 어떻게 조합할지는 §2-7의 선택지에서 다룬다.
 
-### 2-1. 분석 대상 요약
-#### 2-1-1. 기존 분석 대상 표
+### 2-1. 분석 대상
 
-| 구분 | 레포지토리 | 접근 상태 | 성격 | 주요 스킬 위치 |
-|------|------------|-----------|------|----------------|
+내부 `skills/`도 같은 표에 포함시켜, 외부 레포와 같은 평면에서 보이도록 정리했다.
+
+| 구분 | 레포지토리 | 접근 | 성격 | 주요 스킬 위치 |
+|------|------------|------|------|----------------|
+| 내부 (본 저장소) | `skills/` 16개 | 로컬 | 산출물 파이프라인 (RFP→설계→컨텍스트→프로토타입→구현→리뷰→커밋→문서 동기화) | `skills/{name}/SKILL.md` |
 | 공식 | [anthropics/skills](https://github.com/anthropics/skills) | 가능 | Claude Agent Skills 공식 구현/예시/스펙 | `skills/` |
 | 공식 | [openai/skills](https://github.com/openai/skills) | 가능 | Codex용 Agent Skills 카탈로그 | `skills/.system`, `skills/.curated` |
 | 비공식 | [obra/superpowers](https://github.com/obra/superpowers) | 가능 | 개발 방법론형 스킬 프레임워크 | `skills/` |
@@ -193,9 +196,34 @@ my-repo/
 | 기업 공개 | [huggingface/skills](https://github.com/huggingface/skills) | 가능 | Hugging Face/AI-ML 작업용 스킬 모음 | `skills/` |
 | 비공식 | [VoltAgent/awesome-claude-code-subagents](https://github.com/VoltAgent/awesome-claude-code-subagents) | 가능 | Claude Code subagent 카탈로그 | `categories/`, `.claude/agents` |
 
+### 2-2. 본 저장소 `skills/` 16개 한글 요약
+
+각 스킬이 정확히 무엇을 하는지, 그리고 외부 레포에 비슷한 의도가 있다면 어디에 있는지 한 표에 정리했다. "있어야 한다"가 아니라 "이런 역할이 이렇게 있다, 외부에는 이런 비슷한 게 있다"는 사실 정리다.
+
+| 스킬 | 한글 역할 요약 | 의도가 비슷한 외부 (참고용) |
+|------|----------------|-----------------------------|
+| `rfp-ingest` | RFP PDF에서 특정 SFR(성능요구사항)을 골라 추출·해석하고 화면 후보를 매핑해 `rfp-design-input-{SFR}.md`를 만든다 | 직접 대응 없음 (도메인 특화) |
+| `design-doc` | 인터뷰형 대화로 요구사항·동작 흐름·집중 로직·인터페이스·데이터를 끌어내 `OUTPUT_V2` 설계 문서를 만든다 | superpowers `brainstorming`, gstack `/office-hours`, openai `define-goal` |
+| `context-doc` | 설계 문서를 얇은 `CLAUDE.md`/`AGENTS.md` + 주제별 `.instruction/*-instruction.md` 7종으로 분할 생성해 에이전트 컨텍스트를 만든다 | 직접 대응 없음 (Karpathy 4원칙이 일부 가드 역할) |
+| `harness-bootstrap` | 문서 없는 기존/레거시 코드베이스를 스캔해 설계 문서·CLAUDE/AGENTS·instruction 문서를 역추출한다 | superpowers `brainstorming` + `writing-plans` 패턴 일부 유사 |
+| `design-prototype-docs` | 프로토타입을 만들기 전에 화면 목록·흐름·기능·레이아웃·더미 데이터를 정리한 목업 디자인 문서를 만든다 | anthropics `frontend-design`, gstack `/design-consultation`·`/design-shotgun` |
+| `create-prototype` | 목업 디자인 문서를 입력으로 받아 실제 HTML/CSS/JSON 프로토타입을 생성한다 | anthropics `web-artifacts-builder`, gstack `/design-html` |
+| `frontend-design` | 실제 UI 구현 시 디자인 품질 기준(레이아웃·반응형·접근성·디자인 시스템·일반 AI 클리셰 방지)을 적용한다 | anthropics `frontend-design`, gstack `/design-review` |
+| `impl-fe-be-doc` | FE/BE 페어 또는 화면 1개 = 1 Phase 구조로 작업 지침서(`INF/BE/FE-XX` 태스크)를 만든다 | superpowers `writing-plans` + `executing-plans`, gstack `/autoplan`·`/plan-eng-review` |
+| `impl-doc` | CLI·자동화·라이브러리·백엔드 단독처럼 화면이 없는 경우의 범용 단계별 구현 지침서(`INIT/CORE/IO/TEST/PKG`)를 만든다 | superpowers `writing-plans` + `executing-plans` |
+| `multi-review` | Security/Performance/Maintainability/Testing 4관점을 병렬로 돌려 코드 리뷰 결과를 모은다 | superpowers `requesting-code-review`, Claude Code `/code-review`, gstack `/review`·`/devex-review` |
+| `pre-commit` | 커밋 직전에 빈 catch·타임아웃 누락·민감정보·TODO 형식·테스트 부재 같은 규칙 위반을 검사한다 | superpowers `verification-before-completion`, Claude Code `verify` |
+| `commit` | Conventional Commits + 한글 description(50자 이내) + why 중심 body 규칙으로 커밋 메시지를 생성한다 | Claude Code 내장 commit 흐름 |
+| `code-comment` | 변경된 파일에만 한글 주석을 추가/갱신한다. 사용자 승인 전에는 파일을 수정하지 않는다 | 직접 대응 없음 |
+| `doc-audit` | 코드와 Agent 문서(CLAUDE/AGENTS/instruction) 간 괴리를 분석하고 제안만 먼저 출력한다 | superpowers `verification` 원칙과 일부 유사 |
+| `agent-sync` | Agent 문서와 Skills를 환경별(Claude/Codex/Gemini)로 동기화한다 | 직접 대응 없음 |
+| `skill-designer` | 새 스킬 설계·생성·테스트·트리거 description 최적화를 인터뷰형으로 진행한다 (디렉토리명은 `skill-design`) | anthropics·openai `skill-creator`, superpowers `writing-skills` |
+
+오른쪽 열의 "의도가 비슷한 외부"는 **같은 위치를 차지한다**가 아니라 **비슷한 의도의 다른 풀이**가 그곳에 있다는 뜻이다. 둘을 동시에 켤지, 한쪽만 쓸지, 둘 다 안 쓸지는 §2-7 선택지에서 다룬다.
+
 ---
 
-### 2-2. 비공식 레포 한 줄 카드
+### 2-3. 비공식 레포 한 줄 카드
 
 | 레포 | 만든사람 | GitHub 스타 수 | 핵심 의도 | 한 줄 요약 |
 |------|----------|----------------|-----------|------------|
@@ -204,7 +232,7 @@ my-repo/
 | [garrytan/gstack](https://github.com/garrytan/gstack) | Garry Tan | 약 107k (2026-06-05 확인) | Claude/Codex를 가상 제품 개발 팀처럼 운영 | CEO, design, eng review, QA, ship, CSO 역할을 slash command/skill로 제공 |
 | [VoltAgent/awesome-claude-code-subagents](https://github.com/VoltAgent/awesome-claude-code-subagents) | VoltAgent | 약 21.2k (2026-06-05 확인) | 역할별 Claude Code subagent 카탈로그 | 언어/인프라/보안/데이터/제품 역할을 `.claude/agents` 또는 plugin으로 설치 |
 
-### 2-3. 성격 분류
+### 2-4. 성격 분류
 
 | 대상 | 산출물형/행동형 | 워크플로우형/역할형 | 분류 근거 | 본 저장소와의 관계 |
 |------|----------------|---------------------|-----------|-------------------|
@@ -215,33 +243,32 @@ my-repo/
 | `VoltAgent/awesome-claude-code-subagents` | 행동형 | 역할형 | `.claude/agents` 기반 전문가 persona와 tool 권한 분리 | 내부 `multi-review`의 병렬 관점 확장 후보 |
 | `huggingface/skills` | 산출물형 | 워크플로우형 | AI/ML, Hub, datasets, Gradio, fine-tuning 작업을 skill 단위로 분리 | AI/ML 도메인 작업 때 외부 도메인 skill로 보조 |
 
-### 2-4. 내부 skills와 외부 중복 매트릭스
+### 2-5. 레포별 겹치는 의도
 
-| 내부 스킬 | 대응 외부 | 겹침 정도 | 처리 권장 |
-|-----------|-----------|-----------|-----------|
-| `design-doc` | `superpowers`의 `brainstorming` | 상 | 내부 `design-doc`를 SoT로 두고, 요구가 모호하거나 설계 승인 루프가 필요하면 `brainstorming` 원칙을 보조 적용 |
-| `impl-doc` / `impl-fe-be-doc` | `superpowers`의 `writing-plans` + `executing-plans` | 상 | 내부 구현 지침서 포맷을 우선하고, task granularity와 TDD 단계는 superpowers 패턴을 참고 |
-| `multi-review` | `superpowers`의 `requesting-code-review`, Claude Code `/code-review` | 중 | 내부 4관점 리뷰를 기본으로 두고, PR 전 최종 리뷰나 외부 reviewer prompt가 필요할 때 보조 사용 |
-| `pre-commit` | `superpowers`의 `verification-before-completion` | 중 | 내부 pre-commit 체크리스트를 우선하고, 완료 주장 전 증거 기반 검증 원칙을 항상 병행 |
-| `commit` | Claude Code 기본 commit 흐름 | 하 | 내부 conventional commit 규칙과 한글 body 정책을 우선하고, 도구 기본 commit은 실행 수단으로만 사용 |
-| 행동 규범 전체 | Karpathy 4원칙 | 중(직교) | 내부 스킬을 대체하지 말고 모든 작업에 Think/Simplicity/Surgical/Goal 기준을 덧씌움 |
-| 역할 분리 | `gstack`, `awesome-claude-code-subagents` | 중 | 내부 `multi-review`, `impl-fe-be-doc` 역할 분리를 우선하고, 더 강한 persona 분리가 필요할 때 외부 역할형 도구 호출 |
-| `rfp-ingest` | 직접 대응 없음 | 하 | RFP/SFR 도메인 특화는 내부 스킬 유지. 외부는 설계 리뷰 단계에서만 보조 |
-| `context-doc` | 직접 대응 없음, `superpowers` plan handoff와 일부 유사 | 하 | 내부 `CLAUDE.md`/`AGENTS.md`/`.instruction` 생성 규칙 유지 |
-| `harness-bootstrap` | `superpowers`의 `brainstorming` + `writing-plans`와 일부 유사 | 중 | 기존 코드베이스 역추출은 내부 스킬 우선. 외부는 분해/검증 패턴만 참고 |
-| `design-prototype-docs` | `anthropics/skills`의 `frontend-design`, `web-artifacts-builder` | 중 | 내부 목업 문서 포맷 우선, 시각 품질 기준은 외부 디자인 스킬 참고 가능 |
-| `create-prototype` | `anthropics/skills`의 `web-artifacts-builder`, gstack `/design-html` | 중 | 내부 산출물 경로/JSON 규칙 우선, 대안 디자인 생성은 외부 보조 |
-| `frontend-design` | `anthropics/skills`의 `frontend-design`, gstack `/design-review` | 중 | 내부 UI 품질 기준 우선, 완성 화면 리뷰에는 외부 디자인 리뷰 보조 가능 |
-| `code-comment` | 직접 대응 없음 | 하 | 한글 주석 작성·갱신 정책은 내부 전용으로 유지 |
-| `doc-audit` | `superpowers`의 verification/review 원칙과 일부 유사 | 하 | 코드와 agent 문서 괴리 분석은 내부 스킬 우선 |
-| `agent-sync` | 직접 대응 없음 | 하 | `skills/` SoT와 설치 대상 동기화는 내부 운영 스킬로 유지 |
-| `skill-designer` | `skill-creator`, `writing-skills` | 상 | 내부 스킬 설계 품질 기준을 우선하고, 표준 Agent Skills 구조 검증에는 외부 메타 스킬 참고 |
+같은 의도(예: "코드 리뷰", "완료 전 검증")를 여러 레포가 각자 다른 이름·방식으로 풀고 있다. 아래는 1:1 매핑이 아니라 **의도 묶음별로 어디에 비슷한 게 있는지**를 정리한 표다. 한 줄에 여러 도구가 있다고 해서 전부 같이 켜야 한다는 뜻은 아니다. 어떤 묶음은 비워둬도 되고, 어떤 묶음은 하나만 골라 쓰는 편이 깔끔하다. 어느 쪽을 우선할지는 §2-7 선택지에서 다룬다.
 
-### 2-5. 워크플로우 요약
+| 의도 묶음 | 본 저장소 `skills/` | obra/superpowers | karpathy 4원칙 | garrytan/gstack | awesome-subagents | 공식 (anthropics·openai·Claude Code 내장) |
+|-----------|---------------------|------------------|-----------------|------------------|--------------------|------------------------------------------|
+| 요구 발견·문제 정의 | `design-doc` 인터뷰, `harness-bootstrap` | `brainstorming` | `Think Before Coding` | `/office-hours`, `/plan-ceo-review` | product-manager, business-analyst | openai `define-goal` |
+| 실행 계획 작성 | `impl-fe-be-doc`, `impl-doc` | `writing-plans` | `Goal-Driven Execution` | `/autoplan`, `/plan-eng-review`, `/spec` | tech-lead, engineering-manager | – |
+| 화면/UI 설계·시각 품질 | `design-prototype-docs`, `create-prototype`, `frontend-design` | – | – | `/design-consultation`, `/design-shotgun`, `/design-html`, `/design-review` | ux-designer, design-system-architect | anthropics `frontend-design`, `web-artifacts-builder`, `theme-factory` |
+| 단순성·범위 가드 | (각 스킬 내 금지 패턴) | – | `Simplicity First`, `Surgical Changes` | `/careful`, `/freeze`, `/guard` | – | – |
+| 구현 실행 | `impl-fe-be-doc`/`impl-doc` 본문 | `executing-plans`, `test-driven-development`, `subagent-driven-development` | – | – | 언어/프레임워크 전문 subagent (python-pro 등) | – |
+| 디버깅 | (자율) | `systematic-debugging` | – | `/investigate` | debugger, qa-engineer | – |
+| 코드 리뷰 | `multi-review` 4관점 | `requesting-code-review`, `receiving-code-review` | – | `/review`, `/devex-review`, `/design-review`, `/cso` | code-reviewer, security-auditor | Claude Code `/code-review`, `security-review` |
+| 완료 전 검증 | `pre-commit` | `verification-before-completion` | `Goal-Driven Execution`의 검증 부분 | `/qa`, `/qa-only`, `/benchmark` | qa-engineer, test-automator | Claude Code `verify` |
+| 커밋·릴리스·배포 | `commit` | `finishing-a-development-branch` | – | `/ship`, `/land-and-deploy`, `/canary` | devops-engineer, release-manager | Claude Code 내장 commit |
+| 문서·지식 운영 | `code-comment`, `doc-audit`, `agent-sync`, `context-doc` | – | – | `/document-release`, `/document-generate`, `/learn`, `/retro` | technical-writer, documentation-engineer | anthropics `docx`·`pdf`·`pptx`·`xlsx`·`doc-coauthoring` |
+| 스킬·플러그인 메타 작업 | `skill-designer` | `writing-skills`, `using-superpowers` | – | – | – | anthropics·openai `skill-creator`, openai `plugin-creator` |
+| AI/ML 도메인 | – | – | – | – | data-scientist, ml-engineer, ai-researcher | `huggingface/skills` 전체 |
+
+같은 칸 안에서도 풀이 방식은 다르다. 예를 들어 "완료 전 검증"은 본 저장소가 `pre-commit` 체크리스트로, superpowers가 `verification-before-completion` 메타 강제로, gstack은 `/qa` 브라우저 클릭으로, 공식 도구는 `verify` 명령으로 푼다. 어느 쪽이 더 우선이라기보다 **작업 성격에 따라 어울리는 게 다르다**고 보는 편이 정확하다.
+
+### 2-6. 워크플로우 요약
 
 레포별로 호출 순서가 다르므로 하나의 큰 그림 대신 **레포마다 독립된 다이어그램**으로 분리한다. 각 노드는 `스킬명 / 한글 역할` 형식으로 표기한다.
 
-#### 2-5-1. 본 저장소 `skills/` 16개
+#### 2-6-1. 본 저장소 `skills/` 16개
 
 설계 → 컨텍스트 → (선택) 프로토타입 → 구현 → 리뷰/품질 게이트 → 커밋 → 문서 동기화로 이어지는 산출물 파이프라인이다.
 
@@ -258,7 +285,7 @@ flowchart LR
   I16["skill-designer<br/>신규 스킬 설계"] -. 새 스킬 필요 시 .-> I0
 ```
 
-#### 2-5-2. obra/superpowers
+#### 2-6-2. obra/superpowers
 
 방법론 강제형 — 발견 → 계획 → 격리 → TDD/디버깅 → 검증 → 리뷰 → 마무리.
 
@@ -273,7 +300,7 @@ flowchart LR
   S6 --> S7["finishing-a-development-branch<br/>브랜치 마무리·PR 정리"]
 ```
 
-#### 2-5-3. multica-ai/andrej-karpathy-skills
+#### 2-6-3. multica-ai/andrej-karpathy-skills
 
 행동 규범형 — 모든 작업 위에 얹는 4원칙. 순서라기보다는 항상 동시에 작동하는 가드.
 
@@ -284,13 +311,13 @@ flowchart LR
   K3 --> K4["Goal-Driven Execution<br/>완료 기준·검증까지 정의"]
 ```
 
-#### 2-5-4. garrytan/gstack
+#### 2-6-4. garrytan/gstack
 
 가상 제품 팀형 — 아이디어 압축부터 배포·회고까지 역할 페르소나 슬래시 커맨드로 분리.
 
 ```mermaid
 flowchart LR
-  G1["/office-hours<br/>YC식 문제 압축·범위 결정"] --> G2["/plan-*-review<br/>CEO·디자인·엔지니어링 검토"]
+  G1["/office-hours<br/>아이디어 압축·최소 출시 범위 결정"] --> G2["/plan-*-review<br/>CEO·디자인·엔지니어링 검토"]
   G2 --> G3["/autoplan<br/>실행 가능한 계획 자동 생성"]
   G3 --> G3b["/design-html<br/>HTML 디자인 초안 산출"]
   G3b --> G4["/review · /qa · /cso<br/>코드·UI·보안 리뷰"]
@@ -298,7 +325,7 @@ flowchart LR
   G5 --> G6["/retro · /learn<br/>회고·지식 축적"]
 ```
 
-#### 2-5-5. VoltAgent/awesome-claude-code-subagents
+#### 2-6-5. VoltAgent/awesome-claude-code-subagents
 
 역할 카탈로그형 — 메인 에이전트가 작업에 맞는 전문 subagent를 골라 위임한다.
 
@@ -309,7 +336,7 @@ flowchart LR
   V3 --> V4["주 에이전트가 통합<br/>결과 수렴·후속 작업 결정"]
 ```
 
-#### 2-5-6. huggingface/skills
+#### 2-6-6. huggingface/skills
 
 AI/ML 도메인형 — 탐색 → 모델 선택/학습 → 데모 배포 → Hub 게시·추적.
 
@@ -320,9 +347,22 @@ flowchart LR
   H3 --> H4["huggingface-paper-publisher · huggingface-trackio<br/>Hub 게시·실험 추적"]
 ```
 
-### 2-6. 통합 권장
+### 2-7. 조합 선택지
 
-우선순위는 `사용자 직접 지시 > 본 저장소 내부 skills/ > Karpathy 4원칙 > 그 외 외부 스킬/플러그인`으로 둔다. 내부 `skills/`는 이 저장소의 산출물 형식과 운영 흐름을 정의하는 SoT이고, Karpathy 원칙은 모든 작업에 적용되는 행동 안전장치다. `superpowers`, `gstack`, `awesome-claude-code-subagents`, `huggingface/skills`는 내부 스킬을 대체하지 않고, 블록 3의 각 레포 절에 정리된 호출 시점에서만 보조 계층으로 쓴다.
+내부 `skills/` 16개만으로도 설계→구현→리뷰→커밋이 전부 닫힌다. 외부 레포를 얹을지 말지, 얹는다면 어디까지 켤지는 **정답이 있는 결정이 아니다**. 팀 규모, 작업 성격, 자동 강제 강도에 따라 다른 조합이 어울린다. 아래는 자주 보이는 조합 예시이고, 그대로 따라할 필요는 없다.
+
+| 시나리오 | 조합 예시 | 의도 |
+|----------|-----------|------|
+| 가장 가볍게 | 내부 `skills/` 단독 | 산출물 파이프라인만 확실히 굴리는 형태 |
+| 행동 가드만 얹기 | 내부 + Karpathy 4원칙 (`CLAUDE.md` 주입) | 과잉 구현·범위 이탈을 줄이는 규범 한 겹 추가 |
+| 방법론 강제까지 | 내부 + superpowers (`using-superpowers` SessionStart 훅 자동 로드) | 계획·TDD·검증 단계를 메타 강제로 보강 |
+| 역할별 검토 보강 | 내부 + gstack 또는 awesome-subagents | CEO/디자인/보안/QA 같은 페르소나 리뷰를 추가 |
+| AI/ML 작업 포함 | 내부 + `huggingface/skills` | 모델·데이터셋·Hub·Gradio 도메인 스킬 활용 |
+| 공식 보조 도구 추가 | 내부 + 공식 `docx`·`pdf`·`xlsx`·`pptx`·`schedule`·`loop` 등 | 문서 산출·반복 작업·운영을 표준 도구로 처리 |
+
+여러 레포를 동시에 켜면 §2-5에서 보인 의도 겹치는 칸에서 **어느 쪽 룰을 따를지를 한 번은 정리해 둬야** 모델이 그때그때 다르게 판단하지 않는다. 우선순위를 강제로 박을지(예: "내부 skills/ 우선" 한 줄을 CLAUDE.md에 명시), 아니면 모델 판단에 맡길지도 결국 선택이다.
+
+참고로 본 저장소의 다른 운영 문서(`Harness_Engineering_v2.md`)는 내부 `skills/`를 SoT로 두는 흐름을 기본 전제로 한다. 이 문서의 조합 선택지는 그 전제와 별도로 "외부에 무엇이 있는지" 자체를 펼쳐 보이기 위한 것이다.
 
 ## 3. 비공식 스킬 레포 상세
 
