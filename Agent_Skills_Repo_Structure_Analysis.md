@@ -23,6 +23,12 @@
   - [2-3. 성격 분류](#2-3-성격-분류)
   - [2-4. 내부 skills와 외부 중복 매트릭스](#2-4-내부-skills와-외부-중복-매트릭스)
   - [2-5. 워크플로우 요약](#2-5-워크플로우-요약)
+    - [2-5-1. 본 저장소 skills/ 16개](#2-5-1-본-저장소-skills-16개)
+    - [2-5-2. obra/superpowers](#2-5-2-obrasuperpowers)
+    - [2-5-3. multica-ai/andrej-karpathy-skills](#2-5-3-multica-aiandrej-karpathy-skills)
+    - [2-5-4. garrytan/gstack](#2-5-4-garrytangstack)
+    - [2-5-5. VoltAgent/awesome-claude-code-subagents](#2-5-5-voltagentawesome-claude-code-subagents)
+    - [2-5-6. huggingface/skills](#2-5-6-huggingfaceskills)
   - [2-6. 통합 권장](#2-6-통합-권장)
 - [3. 비공식 스킬 레포 상세](#3-비공식-스킬-레포-상세)
   - [3-1. obra/superpowers](#3-1-obrasuperpowers)
@@ -233,42 +239,94 @@ my-repo/
 
 ### 2-5. 워크플로우 요약
 
+레포별로 호출 순서가 다르므로 하나의 큰 그림 대신 **레포마다 독립된 다이어그램**으로 분리한다. 각 노드는 `스킬명 / 한글 역할` 형식으로 표기한다.
+
+#### 2-5-1. 본 저장소 `skills/` 16개
+
+설계 → 컨텍스트 → (선택) 프로토타입 → 구현 → 리뷰/품질 게이트 → 커밋 → 문서 동기화로 이어지는 산출물 파이프라인이다.
+
 ```mermaid
 flowchart TB
-  subgraph internal["본 저장소 skills/ 16개"]
-    I0["rfp-ingest"] --> I1["design-doc"]
-    I1 --> I2["context-doc"]
-    I2 --> I3{"산출물 유형"}
-    I3 --> I4["design-prototype-docs"] --> I5["create-prototype"] --> I6["frontend-design"]
-    I3 --> I7["impl-fe-be-doc"]
-    I3 --> I8["impl-doc"]
-    I1 --> I9["harness-bootstrap"] --> I2
-    I7 --> I10["multi-review"]
-    I8 --> I10
-    I10 --> I11["pre-commit"] --> I12["commit"] --> I13["code-comment"]
-    I13 --> I14["doc-audit"] --> I15["agent-sync"]
-    I16["skill-designer"] -. "신규 스킬 설계" .-> I0
-  end
+  I0["rfp-ingest<br/>RFP에서 SFR 추출·해석"] --> I1["design-doc<br/>설계 문서 도출"]
+  I1 --> I2["context-doc<br/>CLAUDE/AGENTS·instruction 생성"]
+  I1 --> I9["harness-bootstrap<br/>레거시 코드 역추출"] --> I2
+  I2 --> I3{"산출물 유형 분기"}
+  I3 -->|UI 중심| I4["design-prototype-docs<br/>화면 설계 문서"]
+  I4 --> I5["create-prototype<br/>HTML/CSS 프로토타입 생성"]
+  I5 --> I6["frontend-design<br/>UI 품질 기준 적용"]
+  I3 -->|FE+BE| I7["impl-fe-be-doc<br/>화면/페어 Phase 작업지침"]
+  I3 -->|도구/백엔드| I8["impl-doc<br/>범용 단계별 구현 지침"]
+  I6 --> I10
+  I7 --> I10["multi-review<br/>4관점 병렬 코드 리뷰"]
+  I8 --> I10
+  I10 --> I11["pre-commit<br/>커밋 전 규칙 검사"]
+  I11 --> I12["commit<br/>Conventional 한글 커밋"]
+  I12 --> I13["code-comment<br/>변경 파일 한글 주석"]
+  I13 --> I14["doc-audit<br/>코드↔문서 괴리 분석"]
+  I14 --> I15["agent-sync<br/>Agent 문서/스킬 동기화"]
+  I16["skill-designer<br/>신규 스킬 설계·테스트"] -. 새 스킬 필요 시 .-> I0
+```
 
-  subgraph superpowers["obra/superpowers"]
-    S1["brainstorming"] --> S2["writing-plans"] --> S3["using-git-worktrees"] --> S4["test-driven-development / systematic-debugging"] --> S5["verification-before-completion"] --> S6["requesting-code-review"] --> S7["finishing-a-development-branch"]
-  end
+#### 2-5-2. obra/superpowers
 
-  subgraph karpathy["multica-ai/andrej-karpathy-skills"]
-    K1["Think Before Coding"] --> K2["Simplicity First"] --> K3["Surgical Changes"] --> K4["Goal-Driven Execution"]
-  end
+방법론 강제형 — 발견 → 계획 → 격리 → TDD/디버깅 → 검증 → 리뷰 → 마무리.
 
-  subgraph gstack["garrytan/gstack"]
-    G1["office-hours"] --> G2["plan-*-review"] --> G3["autoplan / design-html"] --> G4["review / qa / cso"] --> G5["ship / land-and-deploy"] --> G6["retro / learn"]
-  end
+```mermaid
+flowchart LR
+  S1["brainstorming<br/>요구 발견·문제 정의"] --> S2["writing-plans<br/>단계별 실행 계획 작성"]
+  S2 --> S3["using-git-worktrees<br/>작업 공간 격리"]
+  S3 --> S4["test-driven-development<br/>실패 테스트 우선"]
+  S4 --> S4b["systematic-debugging<br/>재현·가설·실험 디버깅"]
+  S4b --> S5["verification-before-completion<br/>완료 전 증거 기반 검증"]
+  S5 --> S6["requesting-code-review<br/>리뷰 요청 품질 향상"]
+  S6 --> S7["finishing-a-development-branch<br/>브랜치 마무리·PR 정리"]
+```
 
-  subgraph volt["VoltAgent awesome subagents"]
-    V1["agent category 선택"] --> V2["전문 subagent 호출"] --> V3["독립 검토/구현"] --> V4["주 agent가 통합"]
-  end
+#### 2-5-3. multica-ai/andrej-karpathy-skills
 
-  subgraph hf["huggingface/skills"]
-    H1["hf-cli / datasets / papers"] --> H2["model 선택/학습"] --> H3["Gradio/ZeroGPU 배포"] --> H4["Hub 게시/추적"]
-  end
+행동 규범형 — 모든 작업 위에 얹는 4원칙. 순서라기보다는 항상 동시에 작동하는 가드.
+
+```mermaid
+flowchart LR
+  K1["Think Before Coding<br/>코딩 전 가정·tradeoff 명시"] --> K2["Simplicity First<br/>가장 단순한 해결책 우선"]
+  K2 --> K3["Surgical Changes<br/>요청 범위 밖 수정 금지"]
+  K3 --> K4["Goal-Driven Execution<br/>완료 기준·검증까지 정의"]
+```
+
+#### 2-5-4. garrytan/gstack
+
+가상 제품 팀형 — 아이디어 압축부터 배포·회고까지 역할 페르소나 슬래시 커맨드로 분리.
+
+```mermaid
+flowchart LR
+  G1["/office-hours<br/>YC식 문제 압축·범위 결정"] --> G2["/plan-*-review<br/>CEO·디자인·엔지니어링 검토"]
+  G2 --> G3["/autoplan<br/>실행 가능한 계획 자동 생성"]
+  G3 --> G3b["/design-html<br/>HTML 디자인 초안 산출"]
+  G3b --> G4["/review · /qa · /cso<br/>코드·UI·보안 리뷰"]
+  G4 --> G5["/ship · /land-and-deploy<br/>릴리스·배포 운영"]
+  G5 --> G6["/retro · /learn<br/>회고·지식 축적"]
+```
+
+#### 2-5-5. VoltAgent/awesome-claude-code-subagents
+
+역할 카탈로그형 — 메인 에이전트가 작업에 맞는 전문 subagent를 골라 위임한다.
+
+```mermaid
+flowchart LR
+  V1["카테고리 선택<br/>10개 카테고리 154+ subagent"] --> V2["전문 subagent 호출<br/>예: security-auditor, python-pro"]
+  V2 --> V3["독립 컨텍스트 실행<br/>역할별 권한·모델로 검토/구현"]
+  V3 --> V4["주 에이전트가 통합<br/>결과 수렴·후속 작업 결정"]
+```
+
+#### 2-5-6. huggingface/skills
+
+AI/ML 도메인형 — 탐색 → 모델 선택/학습 → 데모 배포 → Hub 게시·추적.
+
+```mermaid
+flowchart LR
+  H1["hf-cli · huggingface-datasets · huggingface-papers<br/>Hub 검색·데이터셋·논문 조사"] --> H2["huggingface-best · huggingface-llm-trainer<br/>모델 선택·SFT/DPO 학습"]
+  H2 --> H3["huggingface-gradio · huggingface-zerogpu<br/>Gradio 데모·Spaces 배포"]
+  H3 --> H4["huggingface-paper-publisher · huggingface-trackio<br/>Hub 게시·실험 추적"]
 ```
 
 ### 2-6. 통합 권장
