@@ -246,25 +246,16 @@ my-repo/
 설계 → 컨텍스트 → (선택) 프로토타입 → 구현 → 리뷰/품질 게이트 → 커밋 → 문서 동기화로 이어지는 산출물 파이프라인이다.
 
 ```mermaid
-flowchart TB
+flowchart LR
   I0["rfp-ingest<br/>RFP에서 SFR 추출·해석"] --> I1["design-doc<br/>설계 문서 도출"]
+  I9["harness-bootstrap<br/>레거시 코드 역추출"] --> I1
   I1 --> I2["context-doc<br/>CLAUDE/AGENTS·instruction 생성"]
-  I1 --> I9["harness-bootstrap<br/>레거시 코드 역추출"] --> I2
-  I2 --> I3{"산출물 유형 분기"}
-  I3 -->|UI 중심| I4["design-prototype-docs<br/>화면 설계 문서"]
-  I4 --> I5["create-prototype<br/>HTML/CSS 프로토타입 생성"]
-  I5 --> I6["frontend-design<br/>UI 품질 기준 적용"]
-  I3 -->|FE+BE| I7["impl-fe-be-doc<br/>화면/페어 Phase 작업지침"]
-  I3 -->|도구/백엔드| I8["impl-doc<br/>범용 단계별 구현 지침"]
-  I6 --> I10
-  I7 --> I10["multi-review<br/>4관점 병렬 코드 리뷰"]
-  I8 --> I10
-  I10 --> I11["pre-commit<br/>커밋 전 규칙 검사"]
-  I11 --> I12["commit<br/>Conventional 한글 커밋"]
-  I12 --> I13["code-comment<br/>변경 파일 한글 주석"]
-  I13 --> I14["doc-audit<br/>코드↔문서 괴리 분석"]
-  I14 --> I15["agent-sync<br/>Agent 문서/스킬 동기화"]
-  I16["skill-designer<br/>신규 스킬 설계·테스트"] -. 새 스킬 필요 시 .-> I0
+  I2 --> I3{"산출물<br/>유형"}
+  I3 -->|UI| I4["design-prototype-docs<br/>화면 설계 문서"] --> I5["create-prototype<br/>HTML/CSS 프로토타입"] --> I6["frontend-design<br/>UI 품질 기준"] --> I10
+  I3 -->|FE+BE| I7["impl-fe-be-doc<br/>화면/페어 Phase 지침"] --> I10
+  I3 -->|도구/백엔드| I8["impl-doc<br/>범용 단계별 구현 지침"] --> I10
+  I10["multi-review<br/>4관점 코드 리뷰"] --> I11["pre-commit<br/>커밋 전 규칙 검사"] --> I12["commit<br/>Conventional 한글 커밋"] --> I13["code-comment<br/>변경 파일 한글 주석"] --> I14["doc-audit<br/>코드↔문서 괴리 분석"] --> I15["agent-sync<br/>Agent 문서/스킬 동기화"]
+  I16["skill-designer<br/>신규 스킬 설계"] -. 새 스킬 필요 시 .-> I0
 ```
 
 #### 2-5-2. obra/superpowers
