@@ -7,7 +7,7 @@
 ```markdown
 # 구현 작업지침서: {프로젝트명}
 
-> 프로젝트 유형: {CLI / 라이브러리 / 서비스 / 스크립트 / 파이프라인 / AI Agent}
+> 프로젝트 유형: {CLI / 라이브러리 / 서비스 / 스크립트 / 파이프라인 / AI Agent / BE 단일 기능 / FE 단일 기능}
 > 설계 문서: {참조 파일명}
 > 작성일: {YYYY-MM-DD}
 > 기술 스택: {언어, 프레임워크}
@@ -98,6 +98,52 @@
 ---
 
 <!-- Phase N까지 반복 -->
+
+---
+
+## 작업 성격별 태스크 블록 예시
+
+<!-- 실제 산출 시 해당하는 블록만 사용. 모두 쓸 필요 없음. -->
+
+### BE 단일 기능 예시
+
+```markdown
+### [DB-01] · 사이트 모델 + 마이그레이션 (`migrations/001_sites.py`)
+**의존** : 없음
+SQLAlchemy 모델 + 인덱스 + 마이그레이션 스크립트.
+**검증 기준** : `alembic upgrade head` 성공 + 롤백 가능
+
+### [CORE-01] · 사이트 등록 도메인 규칙 (`domain/sites.py`)
+**의존** : DB-01
+이름 중복 검사, 유효 URL 검증.
+**검증 기준** : 단위 테스트 통과
+
+### [API-01] · POST /api/sites 라우터 (`api/routers/sites.py`)
+**의존** : CORE-01
+DTO + 권한 가드 + 도메인 호출 + 에러 매핑.
+**검증 기준** : curl happy/validation/권한 3케이스 통과
+```
+
+### FE 단일 기능 예시
+
+```markdown
+### [UI-01] · SearchResultCard 컴포넌트 (`components/SearchResultCard.tsx`)
+**의존** : 없음
+props: title, url, snippet. 빈/로딩/에러 상태 분기.
+**검증 기준** : 스토리북 4상태 렌더링 + a11y 통과
+
+### [STATE-01] · 검색 결과 훅 (`hooks/useSearchResults.ts`)
+**의존** : 없음
+react-query 기반 서버 상태 + 캐시 키 + 에러 변환.
+**검증 기준** : 훅 단위 테스트 (성공/에러/빈)
+
+### [UI-02] · 검색 결과 페이지 연동 (`pages/search.tsx`)
+**의존** : UI-01, STATE-01
+훅 호출 + 4상태 라우팅 + 키보드 탐색.
+**검증 기준** : E2E 인터랙션 + 반응형 + 접근성
+```
+
+---
 
 ## 태스크 의존 관계 요약
 
