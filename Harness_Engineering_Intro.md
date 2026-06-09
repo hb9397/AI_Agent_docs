@@ -163,8 +163,10 @@ Phase, 화면, 기능, 모듈 같은 단위로 끊는다.
 
 | 스킬              | 역할                                    | 언제 쓰는가                                |
 | ----------------- | --------------------------------------- | ------------------------------------------ |
-| `impl-fe-be-doc`  | FE/BE 페어 또는 화면 중심 Phase별 작업지침서 생성 | 웹앱처럼 FE/BE 또는 화면 단위 구현을 끝내야 할 때 |
-| `impl-doc`        | 범용 구현 지침 생성                     | CLI, 배치, 라이브러리, 자동화 도구 등일 때 |
+| `impl-fe-be-doc`  | FE/BE 페어 다중 기능 또는 RFP/SFR 기반 다중 화면 작업지침서 생성 | 풀스택 다중 기능이나 다중 화면 명세를 끝내야 할 때 |
+| `impl-doc`        | 단일·소규모 범용 구현 지침 생성        | BE 단일 기능, FE 단일 기능, CLI, 배치, 라이브러리, 자동화 도구 등일 때 |
+| `impl-reuse-scan` | Phase/태스크 시작 직전 공통 자산 발견·보고 | 중복 구현을 피하고 싶을 때 |
+| `impl-verify`     | 태스크·Phase 종료 시 검증 매트릭스 산출 | PASS/FAIL/SKIP 기준으로 다음 Phase 진입 전 점검할 때 |
 
 ### 4. 품질·운영 계열
 
@@ -205,8 +207,11 @@ flowchart LR
     G --> G1["harness-bootstrap"]
     G1 --> G2["design-doc / context-doc 재실행으로 보강"]
 
-    D --> D1["impl-fe-be-doc / impl-doc"]
-    D1 --> D2["frontend-design"]
+    D --> D1["impl-doc / impl-fe-be-doc<br/>계획"]
+    D1 --> D1a["impl-reuse-scan<br/>preflight"]
+    D1a --> D1b["실제 구현"]
+    D1b --> D1c["impl-verify<br/>검증·게이트"]
+    D1c --> D2["frontend-design"]
     D2 --> D3["multi-review"]
 
     E --> E1["pre-commit"]
@@ -268,9 +273,11 @@ flowchart TD
     B --> C["context-doc"]
     B --> D["design-prototype-docs"]
     D --> E["create-prototype"]
-    B --> F["impl-fe-be-doc / impl-doc"]
-    F --> G["실제 구현"]
-    G --> H["multi-review"]
+    B --> F["impl-doc / impl-fe-be-doc<br/>계획"]
+    F --> F1["impl-reuse-scan<br/>preflight"]
+    F1 --> G["실제 구현"]
+    G --> G1["impl-verify<br/>검증·게이트"]
+    G1 --> H["multi-review"]
     H --> I["doc-audit"]
     I --> J["pre-commit"]
     J --> K["commit"]
@@ -285,10 +292,12 @@ flowchart TD
     C --> D["design-doc"]
     C --> E["design-prototype-docs"]
     D --> F["context-doc"]
-    D --> G["impl-fe-be-doc / impl-doc"]
+    D --> G["impl-doc / impl-fe-be-doc<br/>계획"]
     E --> H["create-prototype"]
-    G --> I["실제 구현"]
-    I --> J["multi-review"]
+    G --> G1["impl-reuse-scan<br/>preflight"]
+    G1 --> I["실제 구현"]
+    I --> I1["impl-verify<br/>검증·게이트"]
+    I1 --> J["multi-review"]
     J --> K["doc-audit"]
     K --> L["pre-commit"]
     L --> M["commit"]
@@ -301,8 +310,10 @@ flowchart TD
 ```mermaid
 flowchart LR
     A["design-doc OUTPUT_V2"] --> B["context-doc"]
-    A --> C["impl-fe-be-doc"]
-    A --> D["impl-doc"]
+    A --> C["impl-doc / impl-fe-be-doc<br/>계획"]
+    C --> C1["impl-reuse-scan<br/>preflight"]
+    C1 --> C2["실제 구현"]
+    C2 --> C3["impl-verify<br/>검증·게이트"]
     A --> E["design-prototype-docs"]
 ```
 
@@ -329,12 +340,22 @@ flowchart LR
 /design-doc
 /context-doc
 /impl-fe-be-doc
+/impl-reuse-scan
+/impl-verify
 /multi-review
 /pre-commit
 /commit
 ```
 
 이 방식은 "지금 어떤 스킬을 쓸지 내가 이미 알고 있다"는 전제에서 가장 빠르다.
+
+```text
+/impl-fe-be-doc
+↓
+/impl-reuse-scan   ← Phase 시작 전 (선택)
+↓ 구현
+/impl-verify       ← Phase 종료 시
+```
 
 ### 방식 2. `@` 로 파일을 붙이고 구체적으로 요청
 
@@ -371,6 +392,8 @@ Phase 2의 FE-03 태스크만 구현해줘.
 다른 Phase나 공통 레이아웃은 건드리지 말 것.
 완료 후 검증 포인트도 함께 적어줘.
 ```
+
+Phase 시작 전 `/impl-reuse-scan`, Phase 종료 후 `/impl-verify`를 함께 쓰는 흐름을 권장합니다.
 
 이 방식이 좋은 이유는 AI에게 아래 네 가지를 동시에 주기 때문이다.
 
@@ -449,6 +472,8 @@ FE와 BE가 한 Phase 안에서 같이 검증 가능하도록 쪼개줘.
 API가 너무 많은 Phase는 쪼개줘.
 ```
 
+Phase 시작 전 `/impl-reuse-scan`, Phase 종료 후 `/impl-verify`를 함께 쓰는 흐름을 권장합니다.
+
 ### 예시 6. 커밋 전 품질 게이트
 
 ```text
@@ -464,6 +489,8 @@ API가 너무 많은 Phase는 쪼개줘.
 현재 변경 파일 기준으로 리뷰해줘.
 보안/성능/테스트 누락을 우선순위 높게 봐줘.
 ```
+
+Phase 시작 전 `/impl-reuse-scan`, Phase 종료 후 `/impl-verify`를 함께 쓰는 흐름을 권장합니다.
 
 ---
 
@@ -484,6 +511,8 @@ API가 너무 많은 Phase는 쪼개줘.
 Phase 1의 BE-02와 FE-02만 진행해줘.
 다른 Phase는 건드리지 말 것.
 ```
+
+Phase 시작 전 `/impl-reuse-scan`, Phase 종료 후 `/impl-verify`를 함께 쓰는 흐름을 권장합니다.
 
 ### 2. 참조 문서를 먼저 붙인다
 
@@ -548,6 +577,8 @@ flowchart LR
 - `context-doc`
 - `harness-bootstrap` (문서 없는 기존 코드베이스에 진입할 때)
 - `impl-fe-be-doc` 또는 `impl-doc`
+- `impl-reuse-scan`
+- `impl-verify`
 - `multi-review`
 - `pre-commit`
 

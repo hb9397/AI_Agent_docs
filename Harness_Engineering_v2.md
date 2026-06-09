@@ -24,7 +24,7 @@
 - `design-doc`는 `skills/design-doc/templates/INPUT_V2.md`, `OUTPUT_V2.md` 템플릿을 포함한다.
 - `rfp-ingest`는 `rfp-design-input-{SFR}.md` 형식의 중간 문서 생성을 정의한다.
 - 프로토타입 흐름은 `design-prototype-docs` → `create-prototype`으로 연결된다.
-- 구현 지침 계열 디렉토리는 `impl-fe-be-doc`, `impl-doc` 2개가 존재한다. 화면 중심 구현은 `impl-fe-be-doc`의 화면 중심 모드로 처리한다.
+- 구현 지침 계열 디렉토리는 `impl-fe-be-doc`, `impl-doc`, `impl-reuse-scan`, `impl-verify` 4개가 존재한다. 계획은 `impl-fe-be-doc`/`impl-doc`, 구현 직전 preflight는 `impl-reuse-scan`, Phase 종료 gate는 `impl-verify`가 맡는다.
 - 품질·운영 계열 디렉토리는 `multi-review`, `pre-commit`, `commit`, `code-comment`, `doc-audit`, `agent-sync`가 존재한다.
 
 ---
@@ -63,8 +63,10 @@ AI_Agent_docs/
 
 | 호출명 | 디렉토리 | 역할 | 중심 축 | 적합한 대상 |
 |--------|----------|------|---------|-------------|
-| `impl-fe-be-doc` | `skills/impl-fe-be-doc` | FE/BE 페어 또는 화면 중심 Phase 작업지침서 | 역할 분리 + 화면 1개 = 1 Phase | 일반 웹앱, FE/BE 병행 개발, RFP/SFR 화면 중심 구현 |
-| `impl-doc` | `skills/impl-doc` | 범용 단계별 구현 지침서 | 기능/모듈/파이프라인 | CLI, 자동화, 라이브러리, 백엔드 단독 |
+| `impl-fe-be-doc` | `skills/impl-fe-be-doc` | FE/BE 페어 다중 기능 또는 다중 화면 작업지침서 | 다중 화면·페어 다중 기능 | 풀스택 다중 기능, RFP/SFR 다중 화면 구현 |
+| `impl-doc` | `skills/impl-doc` | 단일·소규모 범용 작업지침서 | 기능/모듈/파이프라인 | API 1~수개, 단일 도메인 로직, 컴포넌트·훅·화면 1개 |
+| `impl-reuse-scan` | `skills/impl-reuse-scan` | 공통 자산 발견·보고 | 코드베이스 스캔 | Phase/태스크 시작 직전 중복 구현 방지 |
+| `impl-verify` | `skills/impl-verify` | 검증 자동 실행·게이트 | 작업지침서 검증 기준 추출 | Phase 종료 시 PASS/FAIL 판정 |
 
 #### D. 품질·운영 계열
 
@@ -98,17 +100,17 @@ AI_Agent_docs/
 | 스케일 | 예시 | 기본 권장 |
 |--------|------|-----------|
 | 프로젝트 전체 | 신규 서비스, 신규 서브시스템 | `design-doc` → `context-doc` → `impl-*` |
-| 화면 단위 | 대시보드, 설정 화면 | `design-doc` → `design-prototype-docs` 또는 `impl-fe-be-doc` 화면 중심 모드 |
-| 기능 단위 | 로그인, 예약 실행, 분석 실행 | `design-doc` → `impl-fe-be-doc` 또는 `impl-doc` |
-| 컴포넌트/로직 단위 | 훅, 파서, 재시도 로직 | `design-doc`만 쓰거나 바로 구현 |
+| 화면 단위 | 대시보드, 설정 화면 | 다중 화면 명세는 `design-doc` → `impl-fe-be-doc`, 화면 1개는 `impl-doc`도 가능 |
+| 기능 단위 | 로그인, 예약 실행, 분석 실행 | 페어 다중 기능은 `impl-fe-be-doc`, 단일·소규모 기능은 `impl-doc` |
+| 컴포넌트/로직 단위 | 훅, 파서, 재시도 로직 | `design-doc`만 쓰거나 `impl-doc` 후 구현 |
 
 ### 4-3. 구현 지침의 중심 축
 
 | 질문 | 선택할 스킬 |
 |------|-------------|
-| FE/BE를 한 Phase 안에서 같이 끝내야 하는가? | `impl-fe-be-doc` |
-| 화면별 컴포넌트/API/상태 명세가 중심인가? | `impl-fe-be-doc` 화면 중심 모드 |
-| 웹앱이 아니라 도구/스크립트/라이브러리인가? | `impl-doc` |
+| FE 화면 여러 개 + BE API 여러 개를 페어로 묶는 풀스택인가? | `impl-fe-be-doc` |
+| RFP/SFR/화면정의서 기반 다중 화면 명세인가? | `impl-fe-be-doc` |
+| 화면 1개·컴포넌트 단독·훅 단독·API 1~수개인가? | `impl-doc` |
 
 ---
 
@@ -129,13 +131,19 @@ AI_Agent_docs/
         │            └─→ /create-prototype
         │
         ▼
-구현 지침 2종 중 하나 선택
-  ├─ /impl-fe-be-doc
-  └─ /impl-doc
+impl 스킬 패밀리 4종 중 계획 스킬 선택
+  ├─ /impl-fe-be-doc  (다중 화면·페어 다중 기능 계획)
+  └─ /impl-doc        (단일·소규모 범용 계획)
+        │
+        ▼
+/impl-reuse-scan      (선택 preflight)
         │
         ▼
 실제 구현
   └─ UI 비중이 높으면 /frontend-design 기준 적용
+        │
+        ▼
+/impl-verify          (Phase 종료 gate)
         │
         ▼
 /multi-review + /doc-audit
@@ -180,12 +188,18 @@ rfp-design-input-{SFR}.md
         ├─ (권장) /context-doc
         ├─ (선택) /design-prototype-docs → /create-prototype
         ▼
-구현 지침 2종 중 하나 선택
-  ├─ /impl-fe-be-doc
-  └─ /impl-doc
+impl 스킬 패밀리 4종 중 계획 스킬 선택
+  ├─ /impl-fe-be-doc  (다중 화면·페어 다중 기능 계획)
+  └─ /impl-doc        (단일·소규모 범용 계획)
+        │
+        ▼
+/impl-reuse-scan      (선택 preflight)
         │
         ▼
 실제 구현
+        │
+        ▼
+/impl-verify          (Phase 종료 gate)
         │
         ▼
 /multi-review + /doc-audit
@@ -199,9 +213,9 @@ rfp-design-input-{SFR}.md
 - `rfp-ingest`는 **RFP 전체 일괄 처리용이 아니라 선택 SFR 분석용**이다.
 - `rfp-ingest` 산출물의 화면 후보는 확정안이 아니라 **후보**다. 확정은 `design-doc` 또는 `design-prototype-docs`에서 한다.
 - RFP 기반이라고 무조건 화면 분리형으로 만들 필요는 없다.
-  - 화면 중심이면 `impl-fe-be-doc`의 화면 중심 모드
-  - FE/BE 페어 Phase가 더 중요해도 `impl-fe-be-doc`
-  - 실제 구현 대상이 내부 도구/배치라면 `impl-doc`
+  - 다중 화면 명세면 `impl-fe-be-doc`
+  - FE/BE 페어 다중 기능이 더 중요해도 `impl-fe-be-doc`
+  - 단일 기능·단일 화면·내부 도구/배치라면 `impl-doc`
 
 ---
 
@@ -239,21 +253,21 @@ design-doc OUTPUT_V2 초안 + CLAUDE.md + AGENTS.md + .instruction/*-instruction
 
 ---
 
-## 7. 구현 지침 2종 선택 기준
+## 7. 구현 지침 4종 선택 기준
 
 | 항목 | `impl-fe-be-doc` | `impl-doc` |
 |------|------------------|------------|
-| 중심 축 | FE/BE 역할 또는 화면 | 기능/모듈 |
-| Phase 단위 | BE+FE 페어 기능 또는 화면 1개 | 입출력 파이프라인/모듈 |
+| 중심 축 | 다중 화면·페어 다중 기능 | 단일·소규모 기능/모듈 |
+| Phase 단위 | FE 화면 여러 개 + BE API 여러 개 또는 RFP/SFR 다중 화면 | API 1~수개, 화면 1개, 컴포넌트/훅/입출력 파이프라인 |
 | 태스크 ID | `INF-XX`, `BE-XX`, `FE-XX` | `INIT`, `CORE`, `IO`, `TEST`, `PKG` |
-| 적합 대상 | 일반 웹앱, FE/BE 담당 분리, RFP/SFR 화면 구현 | CLI, 스크립트, 서비스, 라이브러리 |
+| 적합 대상 | 풀스택 다중 기능, RFP/SFR/화면정의서 기반 다중 화면 구현 | CLI, 스크립트, 서비스, 라이브러리, BE 단일 기능, FE 단일 기능 |
 | 핵심 검증 | FE→API→DB 통합, 화면 렌더링, 상태, API, 인터랙션 | 실행 명령, 입출력, 테스트, 패키징 |
 
 ### 빠른 선택 규칙
 
-- "이 Phase가 끝나면 BE와 FE가 같이 살아 있어야 한다" → `impl-fe-be-doc`
-- "이 화면 하나를 완성 단위로 보고 싶다" → `impl-fe-be-doc` 화면 중심 모드
-- "이건 화면이 아니라 도구/백엔드/자동화다" → `impl-doc`
+- "FE 화면 여러 개와 BE API 여러 개를 페어로 묶어야 한다" → `impl-fe-be-doc`
+- "RFP/SFR/화면정의서 기반 다중 화면 명세다" → `impl-fe-be-doc`
+- "화면 1개·컴포넌트 단독·훅 단독·API 1~수개다" → `impl-doc`
 
 ---
 
@@ -275,8 +289,9 @@ design-doc OUTPUT_V2 초안 + CLAUDE.md + AGENTS.md + .instruction/*-instruction
   └─→ /design-doc
         └─→ OUTPUT_V2 설계 문서
                 ├─→ /context-doc
-                ├─→ /impl-fe-be-doc
-                ├─→ /impl-doc
+                ├─→ /impl-fe-be-doc 또는 /impl-doc (계획)
+                ├─→ /impl-reuse-scan (구현 직전 preflight)
+                ├─→ /impl-verify (Phase 종료 gate)
                 └─→ /design-prototype-docs
 
 기존 코드베이스 (문서 없음)
@@ -322,6 +337,8 @@ Agent 문서 / Skills 변경
 
 #### `impl-fe-be-doc`으로 넘어가는 매핑
 
+다중 화면·페어 다중 기능 작업은 `impl-fe-be-doc`으로 넘긴다. 단일 기능·단일 화면·컴포넌트/훅 단독·API 1~수개 작업은 `impl-doc`으로 넘길 수 있다.
+
 | `design-doc OUTPUT_V2` 섹션 | 사용처 |
 |-----------------------------|--------|
 | 01 개요, 02 동작 흐름 | Phase 분할 기준 |
@@ -330,6 +347,10 @@ Agent 문서 / Skills 변경
 | 05 데이터 설계 | BE/DB 태스크 |
 | 06 파일 구성 | `[NEW]` / `[MODIFY]` 범위 판단 |
 | 10 주의사항, 12 열린 결정 사항 | 전역 주의사항 / 미결 사항 |
+
+#### `impl-doc`으로 넘어가는 매핑
+
+단일·소규모 범용 작업, BE 단일 기능(엔드포인트 1~수개, 단일 도메인 로직), FE 단일 기능(컴포넌트/훅/화면 1개 신규·수정)은 `impl-doc`으로 넘길 수 있다.
 
 #### `impl-fe-be-doc` 화면 중심 모드로 넘어가는 매핑
 
@@ -511,6 +532,8 @@ Agent 문서 / Skills 변경
 | FE/BE Phase 순서를 정하고 싶다 | `impl-fe-be-doc` | 실제 구현 |
 | 화면별 명세가 필요하다 | `impl-fe-be-doc` 화면 중심 모드 | `frontend-design`, 실제 구현 |
 | 도구/스크립트 구현 계획이 필요하다 | `impl-doc` | 실제 구현 |
+| 구현 직전 중복 자산을 확인하고 싶다 | `impl-reuse-scan` | 실제 구현 |
+| Phase 종료 후 검증을 자동화하고 싶다 | `impl-verify` | 다음 Phase |
 | 코드와 문서가 어긋난 것 같다 | `doc-audit` | 승인 후 `agent-sync` |
 | 커밋 전 품질 점검이 필요하다 | `pre-commit` | `commit` |
 | 코드 리뷰가 필요하다 | `multi-review` | 수정 후 재검토 |
