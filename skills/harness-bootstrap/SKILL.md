@@ -66,6 +66,8 @@ agent: fork
 - 설계 변경 시 → `design-doc`로 OUTPUT 갱신 후 → `context-doc`로 하네스 갱신
 - 문서-코드 괴리 검증 → `doc-audit`
 - 구현 지침이 필요하면 → `impl-fe-be-doc` / `impl-doc`
+- 구현 직전 공통 자산 확인 → `impl-reuse-scan` (선택)
+- 단계/페이즈 종료 검증 → `impl-verify` (선택)
 
 ## 중간 산출물 재사용
 
