@@ -28,8 +28,8 @@ design-doc OUTPUT
     ├─→ context-doc      →  CLAUDE.md + AGENTS.md + .instruction/*-instruction.md
     ├─→ impl-fe-be-doc   →  FE/BE 페어 또는 화면 중심 작업지침서
     ├─→ impl-doc         →  범용 단계별 구현 지침서
-    ├─→ impl-reuse-scan  →  Phase/태스크 시작 직전 공통 자산 발견·보고
-    └─→ impl-verify      →  태스크·Phase 종료 시 검증 매트릭스
+    ├─→ impl-reuse-scan  →  Phase/태스크 시작 직전 공통 자산 발견·보고(자동 반영 금지)
+    └─→ impl-verify      →  태스크·Phase 종료 시 검증 매트릭스(코드/지침서 수정 금지)
 ```
 
 OUTPUT 문서를 저장했다면 해당 파일을 그대로 다음 스킬에 넘기면 된다.

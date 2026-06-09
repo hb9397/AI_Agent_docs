@@ -212,7 +212,7 @@ my-repo/
 | `impl-fe-be-doc` | FE/BE 페어 다중 기능 풀스택 또는 RFP/SFR 기반 다중 화면 명세에 특화된 작업 지침서(`INF/BE/FE-XX` 태스크)를 만든다 | superpowers `writing-plans` + `executing-plans`, gstack `/autoplan`·`/plan-eng-review` |
 | `impl-doc` | 단일·소규모 범용 작업 폴백이다. BE 단일 기능(엔드포인트 1~수개, 단일 도메인 로직), FE 단일 기능(컴포넌트/훅/화면 1개 신규·수정), CLI·자동화·라이브러리 작업지침서(`INIT/CORE/IO/TEST/PKG`)를 만든다 | superpowers `writing-plans` + `executing-plans` |
 | `impl-reuse-scan` | 작업지침서 산출 후 구현 직전, 공통 API/DTO/Entity/Component/Hook/Util 같은 기존 자산을 발견·보고하고 사용자 결정 게이트를 둔다. 코드/지침서는 자동 수정하지 않는다 | 외부 직접 대응 없음 — 선행 자산 검색 + 사용자 결정 게이트 |
-| `impl-verify` | 구현 후 또는 Phase 종료 시 작업지침서 검증 기준을 추출해 자동(CLI/curl/테스트) + 수동 체크리스트 기반 PASS/FAIL/SKIP 매트릭스를 만든다 | superpowers `verification-before-completion` / Claude Code `/code-review` 의 검증 layer |
+| `impl-verify` | 구현 후 또는 Phase 종료 시 작업지침서 검증 기준을 추출해 자동(CLI/curl/테스트) + 수동 체크리스트 기반 PASS/FAIL/SKIP 매트릭스를 만든다. 코드/지침서는 수정하지 않는다 | superpowers `verification-before-completion` / Claude Code `/code-review` 의 검증 layer |
 | `multi-review` | Security/Performance/Maintainability/Testing 4관점을 병렬로 돌려 코드 리뷰 결과를 모은다 | superpowers `requesting-code-review`, Claude Code `/code-review`, gstack `/review`·`/devex-review` |
 | `pre-commit` | 커밋 직전에 빈 catch·타임아웃 누락·민감정보·TODO 형식·테스트 부재 같은 규칙 위반을 검사한다 | superpowers `verification-before-completion`, Claude Code `verify` |
 | `commit` | Conventional Commits + 한글 description(50자 이내) + why 중심 body 규칙으로 커밋 메시지를 생성한다 | Claude Code 내장 commit 흐름 |

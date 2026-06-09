@@ -65,8 +65,8 @@ AI_Agent_docs/
 |--------|----------|------|---------|-------------|
 | `impl-fe-be-doc` | `skills/impl-fe-be-doc` | FE/BE 페어 다중 기능 또는 다중 화면 작업지침서 | 다중 화면·페어 다중 기능 | 풀스택 다중 기능, RFP/SFR 다중 화면 구현 |
 | `impl-doc` | `skills/impl-doc` | 단일·소규모 범용 작업지침서 | 기능/모듈/파이프라인 | API 1~수개, 단일 도메인 로직, 컴포넌트·훅·화면 1개 |
-| `impl-reuse-scan` | `skills/impl-reuse-scan` | 공통 자산 발견·보고 | 코드베이스 스캔 | Phase/태스크 시작 직전 중복 구현 방지 |
-| `impl-verify` | `skills/impl-verify` | 검증 자동 실행·게이트 | 작업지침서 검증 기준 추출 | Phase 종료 시 PASS/FAIL 판정 |
+| `impl-reuse-scan` | `skills/impl-reuse-scan` | 공통 자산 발견·보고(자동 수정 금지) | 코드베이스 스캔 | Phase/태스크 시작 직전 중복 구현 방지 |
+| `impl-verify` | `skills/impl-verify` | 검증 리포트 산출·게이트(코드/지침서 수정 금지) | 작업지침서 검증 기준 추출 | Phase 종료 시 PASS/FAIL 판정 |
 
 #### D. 품질·운영 계열
 
@@ -529,7 +529,7 @@ Agent 문서 / Skills 변경
 | RFP의 특정 SFR만 풀고 싶다 | `rfp-ingest` | `design-doc` 또는 `design-prototype-docs` |
 | 요구사항을 화면 설계 문서로 만들고 싶다 | `design-prototype-docs` | `create-prototype` |
 | 실제 HTML 목업이 필요하다 | `create-prototype` | `frontend-design` 참고 |
-| FE/BE Phase 순서를 정하고 싶다 | `impl-fe-be-doc` | 실제 구현 |
+| 다중 기능 Phase 순서를 정하고 싶다 | `impl-fe-be-doc` | 실제 구현 |
 | 화면별 명세가 필요하다 | `impl-fe-be-doc` 화면 중심 모드 | `frontend-design`, 실제 구현 |
 | 도구/스크립트 구현 계획이 필요하다 | `impl-doc` | 실제 구현 |
 | 구현 직전 중복 자산을 확인하고 싶다 | `impl-reuse-scan` | 실제 구현 |
@@ -555,7 +555,7 @@ Agent 문서 / Skills 변경
 
 - [ ] 화면/기능/로직 중 스케일을 먼저 정한다.
 - [ ] 기존 설계 문서에 붙일지, 새 설계를 만들지 결정한다.
-- [ ] 화면 중심 또는 FE/BE 페어면 `impl-fe-be-doc`, 범용이면 `impl-doc`.
+- [ ] 다중 화면·페어 다중 기능이면 `impl-fe-be-doc`, 단일·소규모 범용이면 `impl-doc`.
 - [ ] UI 감도가 중요하면 `frontend-design` 기준을 같이 적용한다.
 
 ### 구현 완료 직후
