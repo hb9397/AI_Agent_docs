@@ -165,8 +165,8 @@ design-doc → impl-doc / impl-fe-be-doc → 작업지침서
 
 | 입력 형태 | 처리 방식 |
 |----------|----------|
-| `impl-general-*.md` + Phase 번호 | 해당 Phase의 모든 태스크 일괄 스캔 |
-| `impl-workflow-*.md` + 태스크 ID | 해당 태스크 1건만 스캔 |
+| `impl-*.md` + Phase 번호 | 해당 Phase의 모든 태스크 일괄 스캔 |
+| `impl-*.md` + 태스크 ID | 해당 태스크 1건만 스캔 |
 | 자유 텍스트 ("사이트 등록 API 만들 건데") | 자유 텍스트에서 의도 추출 후 스캔 |
 
 ---
