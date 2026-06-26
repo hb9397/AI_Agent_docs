@@ -1,6 +1,6 @@
-# Harness Engineering Guide v2
+# Harness Engineering Guide
 
-> 2026-04-03 기준 현재 저장소의 스킬과 문서를 기준으로 정리한 AI Agent 하네스 운영 가이드.
+> 2026-06-26 기준 현재 저장소의 스킬과 문서를 기준으로 정리한 AI Agent 하네스 운영 가이드.
 > 아래 내용은 `skills/`, `example/`, `README.md`, 각 `SKILL.md`에 있는 정보를 기준으로 작성했다.
 
 ---
@@ -25,7 +25,7 @@
 - `rfp-ingest`는 `rfp-design-input-{SFR}.md` 형식의 중간 문서 생성을 정의한다.
 - 프로토타입 흐름은 `design-prototype-docs` → `create-prototype`으로 연결된다.
 - 구현 지침 계열 디렉토리는 `impl-fe-be-doc`, `impl-doc`, `impl-reuse-scan`, `impl-verify` 4개가 존재한다. 계획은 `impl-fe-be-doc`/`impl-doc`, 구현 직전 preflight는 `impl-reuse-scan`, Phase 종료 gate는 `impl-verify`가 맡는다.
-- 품질·운영 계열 디렉토리는 `multi-review`, `pre-commit`, `commit`, `code-comment`, `doc-audit`, `agent-sync`가 존재한다.
+- 품질·운영 계열 디렉토리는 `multi-review`, `pre-commit`, `commit`, `code-comment`, `doc-audit`, `agent-sync`, `git-scoped-account`가 존재한다.
 
 ---
 
@@ -36,7 +36,7 @@ AI_Agent_docs/
 ├── skills/         ← IDE 안의 Agent가 직접 호출하는 스킬과 템플릿의 단일 소스
 ├── example/        ← 산출물 예시
 ├── Harness_Engineering_Intro.md
-├── Harness_Engineering_v2.md
+├── Harness_Engineering.md
 └── README.md
 ```
 
@@ -78,6 +78,7 @@ AI_Agent_docs/
 | `code-comment` | `skills/code-comment` | 변경 파일 한글 주석 작성·갱신 | 승인 전 파일 미수정 원칙 |
 | `doc-audit` | `skills/doc-audit` | 코드와 Agent 문서 괴리 분석 | 제안만 먼저 출력, 승인 후 반영 |
 | `agent-sync` | `skills/agent-sync` | Agent 문서/Skills 동기화 | Agent 문서와 Skills를 분리 또는 병렬 동기화 |
+| `git-scoped-account` | `skills/git-scoped-account` | 디렉토리 스코프 git 계정 일괄 적용·확인 | 전역 `~/.gitconfig` 미변경 + `include.path`로 상위 트리 하위 repo에만 user.name/email 적용 |
 
 #### E. 메타 계열
 
@@ -351,6 +352,8 @@ Agent 문서 / Skills 변경
 #### `impl-doc`으로 넘어가는 매핑
 
 단일·소규모 범용 작업, BE 단일 기능(엔드포인트 1~수개, 단일 도메인 로직), FE 단일 기능(컴포넌트/훅/화면 1개 신규·수정)은 `impl-doc`으로 넘길 수 있다.
+
+> **impl 산출물 저장 규칙**: `impl-fe-be-doc`/`impl-doc` 모두 작업지침서를 `.docs/{사용자}/impl-{기능명}.md`에 저장한다. `{사용자}`는 git 계정을 우선 탐색해 정하고, 같은 경로면 갱신한다(예: `.docs/hb9397/impl-checkout-flow.md`). 파일명은 스킬별로 구분하지 않으며, 어떤 스킬로 만들었는지는 문서 머리말의 `생성 스킬:` 표기로만 구분한다. `impl-reuse-scan`/`impl-verify`는 이 경로의 지침서를 입력으로 참조한다.
 
 #### `impl-fe-be-doc` 화면 중심 모드로 넘어가는 매핑
 
