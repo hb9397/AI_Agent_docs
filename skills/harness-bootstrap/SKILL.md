@@ -5,7 +5,7 @@ description: >
   '하네스 부팅', '기존 코드 분석해서 문서 만들어줘', '레거시 프로젝트 문서화',
   'CLAUDE.md 없는데 생성', '설계 문서 역추출', 'AI 문서 부트스트랩',
   '기존 프로젝트에 하네스 도입' 요청이 오면 이 스킬을 사용한다.
-  기존 코드베이스 → design-doc OUTPUT_V2 형식 설계 문서 + context-doc 결과물(CLAUDE.md + AGENTS.md + .instruction/*) 자동 도출.
+  기존 코드베이스 → design-doc OUTPUT_V2 형식 설계 문서 + context-doc 결과물(CLAUDE.md + AGENTS.md + .docs/instruction/*) 자동 도출.
   프레임워크 자동 감지. 최소 인터뷰(2회 이하)로 코드에서 추출 불가능한 도메인 맥락만 보충.
 allowed-tools: Read, Glob, Grep, Bash, Write
 agent: fork
@@ -17,7 +17,7 @@ agent: fork
 코드를 직접 분석해서 다음 두 산출물을 한 번에 도출한다.
 
 1. **`design-doc` OUTPUT_V2 형식 설계 문서** (프로젝트 설계 스냅샷)
-2. **`context-doc` 결과물** — `CLAUDE.md` + 동일 내용의 `AGENTS.md` + `.instruction/*-instruction.md`
+2. **`context-doc` 결과물** — `CLAUDE.md` + 동일 내용의 `AGENTS.md` + `.docs/instruction/*-instruction.md`
 
 생성 전 반드시 사용자 확인을 거친다. 파일을 무단으로 생성하지 않는다.
 
@@ -56,10 +56,10 @@ agent: fork
         ├─ Step 1~4: 코드 스캔 + 최소 인터뷰
         │
         ├─ Step 5: design-doc OUTPUT_V2 산출
-        │            └── 저장: {project}/docs/DESIGN.md (또는 사용자 지정)
+        │            └── 저장: {project}/.docs/DESIGN.md (또는 사용자 지정)
         │
         └─ Step 6~7: context-doc 파이프라인 실행
-                     └── 저장: CLAUDE.md + AGENTS.md + .instruction/*-instruction.md
+                     └── 저장: CLAUDE.md + AGENTS.md + .docs/instruction/*-instruction.md
 ```
 
 이후 작업은 정규 플로우를 따른다.
@@ -71,8 +71,8 @@ agent: fork
 
 ## 중간 산출물 재사용
 
-- `docs/DESIGN.md`만 먼저 저장해도, 이후에는 저장소 재스캔 없이
-  `@docs/DESIGN.md /context-doc`로 정규 컨텍스트 생성 흐름을 다시 탈 수 있다.
+- `.docs/DESIGN.md`만 먼저 저장해도, 이후에는 저장소 재스캔 없이
+  `@.docs/DESIGN.md /context-doc`로 정규 컨텍스트 생성 흐름을 다시 탈 수 있다.
 - 한 번 부트스트랩이 끝난 프로젝트는 구조 변경 시 `harness-bootstrap`을 반복하기보다
   `design-doc` → `context-doc` 갱신을 기본 경로로 쓴다.
 
@@ -178,7 +178,7 @@ agent: fork
 
 > "위 설계 문서를 검토해 주세요.
 > 수정할 부분이 있으면 말씀해 주시고, 이상 없으면 바로 `context-doc` 단계까지 이어서 초안을 완성하겠습니다.
-> 저장 경로는 `docs/DESIGN.md` 로 하겠습니다. 변경 원하시면 알려주세요."
+> 저장 경로는 `.docs/DESIGN.md` 로 하겠습니다. 변경 원하시면 알려주세요."
 
 ---
 
@@ -189,7 +189,7 @@ Step 5 OUTPUT을 입력으로 삼아 `context-doc` 스킬의 워크플로우를 
 - `../context-doc/prompts/analysis-claude.md` 기준으로 CLAUDE.md / AGENTS.md 공통 본문 초안 작성
 - `../context-doc/prompts/analysis-instruction.md` 기준으로 주제별 instruction 파일 분류
 - `../context-doc/templates/CLAUDE.md.template` + 각 `*-instruction.md.template` 활용
-- 모노레포 감지 시 `.instruction/` 배치 질문 (context-doc의 Step 2와 동일)
+- 모노레포 감지 시 `.docs/instruction/` 배치 질문 (context-doc의 Step 2와 동일)
 
 이 단계에서는 **새로운 인터뷰를 추가하지 않는다**. Step 3 답변 + Step 5 OUTPUT으로 충분하다.
 또한 bootstrap 한계 때문에 아래 오버라이드를 적용한다.
@@ -205,16 +205,16 @@ Step 5 OUTPUT을 입력으로 삼아 `context-doc` 스킬의 워크플로우를 
 생성된 모든 파일 초안을 대화창에 순서대로 출력하고 승인을 요청한다.
 
 출력 순서:
-1. `docs/DESIGN.md` (또는 사용자 지정 경로)
+1. `.docs/DESIGN.md` (또는 사용자 지정 경로)
 2. `CLAUDE.md`
 3. `AGENTS.md` (`CLAUDE.md`와 동일 내용)
-4. `.instruction/architecture-instruction.md`
-5. `.instruction/code-style-instruction.md`
-6. `.instruction/framework-instruction.md`
-7. `.instruction/api-instruction.md`
-8. `.instruction/comm-instruction.md`
-9. `.instruction/file-convention-instruction.md`
-10. `.instruction/agent-instruction.md`
+4. `.docs/instruction/architecture-instruction.md`
+5. `.docs/instruction/code-style-instruction.md`
+6. `.docs/instruction/framework-instruction.md`
+7. `.docs/instruction/api-instruction.md`
+8. `.docs/instruction/comm-instruction.md`
+9. `.docs/instruction/file-convention-instruction.md`
+10. `.docs/instruction/agent-instruction.md`
 
 (단, 설계 문서에 해당 주제가 없으면 instruction 파일은 생성하지 않는다 — context-doc 원칙 그대로)
 
@@ -222,9 +222,9 @@ Step 5 OUTPUT을 입력으로 삼아 `context-doc` 스킬의 워크플로우를 
 > 이상 없으면 한꺼번에 저장하겠습니다. 수정 사항이 있으면 알려주세요."
 
 승인 시:
-- `.instruction/` 디렉토리가 없으면 생성
-- 설계 문서 저장 폴더(`docs/` 등)가 없으면 생성
+- `.docs/instruction/` 디렉토리가 없으면 생성
+- 설계 문서 저장 폴더(`.docs/` 등)가 없으면 생성
 - 모든 파일 일괄 저장
-- CLAUDE.md / AGENTS.md의 `@.instruction/*` 참조가 실제 파일과 1:1 일치하는지 검증
+- CLAUDE.md / AGENTS.md의 `@.docs/instruction/*` 참조가 실제 파일과 1:1 일치하는지 검증
 - AGENTS.md 본문이 CLAUDE.md와 동일한지 검증
 - 이미 존재하는 파일이 있으면 덮어쓰기 전에 사용자에게 알림

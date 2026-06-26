@@ -93,12 +93,12 @@
 
 | 주제 | 파일 |
 |------|------|
-| 아키텍처 제약 | @.instruction/architecture-instruction.md |
-| 코드 스타일 | @.instruction/code-style-instruction.md |
-| 프레임워크/라이브러리 사용 규칙 | @.instruction/framework-instruction.md |
-| API 설계 규약 | @.instruction/api-instruction.md |
-| 통신 프로토콜 규약 | @.instruction/comm-instruction.md |
-| 파일 생성 규칙 | @.instruction/file-convention-instruction.md |
-| AI Agent 동작 규칙 | @.instruction/agent-instruction.md |
+| 아키텍처 제약 | @.docs/instruction/architecture-instruction.md |
+| 코드 스타일 | @.docs/instruction/code-style-instruction.md |
+| 프레임워크/라이브러리 사용 규칙 | @.docs/instruction/framework-instruction.md |
+| API 설계 규약 | @.docs/instruction/api-instruction.md |
+| 통신 프로토콜 규약 | @.docs/instruction/comm-instruction.md |
+| 파일 생성 규칙 | @.docs/instruction/file-convention-instruction.md |
+| AI Agent 동작 규칙 | @.docs/instruction/agent-instruction.md |
 
 <!-- 설계 문서에 해당 주제가 없어서 생성하지 않은 파일은 이 표에서 제거한다. -->

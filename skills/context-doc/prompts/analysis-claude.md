@@ -42,7 +42,7 @@ CLAUDE.md와 AGENTS.md는 **동일한 내용의 얇은 프로젝트 팩트 + 지
 - 일반적인 코딩 규칙·금지 패턴은 instruction 파일로.
 
 ### 8. 지침 인덱스 (Instruction Index)
-Step 3-B에서 생성하기로 확정된 `.instruction/*-instruction.md` 파일 목록을
+Step 3-B에서 생성하기로 확정된 `.docs/instruction/*-instruction.md` 파일 목록을
 **표 형태 인덱스**로 삽입한다. 생성하지 않는 파일은 인덱스에 넣지 않는다.
 
 ---
