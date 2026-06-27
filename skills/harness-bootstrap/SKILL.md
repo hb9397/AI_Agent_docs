@@ -8,7 +8,6 @@ description: >
   기존 코드베이스 → design-doc OUTPUT_V2 형식 설계 문서 + context-doc 결과물(CLAUDE.md + AGENTS.md + .docs/instruction/*) 자동 도출.
   프레임워크 자동 감지. 최소 인터뷰(2회 이하)로 코드에서 추출 불가능한 도메인 맥락만 보충.
 allowed-tools: Read, Glob, Grep, Bash, Write
-agent: fork
 ---
 
 # 하네스 부트스트랩 (harness-bootstrap)
@@ -79,6 +78,35 @@ agent: fork
 ---
 
 ## 워크플로우
+
+### Step 0 — 플랫폼·실행 방식 확인 + 프로젝트 유형 확인
+
+#### Step 0-A — 플랫폼·실행 방식 확인
+
+사용자에게 아래를 확인한다:
+
+> 1. 서브에이전트(병렬 처리)를 사용할 수 있는 환경인가요? (Claude Code / Codex / 기타)
+> 2. 사용할 경우 병렬 실행을 원하시나요?
+
+서브에이전트 미지원 또는 미사용 선택 시 순차 실행한다.
+
+#### Step 0-B — 프로젝트 유형 확인 (C-1 게이트)
+
+부트스트랩 범위를 확정하기 위해 **반드시** 아래를 수행한다.
+
+1. 현재 수행 위치에서 프로젝트 구조를 탐색한다 (git repo 경계, 하위 앱 폴더 후보 스캔).
+2. **단일 애플리케이션 프로젝트**인지 **복수 애플리케이션 프로젝트**인지 판정한다.
+3. 판정 결과 + 적용 대상 애플리케이션(폴더)을 사용자에게 **반드시 재확인**한다.
+4. 확인된 범위 밖은 건드리지 않는다.
+
+> ✋ **확인 게이트**
+>
+> - 프로젝트 유형: **단일 / 복수** 애플리케이션
+> - 부트스트랩 대상 애플리케이션(폴더): `{폴더명}`
+>
+> 맞습니까? **(승인 / 수정 / 취소)**
+
+---
 
 ### Step 1 — 저장소 스캔 및 매니페스트 감지
 
@@ -205,16 +233,18 @@ Step 5 OUTPUT을 입력으로 삼아 `context-doc` 스킬의 워크플로우를 
 생성된 모든 파일 초안을 대화창에 순서대로 출력하고 승인을 요청한다.
 
 출력 순서:
+
+**단일 애플리케이션:**
 1. `.docs/DESIGN.md` (또는 사용자 지정 경로)
 2. `CLAUDE.md`
 3. `AGENTS.md` (`CLAUDE.md`와 동일 내용)
-4. `.docs/instruction/architecture-instruction.md`
-5. `.docs/instruction/code-style-instruction.md`
-6. `.docs/instruction/framework-instruction.md`
-7. `.docs/instruction/api-instruction.md`
-8. `.docs/instruction/comm-instruction.md`
-9. `.docs/instruction/file-convention-instruction.md`
-10. `.docs/instruction/agent-instruction.md`
+4. `.docs/instruction/*-instruction.md` (해당 주제만)
+
+**복수 애플리케이션:**
+1. `.docs/{앱}-DESIGN.md`
+2. `.docs/{앱}-context.md` (단일앱의 CLAUDE.md/AGENTS.md에 해당하는 내용)
+3. `.docs/{앱}/instruction/*-instruction.md` (해당 주제만)
+4. `.docs/root-context/CLAUDE.md`, `.docs/root-context/AGENTS.md` (루트 통합 인덱스 복사본)
 
 (단, 설계 문서에 해당 주제가 없으면 instruction 파일은 생성하지 않는다 — context-doc 원칙 그대로)
 

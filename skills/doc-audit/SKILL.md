@@ -2,7 +2,6 @@
 name: doc-audit
 description: "프로젝트 코드와 AI Agent 문서 간의 괴리 분석 및 업데이트 제안"
 allowed-tools: Read, Glob, Grep, Bash, Task
-agent: fork
 ---
 
 # 문서 감사 (doc-audit)
@@ -11,7 +10,9 @@ agent: fork
 
 ---
 
-## STEP 0 — 플랫폼 및 실행 방식 확인
+## STEP 0 — 플랫폼·실행 방식 확인 + 프로젝트 유형 확인
+
+#### STEP 0-A — 플랫폼·실행 방식 확인
 
 `prompts/parallel-setup.md`의 [플랫폼 확인] → [모델 목록 표시] → [실행 방식 선택] 절차를 따른다.
 
@@ -24,6 +25,19 @@ agent: fork
 | C | rulecheck-audit | 문서 규칙 위반 사례 분석 |
 
 순차 선택 시 Task A → B → C 순서로 직접 수행한다.
+
+#### STEP 0-B — 프로젝트 유형 확인 (C-1 게이트)
+
+감사 범위를 확정하기 위해 **반드시** 아래를 수행한다.
+
+1. 현재 수행 위치에서 프로젝트 구조를 탐색한다 (git repo 경계, 하위 앱 폴더 후보 스캔).
+2. **단일 애플리케이션 프로젝트**인지 **복수 애플리케이션 프로젝트**인지 판정한다.
+3. 판정 결과 + 감사 대상 애플리케이션(폴더)을 사용자에게 **반드시 재확인**한다.
+4. 확인된 범위 밖은 건드리지 않는다.
+
+복수 앱인 경우 분석 대상 문서 경로가 달라진다:
+- (단일앱) `.docs/instruction/**/*.md`, `CLAUDE.md`, `AGENTS.md`
+- (복수앱) `.docs/{앱}/instruction/**/*.md`, `.docs/root-context/CLAUDE.md`, `.docs/root-context/AGENTS.md`, 루트 `CLAUDE.md`/`AGENTS.md`
 
 ---
 
