@@ -84,7 +84,7 @@ AI_Agent_docs/
 
 | 호출명 | 디렉토리 | 역할 | 비고 |
 |--------|----------|------|------|
-| `skill-designer` | `skills/skill-design` | 새 스킬 설계·생성·테스트·트리거 최적화 | 디렉토리명은 `skill-design`, 실제 name은 `skill-designer` |
+| `custom-skill-design` | `skills/custom-skill-design` | 새 스킬 설계·생성·테스트·트리거 최적화 | |
 
 ## 4. 작업 시작 전에 먼저 정해야 할 3가지
 
@@ -428,7 +428,7 @@ Agent 문서 / Skills 변경
 | `doc-audit` | deps / pattern / rulecheck | 문서 괴리 분석 시간 단축 |
 | `agent-sync` | Docs / Skills | 범위가 넓을수록 효과적 |
 | `code-comment` | 파일별 | 변경 파일이 여러 개일 때만 |
-| `skill-designer` | 테스트/비교 루프 | Claude Code 환경일수록 효과적 |
+| `custom-skill-design` | 테스트/비교 루프 | Claude Code 환경일수록 효과적 |
 
 ### 병렬화하지 않는 편이 좋은 것
 
@@ -513,7 +513,7 @@ Agent 문서 / Skills 변경
 
 ### 12-5. 반복 작업은 스킬화 후보다
 
-같은 워크플로우를 세 번 이상 반복하면 `skill-designer` 후보로 본다.
+같은 워크플로우를 세 번 이상 반복하면 `custom-skill-design` 후보로 본다.
 
 - 반복 입력 형식이 고정돼 있고
 - 출력 형식이 어느 정도 표준화돼 있고
@@ -540,7 +540,7 @@ Agent 문서 / Skills 변경
 | 코드와 문서가 어긋난 것 같다 | `doc-audit` | 승인 후 `agent-sync` |
 | 커밋 전 품질 점검이 필요하다 | `pre-commit` | `commit` |
 | 코드 리뷰가 필요하다 | `multi-review` | 수정 후 재검토 |
-| 반복 작업을 스킬로 만들고 싶다 | `skill-designer` | eval 루프 |
+| 반복 작업을 스킬로 만들고 싶다 | `custom-skill-design` | eval 루프 |
 
 ---
 

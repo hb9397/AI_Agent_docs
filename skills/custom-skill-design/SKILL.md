@@ -1,5 +1,5 @@
 ---
-name: skill-designer
+name: custom-skill-design
 description: "사용자 인터뷰를 통해 AI Agent Skill을 설계·생성·테스트·고도화한다. '스킬 만들어줘', '스킬 설계', '스킬 개선', 'SKILL.md 작성', '워크플로우를 스킬로', '스킬 테스트', '스킬 트리거 최적화' 같은 표현이 나오면 반드시 이 스킬을 사용한다. 새 스킬 설계부터 기존 워크플로우 전환, eval 루프를 통한 품질 검증, description 트리거 최적화까지 스킬 생애주기 전체를 담당한다."
 allowed-tools: Read, Write, Glob, Grep, Bash
 ---
@@ -9,7 +9,7 @@ allowed-tools: Read, Write, Glob, Grep, Bash
 ```
 사용자 요청 (자연어 / 기존 워크플로우 / 기존 스킬 파일)
     ↓
-skill-designer  ← 지금 여기
+custom-skill-design  ← 지금 여기
     ↓
 생성된 스킬 디렉토리 (SKILL.md + prompts/ + templates/)
     ↓  ← eval 루프로 품질 검증
@@ -86,6 +86,8 @@ ls [경로]/prompts/ [경로]/templates/ 2>/dev/null
   (출력이 객관적으로 검증 가능하면 Yes 권장)
 - 병렬 처리 여부:
 - 연계 스킬:
+- 산출물/적용범위 → C-1 게이트 필요 여부: Yes / No
+  (파일 생성·코드 수정 등 프로젝트 구조에 의존하면 Yes)
 ```
 
 확인 게이트:
@@ -211,34 +213,48 @@ assertions 초안 작성 (실행 중 병행)
 
 ---
 
-## Step 7 — 최종 패키징 및 사용 안내
+## Step 7 — 정본 레포 동기화 확인 (CS-4)
+
+현재 작업 위치가 정본 레포(`AI_Agent_docs` 등) **밖**인 경우, 생성/수정한 스킬을 정본 레포에도 반영할지 사용자에게 확인한다.
+
+> "스킬이 정본 레포 밖에서 생성/수정되었습니다.
+> 정본 레포(`{정본경로}/skills/{skill-name}/`)에도 반영할까요? (승인 / 나중에 / 취소)"
+
+- 승인 시: 정본 레포의 `skills/{skill-name}/` 디렉토리에 복사·갱신한다.
+- 나중에 / 취소 시: 현재 위치에만 저장하고 안내한다.
+- 정본 레포 경로를 모르면 사용자에게 묻는다.
+
+현재 위치가 정본 레포 내부이면 이 Step을 건너뛴다.
+
+---
+
+## Step 8 — 최종 패키징 및 사용 안내 (CS-5)
 
 대화창에 출력:
 
 ```
 ## 완성된 스킬: {skill-name}
 
-📁 파일 구조:
+파일 구조:
 {skill-name}/
 ├── SKILL.md
 ├── prompts/
 ├── templates/
 └── evals/evals.json
 
-🚀 설치 방법:
-  Claude Code : ~/.claude/skills/ 에 복사 후 재시작
-  Cursor      : .cursor/skills/ 에 복사
-  터미널      : claude --skill ./{skill-name}/SKILL.md
+배포 방법:
+  1. (권장) 정본 레포의 skills/{skill-name}/ 에 저장한 뒤
+     harness-setup 스킬로 대상 프로젝트에 일괄 배포
+  2. (수동) 대상 프로젝트의 .claude/skills/ 및 .agents/skills/ 에 직접 복사
 
-📌 트리거 예시 문장:
+트리거 예시 문장:
   - "{trigger-1}"
   - "{trigger-2}"
   - "{trigger-3}"
 
-🔁 다음 단계 제안:
+다음 단계 제안:
   - 테스트 케이스 추가 및 재검증
   - Description 트리거 최적화 (Step 6)
   - 연계 스킬과의 통합 테스트
+  - harness-setup으로 프로젝트 일괄 배포
 ```
-
-> Claude Code 환경에서 `present_files` 도구가 가능하면 `.skill` 패키지 파일도 생성한다.

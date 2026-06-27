@@ -52,10 +52,20 @@ downstream-skill 입력으로 사용 가능
 name: skill-name                          # kebab-case
 description: "트리거 상황 명시 — 언제, 어떤 키워드에 호출되는지"
 allowed-tools: Read, Write, Glob, Grep, Bash   # 실제 사용하는 것만
-agent: fork                               # sub-agent 필요 시에만
 disable-model-invocation: true            # 재귀 호출 방지 필요 시에만
 ---
 ```
+
+### 헤더 금지 항목
+
+- **`model:` 필드 금지** — 모델 선택은 사용자·환경에 위임한다. frontmatter에 하드코딩하지 않는다.
+- **`agent: fork` 하드코딩 금지** — 서브에이전트/병렬 사용 여부는 STEP 0에서 사용자에게 질문하는 게이트로 처리한다. frontmatter로 강제하지 않는다.
+
+### 플랫폼 중립 원칙 (C-3)
+
+- frontmatter는 **Claude frontmatter 형식**을 유지한다 (name, description, allowed-tools).
+- 본문은 **Codex 등 타 플랫폼에서도 해석 가능한 중립 서술**로 작성한다.
+- Claude 전용 기능(sub-agent Task, present_files 등)은 STEP 0에서 "사용 여부 질문 게이트"로 분기한다.
 
 ### description 작성 기준
 
