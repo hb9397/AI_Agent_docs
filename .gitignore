@@ -1,5 +1,5 @@
 AI_Agent_완전가이드_202602.pptx
 
-.claude
-
-.agents
+# .claude/.agents 디렉토리는 형상관리 대상 (이 레포의 스킬 시드)
+# 단, 사용자 로컬 설정 파일은 제외
+.claude/settings.local.json
