@@ -77,6 +77,9 @@ for app in {앱1} {앱2} {앱3}; do
   # 앱별 컨텍스트 파일 (비어 있는 상태로 생성)
   touch ".docs/${app}-context.md"
 
+  # 앱별 설계 문서(context-base) 디렉토리 — design-doc 산출물 위치
+  mkdir -p ".docs/${app}/context-base"
+
   # 앱별 instruction 디렉토리
   mkdir -p ".docs/${app}/instruction"
 
@@ -180,10 +183,12 @@ cp AGENTS.md .docs/root-context/AGENTS.md
 │   │   └── AGENTS.md
 │   ├── {앱1}-context.md
 │   ├── {앱1}/
+│   │   ├── context-base/         ← design-doc 산출물 (DESIGN.md)
 │   │   ├── instruction/
 │   │   └── impl-doc/
 │   ├── {앱2}-context.md
 │   ├── {앱2}/
+│   │   ├── context-base/
 │   │   ├── instruction/
 │   │   └── impl-doc/
 │   └── prototype/

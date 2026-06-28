@@ -4,9 +4,9 @@
 
 | 파일 | 생성 스킬 | 대표 산출 경로 |
 |------|-----------|----------------|
-| [design-doc--ACRO.md](./design-doc--ACRO.md) | `design-doc` | `.docs/DESIGN.md` (단일 앱 전체 설계) |
-| [design-doc--ACRO-BE.md](./design-doc--ACRO-BE.md) | `design-doc` | `.docs/acro-be-DESIGN.md` (복수 앱 BE) |
-| [design-doc--ACRO-FE.md](./design-doc--ACRO-FE.md) | `design-doc` | `.docs/acro-fe-DESIGN.md` (복수 앱 FE) |
+| [design-doc--ACRO.md](./design-doc--ACRO.md) | `design-doc` | `.docs/context-base/DESIGN.md` (단일 앱 전체 설계) |
+| [design-doc--ACRO-BE.md](./design-doc--ACRO-BE.md) | `design-doc` | `.docs/acro-be/context-base/DESIGN.md` (복수 앱 BE) |
+| [design-doc--ACRO-FE.md](./design-doc--ACRO-FE.md) | `design-doc` | `.docs/acro-fe/context-base/DESIGN.md` (복수 앱 FE) |
 | [context-doc--CLAUDE.md](./context-doc--CLAUDE.md) | `context-doc` | 루트 `CLAUDE.md` |
 | [context-doc--AGENTS.md](./context-doc--AGENTS.md) | `context-doc` | 루트 `AGENTS.md` (CLAUDE.md와 동일 내용) |
 | [context-doc--architecture-instruction.md](./context-doc--architecture-instruction.md) | `context-doc` | `.docs/instruction/architecture-instruction.md` (7종 중 하나) |

@@ -169,6 +169,7 @@ Step 2 감지 결과에서 `.docs/{앱}-context.md`가 없는 새 앱 폴더가 
 
 ```bash
 touch ".docs/${new_app}-context.md"
+mkdir -p ".docs/${new_app}/context-base"
 mkdir -p ".docs/${new_app}/instruction"
 mkdir -p ".docs/${new_app}/impl-doc"
 ```

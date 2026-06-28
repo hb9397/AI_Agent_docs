@@ -34,7 +34,7 @@
 
 | 스킬 | 경로 |
 |------|------|
-| design-doc | `.docs/{앱}-DESIGN.md` |
+| design-doc | `.docs/{앱}/context-base/DESIGN.md` |
 | context-doc | `.docs/{앱}-context.md` + `.docs/{앱}/instruction/*-instruction.md` |
 | impl-doc / impl-fe-be-doc | `.docs/{앱}/impl-doc/{사용자}/{기능}.md` |
 | design-prototype-docs / create-prototype | `.docs/prototype/{사용자}/{id}/` |

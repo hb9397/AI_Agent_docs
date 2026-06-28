@@ -76,7 +76,7 @@ mkdir -p .docs
 >
 > | 스킬 | 경로 |
 > |------|------|
-> | design-doc | `.docs/DESIGN.md` |
+> | design-doc | `.docs/context-base/DESIGN.md` |
 > | context-doc | `.docs/instruction/*-instruction.md` |
 > | impl-doc / impl-fe-be-doc | `.docs/impl-doc/{사용자}/{기능}.md` |
 > | design-prototype-docs / create-prototype | `.docs/prototype/{사용자}/{id}/` |

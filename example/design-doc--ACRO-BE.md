@@ -1,6 +1,6 @@
 <!-- 산출물 예시 메타 -->
 > 📂 **산출물 예시 — `design-doc` 스킬 (복수 앱)**  
-> 산출 경로: `.docs/acro-be-DESIGN.md`  
+> 산출 경로: `.docs/acro-be/context-base/DESIGN.md`  
 > 복수 애플리케이션 프로젝트에서 BE 앱 단위로 분리 생성한 design-doc OUTPUT 예시입니다. (FE 짝: `design-doc--ACRO-FE.md`)
 
 ---

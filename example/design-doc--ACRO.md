@@ -1,6 +1,6 @@
 <!-- 산출물 예시 메타 -->
 > 📂 **산출물 예시 — `design-doc` 스킬**  
-> 산출 경로: `.docs/DESIGN.md` (단일 앱) · 복수 앱이면 `.docs/{앱}-DESIGN.md`  
+> 산출 경로: `.docs/context-base/DESIGN.md` (단일 앱) · 복수 앱이면 `.docs/{앱}/context-base/DESIGN.md`  
 > 인터뷰 기반 설계가 끝난 뒤 생성되는 design-doc OUTPUT 문서의 형식 예시입니다. 단일 앱 전체(프로젝트 스케일) 설계 사례.
 
 ---

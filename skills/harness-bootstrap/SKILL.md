@@ -57,7 +57,7 @@ allowed-tools: Read, Glob, Grep, Bash, Write
         ├─ Step 1~4: 코드 스캔 + 최소 인터뷰
         │
         ├─ Step 5: design-doc OUTPUT_V2 산출
-        │            └── 저장: {project}/.docs/DESIGN.md (또는 사용자 지정)
+        │            └── 저장: {project}/.docs/context-base/DESIGN.md (또는 사용자 지정)
         │
         └─ Step 6~7: context-doc 파이프라인 실행
                      └── 저장: CLAUDE.md + AGENTS.md + .docs/instruction/*-instruction.md
@@ -72,8 +72,8 @@ allowed-tools: Read, Glob, Grep, Bash, Write
 
 ## 중간 산출물 재사용
 
-- `.docs/DESIGN.md`만 먼저 저장해도, 이후에는 저장소 재스캔 없이
-  `@.docs/DESIGN.md /context-doc`로 정규 컨텍스트 생성 흐름을 다시 탈 수 있다.
+- `.docs/context-base/DESIGN.md`만 먼저 저장해도, 이후에는 저장소 재스캔 없이
+  `@.docs/context-base/DESIGN.md /context-doc`로 정규 컨텍스트 생성 흐름을 다시 탈 수 있다.
 - 한 번 부트스트랩이 끝난 프로젝트는 구조 변경 시 `harness-bootstrap`을 반복하기보다
   `design-doc` → `context-doc` 갱신을 기본 경로로 쓴다.
 
@@ -208,7 +208,7 @@ allowed-tools: Read, Glob, Grep, Bash, Write
 
 > "위 설계 문서를 검토해 주세요.
 > 수정할 부분이 있으면 말씀해 주시고, 이상 없으면 바로 `context-doc` 단계까지 이어서 초안을 완성하겠습니다.
-> 저장 경로는 `.docs/DESIGN.md` 로 하겠습니다. 변경 원하시면 알려주세요."
+> 저장 경로는 `.docs/context-base/DESIGN.md` 로 하겠습니다. 변경 원하시면 알려주세요."
 
 ---
 
@@ -237,13 +237,13 @@ Step 5 OUTPUT을 입력으로 삼아 `context-doc` 스킬의 워크플로우를 
 출력 순서:
 
 **단일 애플리케이션:**
-1. `.docs/DESIGN.md` (또는 사용자 지정 경로)
+1. `.docs/context-base/DESIGN.md` (또는 사용자 지정 경로)
 2. `CLAUDE.md`
 3. `AGENTS.md` (`CLAUDE.md`와 동일 내용)
 4. `.docs/instruction/*-instruction.md` (해당 주제만)
 
 **복수 애플리케이션:**
-1. `.docs/{앱}-DESIGN.md`
+1. `.docs/{앱}/context-base/DESIGN.md`
 2. `.docs/{앱}-context.md` (단일앱의 CLAUDE.md/AGENTS.md에 해당하는 내용)
 3. `.docs/{앱}/instruction/*-instruction.md` (해당 주제만)
 4. `.docs/root-context/CLAUDE.md`, `.docs/root-context/AGENTS.md` (루트 통합 인덱스 복사본)
@@ -257,15 +257,16 @@ Step 5 OUTPUT을 입력으로 삼아 `context-doc` 스킬의 워크플로우를 
 
 **단일 애플리케이션:**
 - `.docs/instruction/` 디렉토리가 없으면 생성
-- 설계 문서 저장 폴더(`.docs/` 등)가 없으면 생성
+- 설계 문서 저장 폴더(`.docs/context-base/`)가 없으면 생성
 - 모든 파일 일괄 저장
 - `CLAUDE.md` / `AGENTS.md`의 `@.docs/instruction/*` 참조가 실제 파일과 1:1 일치하는지 검증
 - `AGENTS.md` 본문이 `CLAUDE.md`와 동일한지 검증
 
 **복수 애플리케이션:**
 - `.docs/{앱}/instruction/` 디렉토리가 없으면 생성
+- `.docs/{앱}/context-base/` 디렉토리가 없으면 생성
 - `.docs/root-context/` 디렉토리가 없으면 생성
-- 설계 문서: `.docs/{앱}-DESIGN.md` 저장
+- 설계 문서: `.docs/{앱}/context-base/DESIGN.md` 저장
 - 컨텍스트 문서: `.docs/{앱}-context.md` 저장
 - instruction: `.docs/{앱}/instruction/*-instruction.md` 저장
 - 루트 통합: `.docs/root-context/CLAUDE.md`, `.docs/root-context/AGENTS.md` 저장

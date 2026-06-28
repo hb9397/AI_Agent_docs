@@ -32,7 +32,7 @@ allowed-tools: Read, Glob, Grep, Bash, Write, Task
 1. 현재 수행 위치에서 프로젝트 구조를 탐색한다 (git repo 경계, 하위 앱 폴더 후보 스캔).
 2. **단일 애플리케이션 프로젝트**인지 **복수 애플리케이션 프로젝트**인지 판정한다.
 3. 판정 결과 + 적용 대상 애플리케이션(폴더)을 사용자에게 **반드시 재확인**한다.
-4. DESIGN.md 또는 `{앱}-DESIGN.md` 위치를 확인하여 참조 설정을 명시한다.
+4. 설계 문서(`.docs/context-base/DESIGN.md` 또는 `.docs/{앱}/context-base/DESIGN.md`) 위치를 확인하여 참조 설정을 명시한다.
 5. 확인된 범위 밖은 건드리지 않는다.
 
 > ✋ **확인 게이트**

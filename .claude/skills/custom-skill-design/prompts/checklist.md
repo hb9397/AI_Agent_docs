@@ -30,8 +30,8 @@
     → Claude 전용 기능은 질문 게이트로 분기
 [ ] 규칙이 스킬 내부에 인라인되어 있는가? (다른 스킬 간 참조 금지)
 [ ] 산출물 경로가 C-2 표준을 따르는가? (해당 시)
-    → 스킬 유형별 실제 경로가 다름 (예: design-doc → .docs/DESIGN.md, context-doc → 루트 CLAUDE.md + .docs/instruction/, impl-doc → .docs/impl-doc/{사용자}/{기능명}.md)
-    → 복수앱은 .docs/{앱}-*, .docs/{앱}/, .docs/root-context/ 등으로 추가 분기
+    → 스킬 유형별 실제 경로가 다름 (예: design-doc → .docs/context-base/DESIGN.md, context-doc → 루트 CLAUDE.md + .docs/instruction/, impl-doc → .docs/impl-doc/{사용자}/{기능명}.md)
+    → 복수앱은 .docs/{앱}/context-base/DESIGN.md, .docs/{앱}-context.md, .docs/{앱}/, .docs/root-context/ 등으로 추가 분기
     → 리팩토링 작업 계획서.md §3-2 C-2 경로 표준 표를 참조할 것
 [ ] C-1 확인 단계 필요 스킬이면 STEP 0에 프로젝트 유형 감지 + 사용자 확인이 있는가?
 ```

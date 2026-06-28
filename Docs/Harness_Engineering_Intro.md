@@ -119,6 +119,7 @@ flowchart LR
 
 AI가 바로 코드부터 쓰게 하지 않는다.  
 먼저 무엇을 만들고 왜 그렇게 만드는지 문서로 정리한다.
+설계 문서는 단일 앱에서는 `.docs/context-base/DESIGN.md`, 복수 앱에서는 `.docs/{앱}/context-base/DESIGN.md`에 저장한다.
 
 ### 2. 에이전트가 읽을 고정 맥락을 만든다
 
