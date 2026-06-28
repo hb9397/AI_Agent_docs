@@ -116,6 +116,36 @@ Remove-Item -Recurse -Force ".agents\skills\$skill"
 
 ---
 
+## 4-1. `.docs/` 안내·정책 파일 갱신
+
+`.docs/`가 존재하면(단일·복수 공통) 아래 안내·정책 파일을 최신 템플릿으로 맞춘다.
+README/.gitignore는 harness-setup이 단독 관리하므로 **덮어써도 안전**하고, `_inbox/` 내용은 **절대 건드리지 않는다**.
+
+| 파일 | 단일 앱 템플릿 | 복수 앱 템플릿 | 처리 |
+|------|----------------|----------------|------|
+| `.docs/README.md` | `docs-readme-single.template` | `docs-readme-multi.template` | 덮어쓰기 |
+| `.docs/.gitignore` | `docs-gitignore.template` | (동일) | 덮어쓰기 |
+| `.docs/_inbox/` | — | — | 없으면 생성(`.gitkeep`+README), 내용 보존 |
+
+```bash
+# 프로젝트 유형(Step 2)에 따라 README 템플릿 선택
+README_TPL="docs-readme-single.template"   # 복수 앱이면 docs-readme-multi.template
+
+cp "$HARNESS_SRC/skills/harness-setup/templates/$README_TPL" .docs/README.md
+cp "$HARNESS_SRC/skills/harness-setup/templates/docs-gitignore.template" .docs/.gitignore
+
+# _inbox는 없을 때만 생성 (기존 로컬 파일 보존)
+if [ ! -d .docs/_inbox ]; then
+  mkdir -p .docs/_inbox
+  : > .docs/_inbox/.gitkeep
+  cp "$HARNESS_SRC/skills/harness-setup/templates/inbox-readme.template" .docs/_inbox/README.md
+fi
+```
+
+> `.docs/`가 아직 없으면 이 단계는 건너뛴다 (다른 경로로 세팅이 진행 중일 수 있음).
+
+---
+
 ## 5. 복수 애플리케이션 추가 갱신
 
 프로젝트가 **복수 애플리케이션**인 경우에만 수행.
@@ -155,6 +185,7 @@ mkdir -p ".docs/${new_app}/impl-doc"
 ## 갱신 결과
 
 - 스킬: 추가 N개 / 수정 N개 / 삭제 N개 / 변경 없음 N개
+- `.docs/` 안내·정책: README/.gitignore 갱신됨 / `_inbox/` 유지(또는 신규 생성)
 - (복수앱) 루트 컨텍스트: 갱신됨 / 변경 없음
 - (복수앱) 신규 앱 감지: {앱명} (구조 추가됨)
 ```

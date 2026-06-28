@@ -83,6 +83,35 @@ mkdir -p .docs
 
 ---
 
+## 4-1. `.docs/` 안내·정책 파일 생성
+
+`.docs/`를 처음 만들 때 아래 3종을 함께 생성한다. 이미 있으면 README/.gitignore는 최신 템플릿으로 덮어쓰고, `_inbox/` 내용은 보존한다.
+
+| 파일 | 원본 템플릿 | 역할 |
+|------|------------|------|
+| `.docs/README.md` | `templates/docs-readme-single.template` | `.docs/` 구조·산출물 종류·스킬별 산출 위치 안내 |
+| `.docs/.gitignore` | `templates/docs-gitignore.template` | 로컬 전용(미추적) 영역 지정 |
+| `.docs/_inbox/README.md` | `templates/inbox-readme.template` | `_inbox/` 용도 설명 |
+
+```bash
+# 안내 README (구조·산출물·스킬 매핑)
+cp "$HARNESS_SRC/skills/harness-setup/templates/docs-readme-single.template" .docs/README.md
+
+# 로컬 전용 영역 지정 .gitignore
+cp "$HARNESS_SRC/skills/harness-setup/templates/docs-gitignore.template" .docs/.gitignore
+
+# 에이전트 임시 입력 공간 _inbox (대표적 로컬 전용 영역)
+mkdir -p .docs/_inbox
+: > .docs/_inbox/.gitkeep
+cp "$HARNESS_SRC/skills/harness-setup/templates/inbox-readme.template" .docs/_inbox/README.md
+```
+
+> **`_inbox/`의 의미**: 에이전트에게 읽힐 파일(스크린샷·로그·표 등)을 잠시 올려두는 공간이다.
+> `.docs/.gitignore`가 `/_inbox/*`를 무시하므로 그 안의 파일은 git에 올라가지 않고, `.gitkeep`·`README.md`만 추적되어 폴더 구조만 공유된다.
+> 단일 앱에서는 `.docs/`가 소스 레포에 포함되므로, 이 `.gitignore`가 해당 레포의 중첩 `.gitignore`로 동작한다.
+
+---
+
 ## 5. 결과 정리
 
 생성된 구조를 출력용으로 정리한다:
@@ -100,6 +129,9 @@ mkdir -p .docs
 │   └── skills/
 │       └── (동일 구조)
 ├── .docs/                  ← 산출물 저장소
+│   ├── README.md           ← harness-setup 생성 (구조·산출물 안내)
+│   ├── .gitignore          ← harness-setup 생성 (로컬 전용 영역 지정)
+│   └── _inbox/             ← 에이전트 임시 입력 공간 (내용 git 미추적)
 ├── CLAUDE.md               ← context-doc이 생성/관리
 ├── AGENTS.md               ← context-doc이 생성/관리
 └── (기존 소스코드)

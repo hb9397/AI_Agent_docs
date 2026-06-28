@@ -111,7 +111,8 @@ Step 2 확인 결과에 따라 분기한다.
 핵심 작업:
 1. 애플리케이션 루트에 `.claude/skills/`, `.agents/skills/` 생성 (이미 있으면 무시)
 2. 원본 하네스 레포의 `skills/` 전체를 위 두 경로에 복사
-3. 멀티플랫폼(Claude Code, Codex 등) 고려 이유 안내
+3. `.docs/` 안내·정책 파일 생성: `.docs/README.md`(구조·산출물 안내), `.docs/.gitignore`(로컬 전용 영역 지정), `.docs/_inbox/`(에이전트 임시 입력 공간, 내용 git 미추적)
+4. 멀티플랫폼(Claude Code, Codex 등) 고려 이유 안내
 
 ### Step 4-B — 복수 애플리케이션 세팅
 
@@ -126,6 +127,7 @@ Step 2 확인 결과에 따라 분기한다.
 6. `.docs/root-context/` 생성 (루트 컨텍스트 파일 복사본 보관용)
 7. 루트 `CLAUDE.md`, `AGENTS.md` 생성 (git 미관리, 이 스킬이 단독 관리)
 8. `.docs/root-context/CLAUDE.md`, `.docs/root-context/AGENTS.md` 에 동일 복사본 생성
+9. `.docs/` 안내·정책 파일 생성: `.docs/README.md`(구조·산출물 안내), `.docs/.gitignore`(로컬 전용 영역 지정), `.docs/_inbox/`(에이전트 임시 입력 공간, 내용 git 미추적)
 
 루트 `CLAUDE.md`/`AGENTS.md` 작성 시 `templates/root-context.template` 참조.
 
@@ -140,7 +142,11 @@ Step 2 확인 결과에 따라 분기한다.
 > {프로젝트 루트}/
 > ├── .claude/skills/...
 > ├── .agents/skills/...
-> ├── .docs/...
+> ├── .docs/
+> │   ├── README.md           ← 구조·산출물 안내
+> │   ├── .gitignore          ← 로컬 전용 영역 지정
+> │   ├── _inbox/             ← 에이전트 임시 입력 공간 (내용 git 미추적)
+> │   └── ...
 > ├── CLAUDE.md
 > └── AGENTS.md
 > ```
@@ -186,9 +192,10 @@ Step 2 확인 결과에 따라 분기한다.
 보고 항목:
 1. 프로젝트 유형 (단일/복수)
 2. 프로젝트 루트 경로
-3. 생성·갱신된 파일 목록
+3. 생성·갱신된 파일 목록 (`.docs/README.md`, `.docs/.gitignore`, `.docs/_inbox/` 포함)
 4. (복수앱) 감지된 애플리케이션 폴더 목록
-5. 다음 단계 안내
+5. `.docs/_inbox/`는 에이전트에게 읽힐 파일을 잠시 올려두는 로컬 전용 공간이며 내용은 git에 올라가지 않는다는 안내
+6. 다음 단계 안내
 
 > **다음 단계:**
 > - 설계 시작: `/design-doc`

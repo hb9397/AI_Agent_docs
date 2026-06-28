@@ -52,7 +52,7 @@ ai-agent-harness-docs/
 
 | 호출명 | 디렉토리 | 역할 | 대표 입력 | 대표 산출물 |
 |--------|----------|------|-----------|-------------|
-| `harness-setup` | `skills/harness-setup` | 원본 하네스 저장소 → 프로젝트 설치·갱신 | 원본 하네스 저장소 경로, 대상 프로젝트 | `.claude/skills/`, `.agents/skills/`, `.docs/`, 루트 컨텍스트 파일 |
+| `harness-setup` | `skills/harness-setup` | 원본 하네스 저장소 → 프로젝트 설치·갱신 | 원본 하네스 저장소 경로, 대상 프로젝트 | `.claude/skills/`, `.agents/skills/`, `.docs/`(+ `README.md`·`.gitignore`·`_inbox/`), 루트 컨텍스트 파일 |
 | `rfp-ingest` | `skills/rfp-ingest` | RFP에서 지정 SFR 추출·해석·화면 후보 매핑 | `@RFP PDF`, `SFR-019` 등 | 대화 컨텍스트 (파일 생성 없음) |
 | `design-doc` | `skills/design-doc` | 인터뷰 기반 설계 문서 도출 | 아이디어, 기존 문서, rfp-ingest 해석 결과 | `.docs/DESIGN.md` (단일앱) / `.docs/{앱}-DESIGN.md` (복수앱) |
 | `context-doc` | `skills/context-doc` | 에이전트용 컨텍스트 문서 생성 (주제별 분할) | `design-doc` 결과물 | `CLAUDE.md` + `AGENTS.md` + `.docs/instruction/*-instruction.md` |
@@ -103,6 +103,11 @@ ai-agent-harness-docs/
 |------|------|---------------------|
 | **단일 앱** | 하나의 git repo = 앱 + 하네스 산출물 | `.docs/DESIGN.md`, `.docs/impl-doc/{사용자}/{기능}.md` |
 | **복수 앱** | 프로젝트 상위 폴더 (git init 없음) 아래에 `.docs/`, 각 앱, 원본 하네스 저장소가 독립 git | `.docs/{앱}-DESIGN.md`, `.docs/{앱}/impl-doc/{사용자}/{기능}.md` |
+
+> `harness-setup`은 `.docs/`를 만들 때 안내·정책 파일도 함께 생성한다:
+> - `.docs/README.md` — `.docs/` 구조와 "어떤 스킬이 무엇을 어디에 만드는지" 매핑.
+> - `.docs/.gitignore` — 로컬 전용(미추적) 영역 지정. 단일 앱에선 소스 레포의 중첩 `.gitignore`, 복수 앱에선 `.docs` 레포의 루트 `.gitignore`로 동작.
+> - `.docs/_inbox/` — 에이전트에게 읽힐 파일을 잠시 올려두는 **로컬 전용** 공간. 내용은 git에 올라가지 않고 `.gitkeep`·`README.md`만 추적되어 폴더 구조만 공유된다.
 
 ### 4-2. 작업 스케일
 

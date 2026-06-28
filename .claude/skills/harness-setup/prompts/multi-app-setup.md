@@ -91,7 +91,34 @@ done
 mkdir -p .docs/prototype
 ```
 
-### 4-4. `.docs/` git 초기화 안내
+### 4-4. `.docs/` 안내·정책 파일 생성
+
+`.docs/`를 처음 만들 때 아래 3종을 함께 생성한다. 갱신 시 README/.gitignore는 최신 템플릿으로 덮어쓰고, `_inbox/` 내용은 보존한다.
+
+| 파일 | 원본 템플릿 | 역할 |
+|------|------------|------|
+| `.docs/README.md` | `templates/docs-readme-multi.template` | `.docs/` 구조·산출물 종류·스킬별 산출 위치 안내 |
+| `.docs/.gitignore` | `templates/docs-gitignore.template` | 로컬 전용(미추적) 영역 지정 |
+| `.docs/_inbox/README.md` | `templates/inbox-readme.template` | `_inbox/` 용도 설명 |
+
+```bash
+# 안내 README (구조·산출물·스킬 매핑)
+cp "$HARNESS_SRC/skills/harness-setup/templates/docs-readme-multi.template" .docs/README.md
+
+# 로컬 전용 영역 지정 .gitignore (.docs 레포 루트 .gitignore로 동작)
+cp "$HARNESS_SRC/skills/harness-setup/templates/docs-gitignore.template" .docs/.gitignore
+
+# 에이전트 임시 입력 공간 _inbox (대표적 로컬 전용 영역)
+mkdir -p .docs/_inbox
+: > .docs/_inbox/.gitkeep
+cp "$HARNESS_SRC/skills/harness-setup/templates/inbox-readme.template" .docs/_inbox/README.md
+```
+
+> **`_inbox/`의 의미**: 에이전트에게 읽힐 파일(스크린샷·로그·표 등)을 잠시 올려두는 공간이다.
+> `.docs/.gitignore`가 `/_inbox/*`를 무시하므로 그 안의 파일은 git에 올라가지 않고, `.gitkeep`·`README.md`만 추적되어 폴더 구조만 공유된다.
+> 복수 앱에서는 `.docs/`가 독립 git 레포이므로, 이 `.gitignore`가 그 레포의 루트 `.gitignore`다.
+
+### 4-5. `.docs/` git 초기화 안내
 
 `.docs/`는 별도 git 레포로 관리한다 (초기 단계에서는 remote 연결 전일 수 있음).
 생성 후 아래를 안내한다:
@@ -145,6 +172,9 @@ cp AGENTS.md .docs/root-context/AGENTS.md
 ├── .claude/skills/...           ← git 미소속
 ├── .agents/skills/...           ← git 미소속
 ├── .docs/                       ← 별도 git 레포 (팀 공유용)
+│   ├── README.md               ← harness-setup 생성 (구조·산출물 안내)
+│   ├── .gitignore              ← harness-setup 생성 (로컬 전용 영역 지정)
+│   ├── _inbox/                 ← 에이전트 임시 입력 공간 (내용 git 미추적)
 │   ├── root-context/
 │   │   ├── CLAUDE.md            ← 루트 컨텍스트 복사본 (원본 역할)
 │   │   └── AGENTS.md
