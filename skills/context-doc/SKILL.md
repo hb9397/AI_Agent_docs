@@ -7,7 +7,7 @@ description: >
   '에이전트 가이드 만들어줘' 요청이 오면 반드시 이 스킬을 쓴다.
   설계 문서 → 얇은 CLAUDE.md와 동일 내용의 AGENTS.md(프로젝트 팩트 + 인덱스) + 주제별 .docs/instruction/*-instruction.md 자동 생성.
   프레임워크 종속성이 없으며, 설계 문서에 등장한 주제만 분할 파일로 생성한다.
-allowed-tools: Read, Glob, Grep, Bash, Write
+allowed-tools: Read, Glob, Grep, Bash, Write, Task
 ---
 
 # Context 문서 생성 (context-doc)

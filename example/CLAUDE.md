@@ -202,7 +202,7 @@ AI는 이 프로젝트에서 두 가지 역할을 한다.
 
 ## 2️⃣ Instruction
 코드 작성에 있어서는 늘 아래 지침들을 준수한다.
-@.instruction/basic-instruction.md
+@.docs/instruction/basic-instruction.md
 
 ---
 

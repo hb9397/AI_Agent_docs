@@ -1,12 +1,14 @@
 # 외부 Agent Skills 레포지토리 구성 분석
 
 > **⚠ 과거 스냅샷 문서** — 2026-05-27 시점 분석이며, 이후 리팩토링(D-7 파일 생성 폐지, `.instruction` → `.docs/root-context` 전환 등)으로 일부 내용이 현행과 다릅니다.
+>
+> 특히 이 문서의 `18개`, `skill-designer`, `skill-design`, `model:` 예시는 당시 조사 기록입니다. 현재 운영 기준은 `README.md`, `Docs/Harness_Engineering.md`, `CLAUDE.md`, `AGENTS.md`를 따릅니다.
 
 > 작성일: 2026-05-27
 >
 > 목적: 현재 저장소의 스킬 개선이나 신규 스킬 설계로 넘어가기 전에, 주요 공식/비공식 Agent Skills 레포지토리의 실제 구성, 설치 방식, 스킬 배치 방식, 개별 스킬 목록을 먼저 파악한다.
 >
-> 이 문서는 1차 구조 분석 문서다. 현재 저장소의 개선안, 신규 도입 후보, `skill-designer` v2 설계 기준은 후속 문서에서 다룬다.
+> 이 문서는 1차 구조 분석 문서다. 현재 저장소의 개선안, 신규 도입 후보, 당시 `skill-designer` v2 설계 기준은 후속 문서에서 다룬다.
 
 ---
 
@@ -21,12 +23,12 @@
   - [1-5. Plugin과 직접 폴더 설치의 차이](#1-5-plugin과-직접-폴더-설치의-차이)
 - [2. 비공식 스킬·서브에이전트 레포 개요](#2-비공식-스킬서브에이전트-레포-개요)
   - [2-1. 분석 대상](#2-1-분석-대상)
-  - [2-2. 본 저장소 skills/ 18개 한글 요약](#2-2-본-저장소-skills-18개-한글-요약)
+  - [2-2. 당시 본 저장소 skills/ 18개 한글 요약](#2-2-당시-본-저장소-skills-18개-한글-요약)
   - [2-3. 비공식 레포 한 줄 카드](#2-3-비공식-레포-한-줄-카드)
   - [2-4. 성격 분류](#2-4-성격-분류)
   - [2-5. 레포별 겹치는 의도](#2-5-레포별-겹치는-의도)
   - [2-6. 워크플로우 요약](#2-6-워크플로우-요약)
-    - [2-6-1. 본 저장소 skills/ 18개](#2-6-1-본-저장소-skills-18개)
+    - [2-6-1. 당시 본 저장소 skills/ 18개](#2-6-1-당시-본-저장소-skills-18개)
     - [2-6-2. obra/superpowers](#2-6-2-obrasuperpowers)
     - [2-6-3. multica-ai/andrej-karpathy-skills](#2-6-3-multica-aiandrej-karpathy-skills)
     - [2-6-4. garrytan/gstack](#2-6-4-garrytangstack)
@@ -181,7 +183,7 @@ my-repo/
 
 ## 2. 비공식 스킬·서브에이전트 레포 개요
 
-본 저장소는 자체 `skills/` 디렉토리에 18개 내부 스킬을 두고 운영한다. 외부에도 비슷한 의도, 즉 설계→구현→리뷰 워크플로우, 행동 규범, 역할 분리, 반복 가능한 agent 운영을 다른 방식으로 풀어낸 유명 레포가 여럿 있다. 이 섹션은 "이렇게 써야 한다"를 정하는 가이드가 아니라, **무엇이 있고 어디가 겹치는지를 펼쳐 둔 지도**다. 어떻게 조합할지는 §2-7의 선택지에서 다룬다.
+2026-05-27 당시 본 저장소는 자체 `skills/` 디렉토리에 18개 내부 스킬을 두고 있었다. 외부에도 비슷한 의도, 즉 설계→구현→리뷰 워크플로우, 행동 규범, 역할 분리, 반복 가능한 agent 운영을 다른 방식으로 풀어낸 유명 레포가 여럿 있다. 이 섹션은 "이렇게 써야 한다"를 정하는 가이드가 아니라, **무엇이 있고 어디가 겹치는지를 펼쳐 둔 지도**다. 어떻게 조합할지는 §2-7의 선택지에서 다룬다.
 
 ### 2-1. 분석 대상
 
@@ -189,7 +191,7 @@ my-repo/
 
 | 구분 | 레포지토리 | 접근 | 성격 | 주요 스킬 위치 |
 |------|------------|------|------|----------------|
-| 내부 (본 저장소) | `skills/` 18개 | 로컬 | 산출물 파이프라인 (RFP→설계→컨텍스트→프로토타입→구현→리뷰→커밋→문서 동기화) | `skills/{name}/SKILL.md` |
+| 내부 (본 저장소, 당시) | `skills/` 18개 | 로컬 | 산출물 파이프라인 (RFP→설계→컨텍스트→프로토타입→구현→리뷰→커밋→문서 동기화) | `skills/{name}/SKILL.md` |
 | 공식 | [anthropics/skills](https://github.com/anthropics/skills) | 가능 | Claude Agent Skills 공식 구현/예시/스펙 | `skills/` |
 | 공식 | [openai/skills](https://github.com/openai/skills) | 가능 | Codex용 Agent Skills 카탈로그 | `skills/.system`, `skills/.curated` |
 | 비공식 | [obra/superpowers](https://github.com/obra/superpowers) | 가능 | 개발 방법론형 스킬 프레임워크 | `skills/` |
@@ -198,7 +200,7 @@ my-repo/
 | 기업 공개 | [huggingface/skills](https://github.com/huggingface/skills) | 가능 | Hugging Face/AI-ML 작업용 스킬 모음 | `skills/` |
 | 비공식 | [VoltAgent/awesome-claude-code-subagents](https://github.com/VoltAgent/awesome-claude-code-subagents) | 가능 | Claude Code subagent 카탈로그 | `categories/`, `.claude/agents` |
 
-### 2-2. 본 저장소 `skills/` 18개 한글 요약
+### 2-2. 당시 본 저장소 `skills/` 18개 한글 요약
 
 각 스킬이 정확히 무엇을 하는지, 그리고 외부 레포에 비슷한 의도가 있다면 어디에 있는지 한 표에 정리했다. "있어야 한다"가 아니라 "이런 역할이 이렇게 있다, 외부에는 이런 비슷한 게 있다"는 사실 정리다.
 
@@ -221,7 +223,7 @@ my-repo/
 | `code-comment` | 변경된 파일에만 한글 주석을 추가/갱신한다. 사용자 승인 전에는 파일을 수정하지 않는다 | 직접 대응 없음 |
 | `doc-audit` | 코드와 Agent 문서(CLAUDE/AGENTS/instruction) 간 괴리를 분석하고 제안만 먼저 출력한다 | superpowers `verification` 원칙과 일부 유사 |
 | `agent-sync` | Agent 문서와 Skills를 환경별(Claude/Codex/Gemini)로 동기화한다 | 직접 대응 없음 |
-| `skill-designer` | 새 스킬 설계·생성·테스트·트리거 description 최적화를 인터뷰형으로 진행한다 (디렉토리명은 `skill-design`) | anthropics·openai `skill-creator`, superpowers `writing-skills` |
+| `skill-designer` | 당시 새 스킬 설계·생성·테스트·트리거 description 최적화를 인터뷰형으로 진행하던 스킬 (현재 명칭은 `custom-skill-design`) | anthropics·openai `skill-creator`, superpowers `writing-skills` |
 
 오른쪽 열의 "의도가 비슷한 외부"는 **같은 위치를 차지한다**가 아니라 **비슷한 의도의 다른 풀이**가 그곳에 있다는 뜻이다. 둘을 동시에 켤지, 한쪽만 쓸지, 둘 다 안 쓸지는 §2-7 선택지에서 다룬다.
 
@@ -240,7 +242,7 @@ my-repo/
 
 | 대상 | 산출물형/행동형 | 워크플로우형/역할형 | 분류 근거 | 본 저장소와의 관계 |
 |------|----------------|---------------------|-----------|-------------------|
-| `본 저장소 skills/` | 산출물형 + 행동형 | 워크플로우형 | 설계 문서, 컨텍스트 문서, 구현 지침서, 리뷰 결과를 산출하면서 agent 행동 순서도 규정 | 기준 SoT |
+| `본 저장소 skills/` | 산출물형 + 행동형 | 워크플로우형 | 설계 문서, 컨텍스트 문서, 구현 지침서, 리뷰 결과를 산출하면서 agent 행동 순서도 규정 | 기준 레포 |
 | `obra/superpowers` | 행동형 | 워크플로우형 | TDD, debugging, verification, branch finishing 같은 절차 준수에 초점 | 내부 구현/검증 게이트의 보조 규율 |
 | `multica-ai/andrej-karpathy-skills` | 행동형 | 워크플로우형 | 코딩 전 사고, 단순성, 범위 제한, 성공 기준을 규정 | 모든 내부 스킬에 직교하는 행동 규범 |
 | `garrytan/gstack` | 행동형 | 역할형 + 워크플로우형 | CEO, designer, reviewer, QA, ship 같은 역할 명령으로 제품 개발 단계를 분리 | 역할 기반 검토가 필요한 때 보조 호출 |
@@ -265,7 +267,7 @@ my-repo/
 | 완료 전 검증 | `pre-commit` | `verification-before-completion` | `Goal-Driven Execution`의 검증 부분 | `/qa`, `/qa-only`, `/benchmark` | qa-engineer, test-automator | Claude Code `verify` |
 | 커밋·릴리스·배포 | `commit` | `finishing-a-development-branch` | – | `/ship`, `/land-and-deploy`, `/canary` | devops-engineer, release-manager | Claude Code 내장 commit |
 | 문서·지식 운영 | `code-comment`, `doc-audit`, `agent-sync`, `context-doc` | – | – | `/document-release`, `/document-generate`, `/learn`, `/retro` | technical-writer, documentation-engineer | anthropics `docx`·`pdf`·`pptx`·`xlsx`·`doc-coauthoring` |
-| 스킬·플러그인 메타 작업 | `skill-designer` | `writing-skills`, `using-superpowers` | – | – | – | anthropics·openai `skill-creator`, openai `plugin-creator` |
+| 스킬·플러그인 메타 작업 | 당시 `skill-designer` (현재 `custom-skill-design`) | `writing-skills`, `using-superpowers` | – | – | – | anthropics·openai `skill-creator`, openai `plugin-creator` |
 | AI/ML 도메인 | – | – | – | – | data-scientist, ml-engineer, ai-researcher | `huggingface/skills` 전체 |
 
 같은 칸 안에서도 풀이 방식은 다르다. 예를 들어 "완료 전 검증"은 본 저장소가 `pre-commit` 체크리스트로, superpowers가 `verification-before-completion` 메타 강제로, gstack은 `/qa` 브라우저 클릭으로, 공식 도구는 `verify` 명령으로 푼다. 어느 쪽이 더 우선이라기보다 **작업 성격에 따라 어울리는 게 다르다**고 보는 편이 정확하다.
@@ -274,7 +276,7 @@ my-repo/
 
 레포별로 호출 순서가 다르므로 하나의 큰 그림 대신 **레포마다 독립된 다이어그램**으로 분리한다. 각 노드는 `스킬명 / 한글 역할` 형식으로 표기한다.
 
-#### 2-6-1. 본 저장소 `skills/` 18개
+#### 2-6-1. 당시 본 저장소 `skills/` 18개
 
 설계 → 컨텍스트 → (선택) 프로토타입 → 구현 → 리뷰/품질 게이트 → 커밋 → 문서 동기화로 이어지는 산출물 파이프라인이다.
 
@@ -289,7 +291,7 @@ flowchart LR
   I3 -->|단일·소규모| I7
   R0["impl-reuse-scan<br/>preflight"] --> X0["실제 구현"] --> V0["impl-verify<br/>검증·게이트"]
   V0 --> I11["multi-review<br/>4관점 코드 리뷰"] --> I12["pre-commit<br/>커밋 전 규칙 검사"] --> I13["commit<br/>Conventional 한글 커밋"] --> I14["code-comment<br/>변경 파일 한글 주석"] --> I15["doc-audit<br/>코드↔문서 괴리 분석"] --> I16["agent-sync<br/>Agent 문서/스킬 동기화"]
-  I17["skill-designer<br/>신규 스킬 설계"] -. 새 스킬 필요 시 .-> I0
+  I17["skill-designer<br/>신규 스킬 설계<br/>(현재 custom-skill-design)"] -. 새 스킬 필요 시 .-> I0
 ```
 
 #### 2-6-2. obra/superpowers
@@ -356,7 +358,7 @@ flowchart LR
 
 ### 2-7. 조합 선택지
 
-내부 `skills/` 18개만으로도 설계→구현→리뷰→커밋이 전부 닫힌다. 외부 레포를 얹을지 말지, 얹는다면 어디까지 켤지는 **정답이 있는 결정이 아니다**. 팀 규모, 작업 성격, 자동 강제 강도에 따라 다른 조합이 어울린다. 아래는 자주 보이는 조합 예시이고, 그대로 따라할 필요는 없다.
+당시 내부 `skills/` 18개만으로도 설계→구현→리뷰→커밋이 전부 닫힌다고 보았다. 외부 레포를 얹을지 말지, 얹는다면 어디까지 켤지는 **정답이 있는 결정이 아니다**. 팀 규모, 작업 성격, 자동 강제 강도에 따라 다른 조합이 어울린다. 아래는 자주 보이는 조합 예시이고, 그대로 따라할 필요는 없다.
 
 | 시나리오 | 조합 예시 | 의도 |
 |----------|-----------|------|
@@ -1084,7 +1086,7 @@ README 기준 subagent는 다음 템플릿을 따른다.
 name: subagent-name
 description: When this agent should be invoked
 tools: Read, Write, Edit, Bash, Glob, Grep
-model: sonnet
+# 당시 외부 subagent 예시: 현재 본 저장소 운영 기준에서는 model 필드를 하드코딩하지 않는다.
 ---
 
 You are a [role description and expertise areas]...
@@ -1824,5 +1826,5 @@ Hugging Face 레포는 AI/ML 작업 단위로 스킬을 나눈다.
 - 기존 스킬 개선안
 - 신규 도입 후보
 - 도입하지 않을 항목
-- `skills/skill-design` 또는 `skill-designer` v2 설계 기준
+- 당시 `skills/skill-design` 또는 `skill-designer` v2 설계 기준 (현재는 `custom-skill-design`)
 - 스킬 작성 템플릿과 eval 루프

@@ -1,7 +1,7 @@
 ---
 name: code-comment
 description: "한글 주석 자동 작성 — 코드에 주석을 달아달라거나, 주석을 추가·갱신할 때, 변경된 파일에 주석을 적용할 때, comment 추가를 요청할 때 호출한다."
-allowed-tools: Read, Glob, Grep, Bash, Write
+allowed-tools: Read, Glob, Grep, Bash, Write, Task
 ---
 
 # 한글 주석 자동 작성 (code-comment)
