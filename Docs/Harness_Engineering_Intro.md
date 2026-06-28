@@ -91,7 +91,7 @@ flowchart TD
 2. Agent가 참조할 컨텍스트 문서의 형태
 3. 구현 지침서의 형태
 4. 리뷰, 검사, 커밋, 동기화 흐름
-5. 하나의 메인 흐름 — RFP·레거시·아이디어 어디서든 같은 파이프라인으로 합류
+5. 하나의 기본 흐름 — RFP·레거시·아이디어 어디서든 같은 흐름으로 합류
 
 즉, AI에게 일을 "잘 시키는 말버릇"이 아니라,  
 **AI가 흔들리지 않게 만드는 작업 구조**를 만든다.
@@ -136,7 +136,7 @@ Phase, 화면, 기능, 모듈 같은 단위로 끊는다.
 코드가 바뀌면 문서도 갱신돼야 한다.  
 그 역할을 `doc-audit`, `agent-sync`가 담당한다.
 
-### 5. 품질 게이트를 앞당긴다
+### 5. 품질 확인을 앞당긴다
 
 구현 후 바로 리뷰하고, 규칙을 검사하고, 그 다음 커밋한다.
 
@@ -148,7 +148,7 @@ Phase, 화면, 기능, 모듈 같은 단위로 끊는다.
 
 | 스킬                | 역할                                                                    | 언제 쓰는가                                        |
 | ------------------- | ----------------------------------------------------------------------- | -------------------------------------------------- |
-| `harness-setup`     | 정본 레포에서 스킬·문서를 프로젝트에 설치·업데이트 + 루트 미관리 파일 관리 | 프로젝트에 하네스를 처음 설치하거나 정본을 업데이트할 때 |
+| `harness-setup`     | 원본 하네스 레포에서 스킬·문서를 프로젝트에 설치·업데이트 + git으로 관리하지 않는 루트 파일 관리 | 프로젝트에 하네스를 처음 설치하거나 원본을 업데이트할 때 |
 | `rfp-ingest`        | RFP에서 특정 SFR을 뽑아 해석하고 대화 컨텍스트로 전달                    | RFP 기반 프로젝트를 시작할 때                      |
 | `design-doc`        | 인터뷰를 통해 구조화된 설계 문서 생성                                   | 아이디어를 실제 작업 문서로 바꿀 때                |
 | `context-doc`       | 얇은 루트 가이드 문서(`CLAUDE.md`/`AGENTS.md`) + 주제별 `.docs/instruction/*` 생성 | 설계가 끝나고 Agent가 계속 참고할 기준이 필요할 때 |
@@ -180,14 +180,14 @@ Phase, 화면, 기능, 모듈 같은 단위로 끊는다.
 | `commit`       | Conventional Commits 규칙 기반 커밋       | 스테이징 후                             |
 | `code-comment` | 변경 코드에 한글 주석 작성/갱신           | 가독성, 인수인계, 맥락 보강이 필요할 때 |
 | `doc-audit`    | 코드와 문서 간 괴리 분석                  | 문서가 낡은 것 같을 때                  |
-| `agent-sync`   | Agent 문서/Skills 횡적(lateral) 동기화    | 지침 파일이나 스킬이 바뀌었을 때 (정본 pull은 harness-setup 담당) |
+| `agent-sync`   | Agent 문서/Skills 양쪽 내용 맞춤    | 지침 파일이나 스킬이 바뀌었을 때 (원본 하네스 레포에서 가져오는 일은 harness-setup 담당) |
 | `git-scoped-account` | 전역 설정 미변경 + 디렉토리 하위 repo들에 git 계정 일괄 적용·확인 | 한 트리 안 여러 repo의 git 계정을 한 번에 맞춰야 할 때 |
 
 ### 5. 메타 계열
 
 | 스킬             | 역할                                 | 언제 쓰는가                 |
 | ---------------- | ------------------------------------ | --------------------------- |
-| `custom-skill-design` | 반복 작업을 새 스킬로 설계·생성·검증 | 같은 워크플로우를 반복할 때 |
+| `custom-skill-design` | 반복 작업을 새 스킬로 설계·생성·검증 | 같은 작업 흐름을 반복할 때 |
 
 ---
 
@@ -212,9 +212,9 @@ flowchart LR
     G1 --> G2["design-doc / context-doc 재실행으로 보강"]
 
     D --> D1["impl-doc / impl-fe-be-doc<br/>계획"]
-    D1 --> D1a["impl-reuse-scan<br/>preflight"]
+    D1 --> D1a["impl-reuse-scan<br/>시작 전 점검"]
     D1a --> D1b["실제 구현"]
-    D1b --> D1c["impl-verify<br/>검증·게이트"]
+    D1b --> D1c["impl-verify<br/>검증"]
     D1c --> D2["frontend-design"]
     D2 --> D3["multi-review"]
 
@@ -248,7 +248,7 @@ flowchart LR
 하지만 하네스를 여러 Agent에 공통으로 태우려면 운영 규칙은 더 단순해야 한다.
 
 이 문서에서의 기준은 하나다.  
-**재사용 가능한 스킬, 프롬프트, 커맨드 본문, 예시, 실행 스크립트는 모두 `skills/*`를 저장소 단일 원천(source of truth)으로 둔다.**
+**재사용 가능한 스킬, 프롬프트, 커맨드 본문, 예시, 실행 스크립트는 모두 `skills/*`를 원본으로 둔다.**
 실무에서는 가능하면 각 도구에서도 이 위치를 그대로 쓰고, 같은 내용을 도구별 폴더에 중복 복사하지 않는다.
 
 즉, 이 문서에서는 아래처럼 운영하는 것을 권장한다.
@@ -270,9 +270,9 @@ flowchart LR
 
 ## 스킬들 간의 전체 플로우
 
-### 메인 흐름 (단일 통합)
+### 기본 흐름 (단일 통합)
 
-RFP 기반이든 아이디어 기반이든 레거시 부트스트랩이든, 모두 같은 파이프라인으로 합류한다.
+RFP 기반이든 아이디어 기반이든 레거시 부트스트랩이든, 모두 같은 흐름으로 합류한다.
 
 ```mermaid
 flowchart TD
@@ -288,9 +288,9 @@ flowchart TD
     DD --> DP["design-prototype-docs"]
     DP --> CP["create-prototype"]
     DD --> IM["impl-doc / impl-fe-be-doc<br/>계획"]
-    IM --> RS["impl-reuse-scan<br/>preflight"]
+    IM --> RS["impl-reuse-scan<br/>시작 전 점검"]
     RS --> BUILD["실제 구현"]
-    BUILD --> IV["impl-verify<br/>검증·게이트"]
+    BUILD --> IV["impl-verify<br/>검증"]
     IV --> MR["multi-review"]
     MR --> DA["doc-audit"]
     DA --> PC["pre-commit"]
@@ -299,15 +299,15 @@ flowchart TD
 
 ### 가장 중요한 연결 관계
 
-이 스킬셋에서 중심 허브는 `design-doc`의 설계 문서다.
+이 스킬셋에서 중심 문서는 `design-doc`의 설계 문서다.
 
 ```mermaid
 flowchart LR
     A["design-doc OUTPUT_V2"] --> B["context-doc"]
     A --> C["impl-doc / impl-fe-be-doc<br/>계획"]
-    C --> C1["impl-reuse-scan<br/>preflight"]
+    C --> C1["impl-reuse-scan<br/>시작 전 점검"]
     C1 --> C2["실제 구현"]
-    C2 --> C3["impl-verify<br/>검증·게이트"]
+    C2 --> C3["impl-verify<br/>검증"]
     A --> E["design-prototype-docs"]
 ```
 
@@ -320,7 +320,7 @@ flowchart LR
 
 실제 사용은 보통 아래 순서로 시작한다.
 
-0. **하네스 설치**: `/harness-setup`으로 정본 레포에서 스킬·문서를 프로젝트에 설치 (최초 1회 또는 업데이트 시)
+0. **하네스 설치**: `/harness-setup`으로 원본 하네스 레포에서 스킬·문서를 프로젝트에 설치 (최초 1회 또는 업데이트 시)
 1. **슬래시 커맨드처럼 직접 스킬 호출**
 2. **`@` 태그와 파일 컨텍스트를 붙여 더 디테일하게 요청**
 3. **기존 코드베이스 → 하네스 부팅**: `/harness-bootstrap`으로 레거시 프로젝트에 처음 하네스 도입
@@ -470,7 +470,7 @@ API가 너무 많은 Phase는 쪼개줘.
 
 Phase 시작 전 `/impl-reuse-scan`, Phase 종료 후 `/impl-verify`를 함께 쓰는 흐름을 권장합니다.
 
-### 예시 6. 커밋 전 품질 게이트
+### 예시 6. 커밋 전 품질 확인
 
 ```text
 /multi-review
@@ -545,7 +545,7 @@ flowchart LR
     A["각자 다른 방식의 AI 사용"] --> B["공통 설계 문서"]
     B --> C["공통 컨텍스트 문서"]
     C --> D["공통 구현 지침"]
-    D --> E["공통 품질 게이트"]
+    D --> E["공통 품질 확인"]
     E --> F["재현 가능한 팀 결과물"]
 ```
 
@@ -567,7 +567,7 @@ flowchart LR
 
 ### 0단계. 설치
 
-- `harness-setup` (정본 레포에서 스킬·문서를 프로젝트에 설치)
+- `harness-setup` (원본 하네스 레포에서 스킬·문서를 프로젝트에 설치)
 - `git-scoped-account` (복수 앱 프로젝트에서 하위 repo git 계정 일괄 적용 시)
 
 ### 1단계. 최소 도입

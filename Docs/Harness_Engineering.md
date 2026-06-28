@@ -8,13 +8,13 @@
 
 ## 1. 이 문서의 목적
 
-이 저장소의 본질은 "AI가 코드를 잘 짜게 만드는 문서·규칙·워크플로우를 미리 설계하는 것"이다.
+이 저장소의 본질은 "AI가 코드를 잘 짜게 만드는 문서·규칙·작업 흐름을 미리 설계하는 것"이다.
 
 핵심은 세 가지다.
 
 1. **설계 문서가 먼저다.** 바로 구현시키지 않는다.
 2. **Agent가 계속 참조할 고정 컨텍스트를 만든다.**
-3. **구현 단위를 작게 쪼개고 품질 게이트를 사이사이에 둔다.**
+3. **구현 단위를 작게 쪼개고 중간마다 품질을 확인한다.**
 
 이 문서는 현재 저장소 기준의 흐름과 구성을 정리한다.
 
@@ -22,13 +22,13 @@
 
 ## 2. 현재 저장소 기준 구성 요약
 
-- `harness-setup`은 이 저장소(정본 레포)의 스킬을 대상 프로젝트에 설치·갱신하는 진입점이다. 단일/복수 애플리케이션을 자동 감지한다.
+- `harness-setup`은 이 저장소(원본 하네스 레포)의 스킬을 대상 프로젝트에 설치·갱신하는 진입점이다. 단일/복수 애플리케이션을 자동 감지한다.
 - `design-doc`는 `skills/design-doc/templates/INPUT_V2.md`, `OUTPUT_V2.md` 템플릿을 포함한다.
 - `rfp-ingest`는 RFP에서 SFR을 해석하여 대화 컨텍스트로 전달한다 (별도 파일 생성 없음).
 - 프로토타입 흐름은 `design-prototype-docs` → `create-prototype`으로 연결된다. 산출물은 `.docs/prototype/{사용자}/{식별자}/`에 저장한다.
-- 구현 지침 계열은 `impl-fe-be-doc`/`impl-doc`(계획), `impl-reuse-scan`(preflight), `impl-verify`(Phase 게이트) 4개다. 산출물은 `.docs/impl-doc/{사용자}/{기능명}.md` (단일앱) 또는 `.docs/{앱}/impl-doc/{사용자}/{기능명}.md` (복수앱)에 저장한다.
+- 구현 지침 계열은 `impl-fe-be-doc`/`impl-doc`(계획), `impl-reuse-scan`(시작 전 점검), `impl-verify`(Phase 검증) 4개다. 산출물은 `.docs/impl-doc/{사용자}/{기능명}.md` (단일앱) 또는 `.docs/{앱}/impl-doc/{사용자}/{기능명}.md` (복수앱)에 저장한다.
 - 품질·운영 계열은 `multi-review`, `pre-commit`, `commit`, `code-comment`, `doc-audit`, `agent-sync`, `git-scoped-account`가 존재한다.
-- 산출물 생성 또는 코드·커밋 적용범위를 갖는 스킬은 STEP 0에서 프로젝트 유형(단일/복수)을 감지하고 사용자에게 확인한다 (C-1 게이트). 운영 전용 스킬(`git-scoped-account` 등)과 메타 스킬(`custom-skill-design`)은 해당하지 않는다.
+- 산출물 생성 또는 코드·커밋 적용범위를 갖는 스킬은 STEP 0에서 프로젝트 유형(단일/복수)을 감지하고 사용자에게 확인한다. 운영 전용 스킬(`git-scoped-account` 등)과 메타 스킬(`custom-skill-design`)은 해당하지 않는다.
 
 ---
 
@@ -52,7 +52,7 @@ AI_Agent_docs/
 
 | 호출명 | 디렉토리 | 역할 | 대표 입력 | 대표 산출물 |
 |--------|----------|------|-----------|-------------|
-| `harness-setup` | `skills/harness-setup` | 정본 레포 → 프로젝트 설치·갱신 | 정본 레포 경로, 대상 프로젝트 | `.claude/skills/`, `.agents/skills/`, `.docs/`, 루트 컨텍스트 파일 |
+| `harness-setup` | `skills/harness-setup` | 원본 하네스 레포 → 프로젝트 설치·갱신 | 원본 하네스 레포 경로, 대상 프로젝트 | `.claude/skills/`, `.agents/skills/`, `.docs/`, 루트 컨텍스트 파일 |
 | `rfp-ingest` | `skills/rfp-ingest` | RFP에서 지정 SFR 추출·해석·화면 후보 매핑 | `@RFP PDF`, `SFR-019` 등 | 대화 컨텍스트 (파일 생성 없음) |
 | `design-doc` | `skills/design-doc` | 인터뷰 기반 설계 문서 도출 | 아이디어, 기존 문서, rfp-ingest 해석 결과 | `.docs/DESIGN.md` (단일앱) / `.docs/{앱}-DESIGN.md` (복수앱) |
 | `context-doc` | `skills/context-doc` | Agent용 컨텍스트 문서 생성 (다중 분할) | `design-doc` 결과물 | `CLAUDE.md` + `AGENTS.md` + `.docs/instruction/*-instruction.md` |
@@ -71,9 +71,9 @@ AI_Agent_docs/
 | 호출명 | 디렉토리 | 역할 | 중심 축 | 적합한 대상 |
 |--------|----------|------|---------|-------------|
 | `impl-fe-be-doc` | `skills/impl-fe-be-doc` | FE/BE 페어 다중 기능 또는 다중 화면 작업지침서 | 다중 화면·페어 다중 기능 | 풀스택 다중 기능, RFP/SFR 다중 화면 구현 |
-| `impl-doc` | `skills/impl-doc` | 단일·소규모 범용 작업지침서 | 기능/모듈/파이프라인 | API 1~수개, 단일 도메인 로직, 컴포넌트·훅·화면 1개 |
+| `impl-doc` | `skills/impl-doc` | 단일·소규모 범용 작업지침서 | 기능/모듈/처리 흐름 | API 1~수개, 단일 도메인 로직, 컴포넌트·훅·화면 1개 |
 | `impl-reuse-scan` | `skills/impl-reuse-scan` | 공통 자산 발견·보고(자동 수정 금지) | 코드베이스 스캔 | Phase/태스크 시작 직전 중복 구현 방지 |
-| `impl-verify` | `skills/impl-verify` | 검증 리포트 산출·게이트(코드/지침서 수정 금지) | 작업지침서 검증 기준 추출 | Phase 종료 시 PASS/FAIL 판정 |
+| `impl-verify` | `skills/impl-verify` | 검증 리포트 산출(코드/지침서 수정 금지) | 작업지침서 검증 기준 추출 | Phase 종료 시 PASS/FAIL 판정 |
 
 #### D. 품질·운영 계열
 
@@ -84,7 +84,7 @@ AI_Agent_docs/
 | `commit` | `skills/commit` | Conventional Commits 기반 커밋 | 한글 description, scope 추론, why 중심 body |
 | `code-comment` | `skills/code-comment` | 변경 파일 한글 주석 작성·갱신 | 승인 전 파일 미수정 원칙 |
 | `doc-audit` | `skills/doc-audit` | 코드와 Agent 문서 괴리 분석 | 제안만 먼저 출력, 승인 후 반영 |
-| `agent-sync` | `skills/agent-sync` | Agent 문서/Skills 횡적 동기화 | `.claude/skills` ↔ `.agents/skills` 미러, `CLAUDE.md` ↔ `AGENTS.md` 일치 (정본 레포 pull은 harness-setup 전담) |
+| `agent-sync` | `skills/agent-sync` | Agent 문서/Skills 양쪽 내용 맞춤 | `.claude/skills` ↔ `.agents/skills` 미러, `CLAUDE.md` ↔ `AGENTS.md` 일치 (원본 하네스 레포에서 가져오는 일은 harness-setup 전담) |
 | `git-scoped-account` | `skills/git-scoped-account` | 디렉토리 스코프 git 계정 일괄 적용·확인 | 전역 `~/.gitconfig` 미변경 + `include.path`로 상위 트리 하위 repo에만 user.name/email 적용 |
 
 #### E. 메타 계열
@@ -97,12 +97,12 @@ AI_Agent_docs/
 
 ### 4-1. 프로젝트 유형
 
-산출물·적용범위 스킬은 STEP 0에서 아래를 자동 감지하고 사용자에게 확인한다 (C-1 게이트):
+산출물·적용범위 스킬은 STEP 0에서 아래를 자동 감지하고 사용자에게 확인한다:
 
 | 유형 | 구조 | `.docs/` 경로 예시 |
 |------|------|---------------------|
 | **단일 앱** | 하나의 git repo = 앱 + 하네스 산출물 | `.docs/DESIGN.md`, `.docs/impl-doc/{사용자}/{기능}.md` |
-| **복수 앱** | 사용자 생성 컨테이너 폴더 (git init 없음) 아래에 `.docs/`, 각 앱, 정본 레포가 독립 git | `.docs/{앱}-DESIGN.md`, `.docs/{앱}/impl-doc/{사용자}/{기능}.md` |
+| **복수 앱** | 사용자 생성 컨테이너 폴더 (git init 없음) 아래에 `.docs/`, 각 앱, 원본 하네스 레포가 독립 git | `.docs/{앱}-DESIGN.md`, `.docs/{앱}/impl-doc/{사용자}/{기능}.md` |
 
 ### 4-2. 작업 스케일
 
@@ -123,7 +123,7 @@ AI_Agent_docs/
 
 ---
 
-## 5. 하네스 메인 흐름
+## 5. 하네스 기본 작업 흐름
 
 흐름은 **하나**다. 진입 조건에 따라 옵션 분기가 붙는다.
 
@@ -132,7 +132,7 @@ AI_Agent_docs/
 /git-scoped-account   (복수 앱 환경에서 앱별 git 계정 분리 시)
         │
         ▼
-/harness-setup        (정본 레포 → 프로젝트 스킬 설치·갱신)
+/harness-setup        (원본 하네스 레포 → 프로젝트 스킬 설치·갱신)
         │
         ▼
 [1단계 — 설계]
@@ -156,7 +156,7 @@ impl 스킬 선택
   └─ /impl-doc        (단일·소규모 범용)
         │
         ▼
-/impl-reuse-scan      (선택 preflight — 중복 자산 확인)
+/impl-reuse-scan      (선택 시작 전 점검 — 중복 자산 확인)
         │
         ▼
 [3단계 — 구현·검증]
@@ -164,7 +164,7 @@ impl 스킬 선택
   └─ UI 비중이 높으면 /frontend-design 기준 적용
         │
         ▼
-/impl-verify          (Phase 종료 gate)
+/impl-verify          (Phase 종료 검증)
         │
         ▼
 [4단계 — 품질·커밋]
@@ -176,19 +176,19 @@ impl 스킬 선택
         ▼
 /commit
         │
-        └─ 스킬/문서 변경이 있었으면 /agent-sync (횡적 미러)
+        └─ 스킬/문서 변경이 있었으면 /agent-sync (양쪽 내용 맞춤)
 ```
 
-### 메인 흐름에서 기억할 점
+### 기본 흐름에서 기억할 점
 
-- **0단계는 프로젝트당 한 번**이다. `harness-setup`은 설치 후 정본 갱신 시에만 재실행한다.
+- **0단계는 프로젝트당 한 번**이다. `harness-setup`은 설치 후 원본이 갱신됐을 때만 재실행한다.
 - **rfp-ingest는 파일을 생성하지 않는다.** 해석 결과는 대화 컨텍스트로 남아 후속 스킬이 참조한다.
 - **harness-bootstrap → 이후 정규 루프 합류**: 역추출된 설계문서를 기반으로 `design-doc`/`context-doc` 보강 후 같은 흐름을 따른다.
 - 프로젝트 전체 작업이면 `context-doc`를 거의 필수로 본다.
 - 컴포넌트/로직 단위처럼 작은 작업은 `design-doc`까지만 하고 바로 구현해도 된다.
 - 같은 대화에서 여러 Phase를 한꺼번에 구현시키기보다, **Phase 1개 또는 화면 1개 단위**로 끊는 것이 낫다.
 - **`rfp-ingest`는 선택 SFR 분석용**이다. 화면 후보는 확정안이 아니라 후보이며, 확정은 `design-doc`/`design-prototype-docs`에서 한다.
-- **복수 앱에서 루트 미관리 파일(`CLAUDE.md`/`AGENTS.md`)은 `harness-setup` 전담**이다. `agent-sync`는 횡적 미러만 담당한다.
+- **복수 앱에서 git으로 관리하지 않는 루트 파일(`CLAUDE.md`/`AGENTS.md`)은 `harness-setup` 전담**이다. `agent-sync`는 양쪽 내용 맞춤만 담당한다.
 
 ---
 
@@ -197,7 +197,7 @@ impl 스킬 선택
 | 항목 | `impl-fe-be-doc` | `impl-doc` |
 |------|------------------|------------|
 | 중심 축 | 다중 화면·페어 다중 기능 | 단일·소규모 기능/모듈 |
-| Phase 단위 | FE 화면 여러 개 + BE API 여러 개 또는 RFP/SFR 다중 화면 | API 1~수개, 화면 1개, 컴포넌트/훅/입출력 파이프라인 |
+| Phase 단위 | FE 화면 여러 개 + BE API 여러 개 또는 RFP/SFR 다중 화면 | API 1~수개, 화면 1개, 컴포넌트/훅/입출력 흐름 |
 | 태스크 ID | `INF-XX`, `BE-XX`, `FE-XX` | `INIT`, `CORE`, `IO`, `TEST`, `PKG` |
 | 적합 대상 | 풀스택 다중 기능, RFP/SFR/화면정의서 기반 다중 화면 구현 | CLI, 스크립트, 서비스, 라이브러리, BE 단일 기능, FE 단일 기능 |
 | 핵심 검증 | FE→API→DB 통합, 화면 렌더링, 상태, API, 인터랙션 | 실행 명령, 입출력, 테스트, 패키징 |
@@ -210,15 +210,15 @@ impl 스킬 선택
 
 ---
 
-## 8. 스킬 간 데이터 계약
+## 8. 스킬 간 입출력 약속
 
 현재 저장소의 핵심은 단순한 순서가 아니라 **산출물 연결 방식**이다.
-아래 계약이 맞아야 다음 스킬이 흔들리지 않는다.
+아래 연결 방식이 맞아야 다음 스킬이 흔들리지 않는다.
 
 ### 8-1. 핵심 연결도
 
 ```text
-정본 레포
+원본 하네스 레포
   └─→ /harness-setup
         └─→ .claude/skills/, .agents/skills/, .docs/, 루트 컨텍스트
 
@@ -233,8 +233,8 @@ impl 스킬 선택
         └─→ .docs/DESIGN.md (단일앱) / .docs/{앱}-DESIGN.md (복수앱)
                 ├─→ /context-doc
                 ├─→ /impl-fe-be-doc 또는 /impl-doc (계획)
-                ├─→ /impl-reuse-scan (구현 직전 preflight)
-                ├─→ /impl-verify (Phase 종료 gate)
+                ├─→ /impl-reuse-scan (구현 직전 시작 전 점검)
+                ├─→ /impl-verify (Phase 종료 검증)
                 └─→ /design-prototype-docs
 
 기존 코드베이스 (문서 없음)
@@ -254,12 +254,12 @@ impl 스킬 선택
   └─→ /commit
 
 .claude/skills ↔ .agents/skills 또는 CLAUDE.md ↔ AGENTS.md 불일치
-  └─→ /agent-sync (횡적 미러)
+  └─→ /agent-sync (양쪽 내용 맞춤)
 ```
 
-### 8-2. `design-doc OUTPUT_V2`가 사실상 중심 허브다
+### 8-2. `design-doc OUTPUT_V2`가 사실상 중심 문서다
 
-`design-doc`는 현재 설계 체계의 중심이며, `OUTPUT_V2`가 가장 중요한 계약 문서다.
+`design-doc`는 현재 설계 체계의 중심이며, `OUTPUT_V2`가 가장 중요한 기준 문서다.
 
 #### `context-doc`로 넘어가는 매핑
 
@@ -323,7 +323,7 @@ impl 스킬 선택
 
 ---
 
-## 9. 품질 게이트와 운영 스킬의 역할
+## 9. 품질 확인과 운영 스킬의 역할
 
 | 스킬 | 실행 시점 | 막아주는 문제 |
 |------|-----------|---------------|
@@ -334,7 +334,7 @@ impl 스킬 선택
 | `agent-sync` | Agent 문서/스킬 변경 후 | 환경별 문서 불일치 |
 | `commit` | 스테이징 후 | 메시지 품질 저하, 변경 이유 미정리 |
 
-### 권장 게이트 순서
+### 권장 확인 순서
 
 ```text
 구현 완료
@@ -459,7 +459,7 @@ impl 스킬 선택
 
 ### 12-5. 반복 작업은 스킬화 후보다
 
-같은 워크플로우를 세 번 이상 반복하면 `custom-skill-design` 후보로 본다.
+같은 작업 흐름을 세 번 이상 반복하면 `custom-skill-design` 후보로 본다.
 
 - 반복 입력 형식이 고정돼 있고
 - 출력 형식이 어느 정도 표준화돼 있고
@@ -495,7 +495,7 @@ impl 스킬 선택
 ### 새 프로젝트 시작
 
 - [ ] (복수 앱 환경) `git-scoped-account`로 앱별 git 계정 정리.
-- [ ] `harness-setup`으로 정본 레포 스킬을 프로젝트에 설치.
+- [ ] `harness-setup`으로 원본 하네스 레포 스킬을 프로젝트에 설치.
 - [ ] 문서 없는 기존 코드베이스라면 먼저 `harness-bootstrap`으로 뼈대 추출.
 - [ ] `design-doc`로 설계 문서를 만든다.
 - [ ] 프로젝트 단위면 `context-doc`로 `CLAUDE.md`, `AGENTS.md`와 주제별 `.docs/instruction/*-instruction.md`를 만든다.
@@ -531,6 +531,6 @@ impl 스킬 선택
 
 현재 저장소의 하네스 구조는 아래 한 줄로 요약된다.
 
-> `harness-setup`으로 환경을 갖추고, `design-doc`를 중심 허브로 삼아 상황에 맞는 `impl-*` 하나로 구현 단위를 고른 뒤, `multi-review`·`pre-commit`·`doc-audit`로 품질을 닫는 **단일 메인 흐름** 구조다. 단일/복수 애플리케이션 모두 같은 흐름을 따른다.
+> `harness-setup`으로 환경을 갖추고, `design-doc`를 중심 문서로 삼아 상황에 맞는 `impl-*` 하나로 구현 단위를 고른 뒤, `multi-review`·`pre-commit`·`doc-audit`로 품질을 확인하는 **하나의 기본 작업 흐름** 구조다. 단일/복수 애플리케이션 모두 같은 흐름을 따른다.
 
 이 흐름만 지켜도 "바이브코딩"이 즉흥 코딩이 아니라 **문서 중심의 반복 가능한 생산 체계**로 바뀐다.

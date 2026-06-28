@@ -7,7 +7,7 @@ description: >
   '제안요청서 분석', 'SFR 추출' 요청이 오면 반드시 이 스킬을 사용한다.
   RFP 기반 개발 워크플로우의 진입점이며,
   해석 결과는 대화/후속 스킬 입력으로만 전달한다 (별도 파일 생성 없음).
-allowed-tools: Read, Glob, Grep, Bash, Agent
+allowed-tools: Read, Glob, Grep, Bash, Task
 ---
 
 # RFP 요구사항 분석 (rfp-ingest)
