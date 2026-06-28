@@ -251,10 +251,24 @@ Step 5 OUTPUT을 입력으로 삼아 `context-doc` 스킬의 워크플로우를 
 > "위 파일들을 검토해 주세요.
 > 이상 없으면 한꺼번에 저장하겠습니다. 수정 사항이 있으면 알려주세요."
 
-승인 시:
+승인 시 STEP 0에서 확정한 프로젝트 유형에 따라 분기한다.
+
+**단일 애플리케이션:**
 - `.docs/instruction/` 디렉토리가 없으면 생성
 - 설계 문서 저장 폴더(`.docs/` 등)가 없으면 생성
 - 모든 파일 일괄 저장
-- CLAUDE.md / AGENTS.md의 `@.docs/instruction/*` 참조가 실제 파일과 1:1 일치하는지 검증
-- AGENTS.md 본문이 CLAUDE.md와 동일한지 검증
+- `CLAUDE.md` / `AGENTS.md`의 `@.docs/instruction/*` 참조가 실제 파일과 1:1 일치하는지 검증
+- `AGENTS.md` 본문이 `CLAUDE.md`와 동일한지 검증
+
+**복수 애플리케이션:**
+- `.docs/{앱}/instruction/` 디렉토리가 없으면 생성
+- `.docs/root-context/` 디렉토리가 없으면 생성
+- 설계 문서: `.docs/{앱}-DESIGN.md` 저장
+- 컨텍스트 문서: `.docs/{앱}-context.md` 저장
+- instruction: `.docs/{앱}/instruction/*-instruction.md` 저장
+- 루트 통합: `.docs/root-context/CLAUDE.md`, `.docs/root-context/AGENTS.md` 저장
+- `.docs/{앱}-context.md`의 instruction 참조가 `.docs/{앱}/instruction/` 내 실제 파일과 1:1 일치하는지 검증
+- `.docs/root-context/AGENTS.md` 본문이 `.docs/root-context/CLAUDE.md`와 동일한지 검증
+
+**공통:**
 - 이미 존재하는 파일이 있으면 덮어쓰기 전에 사용자에게 알림

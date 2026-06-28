@@ -28,9 +28,11 @@ stat -c "%Y %n" CLAUDE.md AGENTS.md 2>/dev/null | sort -rn | head -1
 
 ## 2. 탐색 범위
 
-- 프로젝트 루트부터 재귀적으로 탐색
+- **단일 앱**: 프로젝트 루트부터 재귀적으로 탐색
+- **복수 앱**: 각 앱 디렉토리 내부만 탐색. **프로젝트 상위 폴더(루트)의 `CLAUDE.md`, `AGENTS.md`, `.docs/root-context/` 등 루트 미관리 파일은 `harness-setup` 전담이므로 agent-sync가 절대 접근하지 않는다.**
 - `be/`, `fe/` 등 서브 디렉토리 각각 독립적으로 처리
 - 제외 디렉토리: `.git`, `node_modules`, `venv`, `__pycache__`, `dist`, `build`
+- 제외 경로(복수 앱): 프로젝트 루트 `CLAUDE.md`, `AGENTS.md`, `.docs/root-context/*`
 
 ---
 

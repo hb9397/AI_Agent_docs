@@ -86,15 +86,33 @@ md5sum ".claude/skills/$skill/SKILL.md" 2>/dev/null
 
 승인 후 실행:
 
+대상 디렉토리가 이미 존재하면 **먼저 삭제** 후 복사한다 (`cp -r` 중첩 방지).
+
+**POSIX (macOS/Linux):**
 ```bash
-# 추가·수정: 정본 → 배포 복사
-cp -r "$HARNESS_SRC/skills/$skill" ".claude/skills/$skill"
-cp -r "$HARNESS_SRC/skills/$skill" ".agents/skills/$skill"
+# 추가·수정: 기존 제거 후 정본 → 배포 복사
+rm -rf ".claude/skills/$skill" && cp -r "$HARNESS_SRC/skills/$skill" ".claude/skills/$skill"
+rm -rf ".agents/skills/$skill" && cp -r "$HARNESS_SRC/skills/$skill" ".agents/skills/$skill"
 
 # 삭제 (사용자 승인 시): 배포에서만 제거
 rm -rf ".claude/skills/$skill"
 rm -rf ".agents/skills/$skill"
 ```
+
+**Windows (PowerShell):**
+```powershell
+# 추가·수정: 기존 제거 후 정본 → 배포 복사
+if (Test-Path ".claude\skills\$skill") { Remove-Item -Recurse -Force ".claude\skills\$skill" }
+Copy-Item -Recurse "$HARNESS_SRC\skills\$skill" ".claude\skills\$skill"
+if (Test-Path ".agents\skills\$skill") { Remove-Item -Recurse -Force ".agents\skills\$skill" }
+Copy-Item -Recurse "$HARNESS_SRC\skills\$skill" ".agents\skills\$skill"
+
+# 삭제 (사용자 승인 시): 배포에서만 제거
+Remove-Item -Recurse -Force ".claude\skills\$skill"
+Remove-Item -Recurse -Force ".agents\skills\$skill"
+```
+
+> **참고**: 에이전트는 실행 환경(POSIX/Windows)을 감지하여 해당 구문을 선택한다.
 
 ---
 

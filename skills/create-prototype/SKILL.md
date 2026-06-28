@@ -317,7 +317,7 @@ function renderData(data) {
 프로젝트 유형(STEP 0-B)과 사용자(STEP 0-C)에 따라 산출물 디렉토리 위치를 결정한다:
 
 - **단일 앱**: `.docs/prototype/{사용자}/{PREFIX}-{번호}/` 하위에 생성
-- **복수 앱**: `.docs/{앱}/prototype/{사용자}/{PREFIX}-{번호}/` 하위에 생성
+- **복수 앱**: `.docs/prototype/{사용자}/{PREFIX}-{번호}/` 하위에 생성 (앱 구분 없이 프로젝트 공통)
 
 예시 (단일앱):
 ```
@@ -407,7 +407,8 @@ function renderData(data) {
 | HTML-파일 짝 완비 | 각 HTML에 대응하는 `css/{slug}.css`, `script/{slug}.js`, `data/{slug}-data.json` 4종이 모두 존재하는가 |
 | Tailwind CDN | 모든 HTML의 `<head>` 맨 앞에 Tailwind CDN `<script>`가 있는가 |
 | JS head 선언 | 모든 `<script src>` 태그가 `<head>` 안에 있는가 (body 안에 `<script src>` 없는가) |
-| JS 선언 순서 | `<head>` 내 순서: Tailwind CDN → 공통 JS → 화면별 JS |
+| CSS 선언 순서 | `<head>` 내 CSS 순서: Tailwind CDN → 공통 CSS → 화면별 CSS |
+| JS 선언 순서 | `<head>` 내 JS 순서: 공통 JS (선택) → 화면별 JS (CSS 뒤에 위치) |
 | `<style>` 블록 없음 | 모든 HTML에 `<style>` 태그가 없는가 |
 | 인라인 style 남용 | `style=""` 속성이 레이아웃·컴포넌트 스타일에 사용되지 않았는가 (JS 동적 주입 외 사용 시 CSS 파일로 이동) |
 | HTML 내 `<script>` | `<body>` 안에 `<script type="application/json" id="page-data">` 외 다른 `<script>` 태그가 없는가 |

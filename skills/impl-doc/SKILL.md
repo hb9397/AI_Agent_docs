@@ -37,8 +37,8 @@ design-doc OUTPUT (설계문서.md)
     ↓
 impl-doc  ← 지금 여기
     ↓
-(단일앱) .docs/impl-doc/{사용자}/impl-{기능명}.md
-(복수앱) .docs/{앱}/impl-doc/{사용자}/impl-{기능명}.md
+(단일앱) .docs/impl-doc/{사용자}/{기능명}.md
+(복수앱) .docs/{앱}/impl-doc/{사용자}/{기능명}.md
     ├─→ 실제 구현
     ├─→ impl-reuse-scan  →  Phase 시작 전 공통 자산 확인
     ├─→ impl-verify      →  Phase 종료 검증

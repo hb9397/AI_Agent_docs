@@ -9,7 +9,7 @@
 
 이 저장소는 AI 에이전트(Claude Code, Gemini CLI 등)가 팀 공통 품질 기준으로 작업하기 위한 **스킬·프롬프트·템플릿·운영 문서의 단일 원천(source of truth)**이다.
 
-- 총 19종 스킬이 `skills/` 디렉토리에 있다
+- 총 20종 스킬이 `skills/` 디렉토리에 있다
 - 프로젝트에는 `harness-setup` 스킬로 설치·업데이트한다
 - 이 레포 자체의 `.claude/skills`와 `.agents/skills`에는 `harness-setup`과 `custom-skill-design`만 배치한다
 
@@ -17,12 +17,12 @@
 
 ```
 AI_Agent_docs/
-├── skills/                        ← 모든 스킬의 단일 소스 (19종)
+├── skills/                        ← 모든 스킬의 단일 소스 (20종)
 │   ├── harness-setup/             ← 프로젝트에 하네스 설치·갱신
 │   ├── custom-skill-design/       ← 새 스킬 설계·생성·검증
 │   ├── design-doc/                ← 설계 문서 생성
 │   ├── context-doc/               ← 컨텍스트 문서 생성
-│   └── ... (15종 더)
+│   └── ... (16종 더)
 ├── example/                       ← 산출물 예시
 ├── .claude/skills/                ← 이 레포용 시드 (harness-setup + custom-skill-design)
 ├── .agents/skills/                ← 이 레포용 시드 (동일)

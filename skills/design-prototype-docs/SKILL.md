@@ -328,7 +328,7 @@ STEP 0-C에서 확인한 식별자를 폴더명에 사용한다.
 프로젝트 유형(STEP 0-B)과 사용자(STEP 0-D)에 따라 분기한다:
 
 - **단일 앱**: `.docs/prototype/{사용자}/{식별자}/design-doc.md`
-- **복수 앱**: `.docs/{앱}/prototype/{사용자}/{식별자}/design-doc.md`
+- **복수 앱**: `.docs/prototype/{사용자}/{식별자}/design-doc.md` (앱 구분 없이 프로젝트 공통)
 
 예시:
 - 단일앱: `.docs/prototype/hb9397/SFR-019/design-doc.md`
