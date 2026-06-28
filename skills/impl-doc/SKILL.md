@@ -233,7 +233,7 @@ PKG-XX  : 패키징 (빌드, 배포, 문서화)
 저장 경로는 프로젝트 유형에 따라 분기한다:
 
 - **단일 앱**: `.docs/impl-doc/{사용자}/{기능명}.md`
-- **복수 앱**: `.docs/{앱}/impl-doc/{사용자}/{기능명}.md` (예: `.docs/be-keai-portal/impl-doc/hb9397/log-analyzer.md`)
+- **복수 앱**: `.docs/{앱}/impl-doc/{사용자}/{기능명}.md` (예: `.docs/be-acro-portal/impl-doc/hb9397/log-analyzer.md`)
 
 **③ 파일 저장 / 갱신**
 

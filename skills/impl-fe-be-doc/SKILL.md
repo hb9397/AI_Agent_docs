@@ -183,7 +183,7 @@ Phase 설계 초안을 내부적으로 확정한 뒤 Step 3으로 진행한다.
 저장 경로는 프로젝트 유형에 따라 분기한다:
 
 - **단일 앱**: `.docs/impl-doc/{사용자}/{기능명}.md`
-- **복수 앱**: `.docs/{앱}/impl-doc/{사용자}/{기능명}.md` (예: `.docs/fe-keai-portal/impl-doc/hb9397/checkout-flow.md`)
+- **복수 앱**: `.docs/{앱}/impl-doc/{사용자}/{기능명}.md` (예: `.docs/fe-acro-portal/impl-doc/hb9397/checkout-flow.md`)
 
 **③ 파일 저장 / 갱신**
 

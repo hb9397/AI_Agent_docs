@@ -72,7 +72,7 @@ mkdir -p .docs/root-context
 Step 2에서 확인된 각 앱 폴더에 대해:
 
 ```bash
-# {앱} = Step 2에서 확인된 앱 디렉토리명 (예: fe-keai-portal, be-keai-portal)
+# {앱} = Step 2에서 확인된 앱 디렉토리명 (예: fe-acro-portal, be-acro-portal)
 for app in {앱1} {앱2} {앱3}; do
   # 앱별 컨텍스트 파일 (비어 있는 상태로 생성)
   touch ".docs/${app}-context.md"

@@ -40,7 +40,7 @@ OUTPUT 문서를 저장했다면 해당 파일을 그대로 다음 스킬에 넘
 
 - 설계 문서를 파일로 저장할 때는 반드시 대상 프로젝트 루트를 먼저 확정한다.
 - **단일 애플리케이션**: `{project}/.docs/DESIGN.md`
-- **복수 애플리케이션**: `{project}/.docs/{앱 디렉토리명}-DESIGN.md` (예: `.docs/fe-keai-portal-DESIGN.md`)
+- **복수 애플리케이션**: `{project}/.docs/{앱 디렉토리명}-DESIGN.md` (예: `.docs/fe-acro-portal-DESIGN.md`)
 - 사용자가 다른 파일명을 지정해도 `{project}/.docs/` 하위에 저장한다.
 - 상위 워크스페이스 루트에서 실행 중이어도, 대상 프로젝트가 따로 있으면 상위 루트에 저장하지 않는다.
 

@@ -40,8 +40,8 @@ git clone <이 저장소 URL> {프로젝트명}-AI-Harness-docs
 단일 앱은 애플리케이션 레포 안에서 소스코드와 하네스 산출물을 함께 관리한다.
 
 ```text
-keai/
-├── keai-portal/                  ← 애플리케이션 레포 (git 관리)
+acro/
+├── acro-portal/                  ← 애플리케이션 레포 (git 관리)
 │   ├── .claude/                  ← Claude Code용 스킬 배포본
 │   │   └── skills/
 │   ├── .agents/                  ← Codex 등 Agent용 스킬 배포본
@@ -50,37 +50,37 @@ keai/
 │   ├── CLAUDE.md                 ← Claude용 프로젝트 컨텍스트
 │   ├── AGENTS.md                 ← Codex/공용 Agent 컨텍스트
 │   └── src/                      ← 소스코드 구조
-└── keai-AI-Harness-docs/         ← 원본 하네스 저장소 (별도 git 관리)
+└── acro-AI-Harness-docs/         ← 원본 하네스 저장소 (별도 git 관리)
 ```
 
 단일 앱에서 git으로 관리되는 대상:
 
-- `keai-portal/`: 소스코드, `.docs/*`, `CLAUDE.md`, `AGENTS.md`, `.claude/skills`, `.agents/skills`
-- `keai-AI-Harness-docs/`: 원본 `skills/`, 운영 문서, 템플릿
+- `acro-portal/`: 소스코드, `.docs/*`, `CLAUDE.md`, `AGENTS.md`, `.claude/skills`, `.agents/skills`
+- `acro-AI-Harness-docs/`: 원본 `skills/`, 운영 문서, 템플릿
 
 ### 복수 애플리케이션 프로젝트 예시
 
 복수 앱은 프로젝트 최상위 폴더 자체를 git으로 관리하지 않는다. 각 애플리케이션과 원본 하네스 저장소, `.docs` 저장소를 각각 독립 저장소로 관리한다.
 
 ```text
-keai/                             ← 프로젝트 상위 폴더 (git 관리 안 함)
-├── keai-fe-portal/               ← 애플리케이션 레포 1 (git 관리)
+acro/                             ← 프로젝트 상위 폴더 (git 관리 안 함)
+├── acro-fe-portal/               ← 애플리케이션 레포 1 (git 관리)
 │   └── src/                      ← 소스코드 구조
-├── keai-be-portal/               ← 애플리케이션 레포 2 (git 관리)
+├── acro-be-portal/               ← 애플리케이션 레포 2 (git 관리)
 │   └── src/                      ← 소스코드 구조
-├── keai-be-collector/            ← 애플리케이션 레포 3 (git 관리)
+├── acro-be-collector/            ← 애플리케이션 레포 3 (git 관리)
 │   └── src/                      ← 소스코드 구조
-├── keai-AI-Harness-docs/         ← 원본 하네스 저장소 (별도 git 관리)
+├── acro-AI-Harness-docs/         ← 원본 하네스 저장소 (별도 git 관리)
 ├── .docs/                        ← 프로젝트 전체 AI 문서 저장소 (별도 git 레포로 관리)
 │   ├── root-context/             ← 루트 CLAUDE.md/AGENTS.md의 원본 복사본
 │   │   ├── CLAUDE.md             ← 루트 통합 인덱스 원본
 │   │   └── AGENTS.md             ← 루트 통합 인덱스 원본
-│   ├── keai-fe-portal-context.md
-│   ├── keai-fe-portal/
-│   ├── keai-be-portal-context.md
-│   ├── keai-be-portal/
-│   ├── keai-be-collector-context.md
-│   └── keai-be-collector/
+│   ├── acro-fe-portal-context.md
+│   ├── acro-fe-portal/
+│   ├── acro-be-portal-context.md
+│   ├── acro-be-portal/
+│   ├── acro-be-collector-context.md
+│   └── acro-be-collector/
 ├── .claude/                      ← 프로젝트 루트 배포본 (git 미관리)
 ├── .agents/                      ← 프로젝트 루트 배포본 (git 미관리)
 ├── CLAUDE.md                     ← 루트 통합 인덱스 (git 미관리)
@@ -90,12 +90,12 @@ keai/                             ← 프로젝트 상위 폴더 (git 관리 안
 복수 앱에서 git으로 관리되는 대상:
 
 - 각 애플리케이션 레포: 각 앱의 소스코드와 앱별 설정
-- `keai-AI-Harness-docs/`: 원본 `skills/`, 운영 문서, 템플릿
+- `acro-AI-Harness-docs/`: 원본 `skills/`, 운영 문서, 템플릿
 - `.docs/`: 프로젝트 전체 AI 문서와 앱별 컨텍스트 문서 (별도 git 레포로 관리). 초기 개인 실험 단계에서는 remote 연결 전일 수 있음
 
 복수 앱에서 git으로 관리하지 않는 대상:
 
-- 프로젝트 최상위 `keai/`
+- 프로젝트 최상위 `acro/`
 - 루트 `.claude/*`, `.agents/*`, `CLAUDE.md`, `AGENTS.md`
 
 이 git으로 관리하지 않는 루트 파일들은 `harness-setup`이 원본 하네스 저장소와 `.docs/root-context/`를 기준으로 다시 만들거나 갱신한다.
@@ -104,12 +104,12 @@ keai/                             ← 프로젝트 상위 폴더 (git 관리 안
 
 ```text
 .docs/root-context/CLAUDE.md   ─┐
-                                ├─ /harness-setup 재실행 → keai/CLAUDE.md
-.docs/root-context/AGENTS.md   ─┘                         → keai/AGENTS.md
+                                ├─ /harness-setup 재실행 → acro/CLAUDE.md
+.docs/root-context/AGENTS.md   ─┘                         → acro/AGENTS.md
 ```
 
 - `.docs/root-context/CLAUDE.md`, `.docs/root-context/AGENTS.md`: git으로 관리되는 `.docs` 레포 안의 원본 복사본
-- `keai/CLAUDE.md`, `keai/AGENTS.md`: 프로젝트 최상위에 놓이는 실행용 루트 인덱스. git으로 관리하지 않고 `harness-setup`이 갱신
+- `acro/CLAUDE.md`, `acro/AGENTS.md`: 프로젝트 최상위에 놓이는 실행용 루트 인덱스. git으로 관리하지 않고 `harness-setup`이 갱신
 - 앱별 상세 컨텍스트는 `.docs/{앱}-context.md`와 `.docs/{앱}/instruction/*-instruction.md`에 두고, 루트 인덱스는 각 앱 문서의 위치를 안내하는 역할만 한다
 
 ### 원본 최신화와 배포 방식
