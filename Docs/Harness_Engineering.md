@@ -1,19 +1,19 @@
 # Harness Engineering Guide
 
-> 2026-06-28 기준 현재 저장소의 스킬과 문서를 기준으로 정리한 AI Agent 하네스 운영 가이드.
-> 아래 내용은 `skills/`, `example/`, `README.md`, 각 `SKILL.md`에 있는 정보를 기준으로 작성했다.
+> 2026-06-28 기준 현재 저장소의 스킬과 문서를 바탕으로 정리한 AI Agent 하네스 운영 가이드.
+> 아래 내용은 `skills/`, `example/`, `README.md`, 각 `SKILL.md`의 현재 내용을 기준으로 작성했다.
 > 단일/복수 애플리케이션 프로젝트 모두 지원한다.
 
 ---
 
 ## 1. 이 문서의 목적
 
-이 저장소의 본질은 "AI가 코드를 잘 짜게 만드는 문서·규칙·작업 흐름을 미리 설계하는 것"이다.
+이 저장소의 목적은 "AI가 같은 기준으로 코드를 작성하도록 문서·규칙·작업 흐름을 미리 갖추는 것"이다.
 
 핵심은 세 가지다.
 
 1. **설계 문서가 먼저다.** 바로 구현시키지 않는다.
-2. **Agent가 계속 참조할 고정 컨텍스트를 만든다.**
+2. **에이전트가 계속 참조할 고정 컨텍스트를 만든다.**
 3. **구현 단위를 작게 쪼개고 중간마다 품질을 확인한다.**
 
 이 문서는 현재 저장소 기준의 흐름과 구성을 정리한다.
@@ -22,12 +22,12 @@
 
 ## 2. 현재 저장소 기준 구성 요약
 
-- `harness-setup`은 이 저장소(원본 하네스 레포)의 스킬을 대상 프로젝트에 설치·갱신하는 진입점이다. 단일/복수 애플리케이션을 자동 감지한다.
+- `harness-setup`은 이 저장소(원본 하네스 저장소)의 스킬을 대상 프로젝트에 설치·갱신하는 진입점이다. 단일/복수 애플리케이션을 자동 감지한다.
 - `design-doc`는 `skills/design-doc/templates/INPUT_V2.md`, `OUTPUT_V2.md` 템플릿을 포함한다.
 - `rfp-ingest`는 RFP에서 SFR을 해석하여 대화 컨텍스트로 전달한다 (별도 파일 생성 없음).
 - 프로토타입 흐름은 `design-prototype-docs` → `create-prototype`으로 연결된다. 산출물은 `.docs/prototype/{사용자}/{식별자}/`에 저장한다.
 - 구현 지침 계열은 `impl-fe-be-doc`/`impl-doc`(계획), `impl-reuse-scan`(시작 전 점검), `impl-verify`(Phase 검증) 4개다. 산출물은 `.docs/impl-doc/{사용자}/{기능명}.md` (단일앱) 또는 `.docs/{앱}/impl-doc/{사용자}/{기능명}.md` (복수앱)에 저장한다.
-- 품질·운영 계열은 `multi-review`, `pre-commit`, `commit`, `code-comment`, `doc-audit`, `agent-sync`, `git-scoped-account`가 존재한다.
+- 품질·운영 계열에는 `multi-review`, `pre-commit`, `commit`, `code-comment`, `doc-audit`, `agent-sync`, `git-scoped-account`가 있다.
 - 산출물 생성 또는 코드·커밋 적용범위를 갖는 스킬은 STEP 0에서 프로젝트 유형(단일/복수)을 감지하고 사용자에게 확인한다. 운영 전용 스킬(`git-scoped-account` 등)과 메타 스킬(`custom-skill-design`)은 해당하지 않는다.
 
 ---
@@ -36,7 +36,7 @@
 
 ```text
 AI_Agent_docs/
-├── skills/              ← IDE 안의 Agent가 직접 호출하는 스킬과 템플릿의 단일 소스
+├── skills/              ← IDE 안의 에이전트가 직접 호출하는 스킬과 템플릿의 원본
 ├── Docs/                ← 운영·소개·분석 문서
 │   ├── Harness_Engineering.md
 │   ├── Harness_Engineering_Intro.md
@@ -52,10 +52,10 @@ AI_Agent_docs/
 
 | 호출명 | 디렉토리 | 역할 | 대표 입력 | 대표 산출물 |
 |--------|----------|------|-----------|-------------|
-| `harness-setup` | `skills/harness-setup` | 원본 하네스 레포 → 프로젝트 설치·갱신 | 원본 하네스 레포 경로, 대상 프로젝트 | `.claude/skills/`, `.agents/skills/`, `.docs/`, 루트 컨텍스트 파일 |
+| `harness-setup` | `skills/harness-setup` | 원본 하네스 저장소 → 프로젝트 설치·갱신 | 원본 하네스 저장소 경로, 대상 프로젝트 | `.claude/skills/`, `.agents/skills/`, `.docs/`, 루트 컨텍스트 파일 |
 | `rfp-ingest` | `skills/rfp-ingest` | RFP에서 지정 SFR 추출·해석·화면 후보 매핑 | `@RFP PDF`, `SFR-019` 등 | 대화 컨텍스트 (파일 생성 없음) |
 | `design-doc` | `skills/design-doc` | 인터뷰 기반 설계 문서 도출 | 아이디어, 기존 문서, rfp-ingest 해석 결과 | `.docs/DESIGN.md` (단일앱) / `.docs/{앱}-DESIGN.md` (복수앱) |
-| `context-doc` | `skills/context-doc` | Agent용 컨텍스트 문서 생성 (다중 분할) | `design-doc` 결과물 | `CLAUDE.md` + `AGENTS.md` + `.docs/instruction/*-instruction.md` |
+| `context-doc` | `skills/context-doc` | 에이전트용 컨텍스트 문서 생성 (주제별 분할) | `design-doc` 결과물 | `CLAUDE.md` + `AGENTS.md` + `.docs/instruction/*-instruction.md` |
 | `harness-bootstrap` | `skills/harness-bootstrap` | 기존 코드베이스 → 설계 + 컨텍스트 문서 역추출 | 문서 없는 기존 코드베이스 | `design-doc OUTPUT_V2` + `context-doc` 결과물 일괄 |
 
 #### B. 프로토타입·UI 계열
@@ -64,7 +64,7 @@ AI_Agent_docs/
 |--------|----------|------|-----------|-------------|
 | `design-prototype-docs` | `skills/design-prototype-docs` | 프로토타입 입력용 화면 설계 문서 생성 | 요구사항, RFP, PRD | `.docs/prototype/{사용자}/{식별자}/design-doc.md` |
 | `create-prototype` | `skills/create-prototype` | HTML/CSS/JSON 프로토타입 생성 | 목업 디자인 문서, 화면 기능 설명 | `.docs/prototype/{사용자}/{PREFIX}-{번호}/` |
-| `frontend-design` | `skills/frontend-design` | 실제 UI 구현 시 디자인 품질 기준 제공 | 화면 구현 요청 | 개성 있는 프론트 코드 |
+| `frontend-design` | `skills/frontend-design` | 실제 UI 구현 시 디자인 품질 기준 제공 | 화면 구현 요청 | 프로젝트에 맞는 프론트엔드 코드 |
 
 #### C. 구현 지침 계열
 
@@ -83,8 +83,8 @@ AI_Agent_docs/
 | `pre-commit` | `skills/pre-commit` | 커밋 전 규칙 검사 | 에러 처리, 타임아웃, 민감 정보, TODO, 테스트 |
 | `commit` | `skills/commit` | Conventional Commits 기반 커밋 | 한글 description, scope 추론, why 중심 body |
 | `code-comment` | `skills/code-comment` | 변경 파일 한글 주석 작성·갱신 | 승인 전 파일 미수정 원칙 |
-| `doc-audit` | `skills/doc-audit` | 코드와 Agent 문서 괴리 분석 | 제안만 먼저 출력, 승인 후 반영 |
-| `agent-sync` | `skills/agent-sync` | Agent 문서/Skills 양쪽 내용 맞춤 | `.claude/skills` ↔ `.agents/skills` 미러, `CLAUDE.md` ↔ `AGENTS.md` 일치 (원본 하네스 레포에서 가져오는 일은 harness-setup 전담) |
+| `doc-audit` | `skills/doc-audit` | 코드와 에이전트 문서 괴리 분석 | 제안만 먼저 출력, 승인 후 반영 |
+| `agent-sync` | `skills/agent-sync` | Agent 문서/Skills 양쪽 내용 맞춤 | `.claude/skills` ↔ `.agents/skills` 미러, `CLAUDE.md` ↔ `AGENTS.md` 일치 (원본 하네스 저장소에서 가져오는 일은 harness-setup 전담) |
 | `git-scoped-account` | `skills/git-scoped-account` | 디렉토리 스코프 git 계정 일괄 적용·확인 | 전역 `~/.gitconfig` 미변경 + `include.path`로 상위 트리 하위 repo에만 user.name/email 적용 |
 
 #### E. 메타 계열
@@ -102,7 +102,7 @@ AI_Agent_docs/
 | 유형 | 구조 | `.docs/` 경로 예시 |
 |------|------|---------------------|
 | **단일 앱** | 하나의 git repo = 앱 + 하네스 산출물 | `.docs/DESIGN.md`, `.docs/impl-doc/{사용자}/{기능}.md` |
-| **복수 앱** | 사용자 생성 컨테이너 폴더 (git init 없음) 아래에 `.docs/`, 각 앱, 원본 하네스 레포가 독립 git | `.docs/{앱}-DESIGN.md`, `.docs/{앱}/impl-doc/{사용자}/{기능}.md` |
+| **복수 앱** | 프로젝트 상위 폴더 (git init 없음) 아래에 `.docs/`, 각 앱, 원본 하네스 저장소가 독립 git | `.docs/{앱}-DESIGN.md`, `.docs/{앱}/impl-doc/{사용자}/{기능}.md` |
 
 ### 4-2. 작업 스케일
 
@@ -132,7 +132,7 @@ AI_Agent_docs/
 /git-scoped-account   (복수 앱 환경에서 앱별 git 계정 분리 시)
         │
         ▼
-/harness-setup        (원본 하네스 레포 → 프로젝트 스킬 설치·갱신)
+/harness-setup        (원본 하네스 저장소 → 프로젝트 스킬 설치·갱신)
         │
         ▼
 [1단계 — 설계]
@@ -156,7 +156,7 @@ impl 스킬 선택
   └─ /impl-doc        (단일·소규모 범용)
         │
         ▼
-/impl-reuse-scan      (선택 시작 전 점검 — 중복 자산 확인)
+/impl-reuse-scan      (구현 시작 전 점검 — 중복 자산 확인)
         │
         ▼
 [3단계 — 구현·검증]
@@ -181,7 +181,7 @@ impl 스킬 선택
 
 ### 기본 흐름에서 기억할 점
 
-- **0단계는 프로젝트당 한 번**이다. `harness-setup`은 설치 후 원본이 갱신됐을 때만 재실행한다.
+- **0단계는 프로젝트당 한 번**이다. `harness-setup`은 설치 후 원본이 갱신됐을 때 다시 실행한다.
 - **rfp-ingest는 파일을 생성하지 않는다.** 해석 결과는 대화 컨텍스트로 남아 후속 스킬이 참조한다.
 - **harness-bootstrap → 이후 정규 루프 합류**: 역추출된 설계문서를 기반으로 `design-doc`/`context-doc` 보강 후 같은 흐름을 따른다.
 - 프로젝트 전체 작업이면 `context-doc`를 거의 필수로 본다.
@@ -213,12 +213,12 @@ impl 스킬 선택
 ## 8. 스킬 간 입출력 약속
 
 현재 저장소의 핵심은 단순한 순서가 아니라 **산출물 연결 방식**이다.
-아래 연결 방식이 맞아야 다음 스킬이 흔들리지 않는다.
+아래 연결 방식이 맞아야 다음 스킬도 안정적으로 동작한다.
 
 ### 8-1. 핵심 연결도
 
 ```text
-원본 하네스 레포
+원본 하네스 저장소
   └─→ /harness-setup
         └─→ .claude/skills/, .agents/skills/, .docs/, 루트 컨텍스트
 
@@ -331,7 +331,7 @@ impl 스킬 선택
 | `pre-commit` | 커밋 직전 | 빈 catch, 타임아웃 누락, 민감 정보, TODO 형식, 테스트 부재 |
 | `code-comment` | 가독성 보완이 필요할 때 | 변경 파일 문맥 전달 실패 |
 | `doc-audit` | 코드와 문서가 어긋난 느낌이 날 때 | 낡은 `CLAUDE.md` / `AGENTS.md`, 낡은 규칙 문서 |
-| `agent-sync` | Agent 문서/스킬 변경 후 | 환경별 문서 불일치 |
+| `agent-sync` | Agent 문서/스킬 변경 후 | 도구별 문서 불일치 |
 | `commit` | 스테이징 후 | 메시지 품질 저하, 변경 이유 미정리 |
 
 ### 권장 확인 순서
@@ -399,7 +399,7 @@ impl 스킬 선택
 
 | 자동화 | 비권장 이유 |
 |--------|-------------|
-| `design-doc` 완료 즉시 `context-doc` 자동 실행 | 설계 문서가 아직 흔들릴 수 있다 |
+| `design-doc` 완료 즉시 `context-doc` 자동 실행 | 설계 문서가 아직 바뀔 수 있다 |
 | `rfp-ingest` 완료 즉시 `design-doc` 자동 실행 | 프로토타입 옵션 분기를 막는다 |
 | 모든 커밋 뒤 강제 리뷰/감사 | 비용 대비 노이즈가 크다 |
 
@@ -410,11 +410,11 @@ impl 스킬 선택
 
 ---
 
-## 12. 바이브코딩 운영 원칙
+## 12. AI 코딩 운영 원칙
 
-### 12-1. 웹 AI와 IDE Agent는 역할이 다르다
+### 12-1. 웹 기반 AI와 IDE 에이전트는 역할이 다르다
 
-| 상황 | 웹 AI가 강한 쪽 | IDE Agent가 강한 쪽 |
+| 상황 | 웹 기반 AI가 강한 쪽 | IDE 에이전트가 강한 쪽 |
 |------|------------------|----------------------|
 | 긴 탐색 대화 | ✅ | △ |
 | 설계 인터뷰 | ✅ | ✅ |
@@ -495,7 +495,7 @@ impl 스킬 선택
 ### 새 프로젝트 시작
 
 - [ ] (복수 앱 환경) `git-scoped-account`로 앱별 git 계정 정리.
-- [ ] `harness-setup`으로 원본 하네스 레포 스킬을 프로젝트에 설치.
+- [ ] `harness-setup`으로 원본 하네스 저장소의 스킬을 프로젝트에 설치.
 - [ ] 문서 없는 기존 코드베이스라면 먼저 `harness-bootstrap`으로 뼈대 추출.
 - [ ] `design-doc`로 설계 문서를 만든다.
 - [ ] 프로젝트 단위면 `context-doc`로 `CLAUDE.md`, `AGENTS.md`와 주제별 `.docs/instruction/*-instruction.md`를 만든다.
@@ -517,7 +517,7 @@ impl 스킬 선택
 - [ ] 필요 시 `code-comment`
 - [ ] `commit`
 
-### Agent가 이상한 방향으로 갈 때
+### 에이전트가 이상한 방향으로 갈 때
 
 - [ ] 바로 멈춘다.
 - [ ] 이번 턴 범위를 다시 좁힌다.
@@ -533,4 +533,4 @@ impl 스킬 선택
 
 > `harness-setup`으로 환경을 갖추고, `design-doc`를 중심 문서로 삼아 상황에 맞는 `impl-*` 하나로 구현 단위를 고른 뒤, `multi-review`·`pre-commit`·`doc-audit`로 품질을 확인하는 **하나의 기본 작업 흐름** 구조다. 단일/복수 애플리케이션 모두 같은 흐름을 따른다.
 
-이 흐름만 지켜도 "바이브코딩"이 즉흥 코딩이 아니라 **문서 중심의 반복 가능한 생산 체계**로 바뀐다.
+이 흐름만 지켜도 AI 코딩이 즉흥 작업이 아니라 **문서 중심의 반복 가능한 생산 체계**로 바뀐다.

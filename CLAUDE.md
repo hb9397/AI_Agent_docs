@@ -1,14 +1,16 @@
 # AI Agent Harness — Agent 운영 가이드
 
-> AI 에이전트 스킬·운영 문서 원본 하네스 레포<br>
+> AI 에이전트 스킬·운영 문서 원본 하네스 저장소<br>
 > 단일/복수 애플리케이션 프로젝트를 모두 지원하는 공통 하네스
 
 ---
 
 ## 프로젝트 개요
 
-이 저장소는 AI 에이전트(Claude Code, Gemini CLI 등)가 팀 공통 품질 기준으로 작업하기 위한 **스킬·프롬프트·템플릿·운영 문서의 원본 하네스 레포**다.
+이 저장소는 AI 에이전트(Claude Code, Gemini CLI 등)가 팀 공통 품질 기준으로 작업하기 위한 **스킬·프롬프트·템플릿·운영 문서의 원본 하네스 저장소**다.
 
+- 대상 저장소: `AI_Agent_docs` (GitHub private)
+- 공유 시 저장소명: `{프로젝트명}-AI-Harness-docs` (GitLab·Gitea 등 사내 저장소)
 - 총 20종 스킬이 `skills/` 디렉토리에 있다
 - 프로젝트에는 `harness-setup` 스킬로 설치·업데이트한다
 - 이 레포 자체의 `.claude/skills`와 `.agents/skills`에는 `harness-setup`과 `custom-skill-design`만 배치한다
@@ -42,14 +44,14 @@ AI_Agent_docs/
 2. **C-1 확인 단계** — 산출물·적용범위 스킬의 STEP 0에는 프로젝트 유형(단일/복수) 감지 + 사용자 확인이 있어야 한다.
 3. **C-2 경로 표준** — `.docs/` 경로는 단일/복수에 따라 분기한다 (상세: `improvement_plan/20260627/리팩토링 작업 계획서.md` §3-2).
 4. **C-3 포맷** — SKILL.md frontmatter는 Claude 양식(`name`, `description`, `allowed-tools`)을 유지하되, 본문은 Codex 등 타 플랫폼에서도 해석 가능한 중립 서술이어야 한다.
-5. **금지 항목** — `model:` 필드 금지, `agent: fork` 하드코딩 금지 (서브에이전트 사용은 STEP 0 질문 게이트로).
+5. **금지 항목** — `model:` 필드 금지, `agent: fork` 하드코딩 금지 (서브에이전트 사용 여부는 STEP 0에서 질문으로 확인).
 6. **규칙 인라인** — 스킬 간 참조 금지. 규칙은 각 스킬에 인라인 복제한다.
 
 ### harness-setup ↔ agent-sync 경계
 
 | 영역 | 담당 |
 |------|------|
-| 원본 하네스 레포 → 프로젝트 최신화 | harness-setup |
+| 원본 하네스 저장소 → 프로젝트 최신화 | harness-setup |
 | 복수앱 루트 미관리 파일 | harness-setup 전담 (agent-sync 접근 금지) |
 | `.claude/skills` ↔ `.agents/skills` 양쪽 스킬 맞춤 | agent-sync |
 | 단일앱 `CLAUDE.md` ↔ `AGENTS.md` 양쪽 문서 맞춤 | agent-sync |
