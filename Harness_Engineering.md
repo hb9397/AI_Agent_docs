@@ -28,7 +28,7 @@
 - 프로토타입 흐름은 `design-prototype-docs` → `create-prototype`으로 연결된다. 산출물은 `.docs/prototype/{사용자}/{식별자}/`에 저장한다.
 - 구현 지침 계열은 `impl-fe-be-doc`/`impl-doc`(계획), `impl-reuse-scan`(preflight), `impl-verify`(Phase 게이트) 4개다. 산출물은 `.docs/impl-doc/{사용자}/{기능명}.md` (단일앱) 또는 `.docs/{앱}/impl-doc/{사용자}/{기능명}.md` (복수앱)에 저장한다.
 - 품질·운영 계열은 `multi-review`, `pre-commit`, `commit`, `code-comment`, `doc-audit`, `agent-sync`, `git-scoped-account`가 존재한다.
-- 모든 스킬은 STEP 0에서 프로젝트 유형(단일/복수)을 감지하고 사용자에게 확인한다 (C-1 게이트).
+- 산출물 생성 또는 코드·커밋 적용범위를 갖는 스킬은 STEP 0에서 프로젝트 유형(단일/복수)을 감지하고 사용자에게 확인한다 (C-1 게이트). 운영 전용 스킬(`git-scoped-account` 등)과 메타 스킬(`custom-skill-design`)은 해당하지 않는다.
 
 ---
 
@@ -94,7 +94,7 @@ AI_Agent_docs/
 
 ### 4-1. 프로젝트 유형
 
-모든 스킬은 STEP 0에서 아래를 자동 감지하고 사용자에게 확인한다 (C-1 게이트):
+산출물·적용범위 스킬은 STEP 0에서 아래를 자동 감지하고 사용자에게 확인한다 (C-1 게이트):
 
 | 유형 | 구조 | `.docs/` 경로 예시 |
 |------|------|---------------------|
@@ -260,7 +260,7 @@ impl 스킬 선택
 
 #### `context-doc`로 넘어가는 매핑
 
-`context-doc`는 얇은 `CLAUDE.md`와 동일 내용의 `AGENTS.md`(프로젝트 팩트 + 인덱스) + 주제별 `.instruction/*-instruction.md` 7종으로 분할 생성한다.
+`context-doc`는 얇은 `CLAUDE.md`와 동일 내용의 `AGENTS.md`(프로젝트 팩트 + 인덱스) + 주제별 `.docs/instruction/*-instruction.md` 7종으로 분할 생성한다. (복수 앱: `.docs/{앱}/instruction/*-instruction.md`)
 
 | `design-doc OUTPUT_V2` 섹션 | 사용처 |
 |-----------------------------|--------|
@@ -428,7 +428,7 @@ impl 스킬 선택
 [참조 문서]
 - 설계문서: ...
 - 작업지침서: ...
-- CLAUDE.md / AGENTS.md / .instruction/*-instruction.md: ...
+- CLAUDE.md / AGENTS.md / .docs/instruction/*-instruction.md: ...
 
 [이번 턴 범위]
 - Phase 2의 BE-03만 구현
@@ -520,7 +520,7 @@ impl 스킬 선택
 - [ ] 이번 턴 범위를 다시 좁힌다.
 - [ ] 참조 문서와 수정 파일 범위를 다시 명시한다.
 - [ ] 문서가 낡았다면 `doc-audit`를 먼저 돌린다.
-- [ ] 같은 문제가 반복되면 관련 `.instruction/*-instruction.md`에 금지 패턴을 보강한다.
+- [ ] 같은 문제가 반복되면 관련 `.docs/instruction/*-instruction.md`에 금지 패턴을 보강한다.
 
 ---
 

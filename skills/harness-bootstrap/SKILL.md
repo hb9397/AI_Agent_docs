@@ -23,6 +23,8 @@ allowed-tools: Read, Glob, Grep, Bash, Write
 > 이 스킬은 "레거시/기존 프로젝트에 AI 하네스를 처음 도입"하는 진입점이다.
 > 이후부터는 `design-doc` → `context-doc` 정규 플로우를 그대로 쓰면 된다.
 
+> **템플릿 재사용 예외**: 이 스킬은 `design-doc`과 `context-doc`의 파이프라인을 한 번에 실행하는 통합 스킬이므로, 해당 스킬의 templates/prompts를 직접 참조한다 (`../design-doc/templates/`, `../context-doc/prompts/`, `../context-doc/templates/`). 이는 "스킬 간 참조 금지" 원칙의 명시적 예외이다.
+
 ---
 
 ## 설계 원칙

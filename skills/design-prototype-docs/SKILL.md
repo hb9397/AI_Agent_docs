@@ -332,7 +332,7 @@ STEP 0-C에서 확인한 식별자를 폴더명에 사용한다.
 
 예시:
 - 단일앱: `.docs/prototype/hb9397/SFR-019/design-doc.md`
-- 복수앱: `.docs/fe-portal/prototype/hb9397/SFR-019/design-doc.md`
+- 복수앱: `.docs/prototype/hb9397/SFR-019/design-doc.md` (앱 구분 없이 프로젝트 공통)
 
 ### 저장 시 규칙
 
