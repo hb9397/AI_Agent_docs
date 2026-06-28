@@ -11,19 +11,19 @@
 
 ---
 
-## 1. 하네스 정본 레포 위치 확인
+## 1. 원본 하네스 레포 위치 확인
 
 ```bash
-# 동일 상위 폴더 또는 하위 폴더에서 하네스 정본 레포 탐색
+# 동일 상위 폴더 또는 하위 폴더에서 원본 하네스 레포 탐색
 ls ../AI_Agent_docs/skills/harness-setup/SKILL.md 2>/dev/null \
   || ls ../*-AI-Harness-docs/skills/harness-setup/SKILL.md 2>/dev/null \
   || ls ./AI_Agent_docs/skills/harness-setup/SKILL.md 2>/dev/null \
   || ls ./*-AI-Harness-docs/skills/harness-setup/SKILL.md 2>/dev/null
 ```
 
-정본 레포를 찾지 못한 경우 사용자에게 경로를 질문한다.
+원본 하네스 레포를 찾지 못한 경우 사용자에게 경로를 질문한다.
 
-정본 레포 경로를 `$HARNESS_SRC`로 둔다.
+원본 하네스 레포 경로를 `$HARNESS_SRC`로 둔다.
 
 ---
 
@@ -40,10 +40,10 @@ mkdir -p .agents/skills
 
 ## 3. 스킬 복사
 
-정본 레포의 `skills/` 하위 전체를 `.claude/skills/`와 `.agents/skills/`에 복사한다.
+원본 하네스 레포의 `skills/` 하위 전체를 `.claude/skills/`와 `.agents/skills/`에 복사한다.
 
 ```bash
-# 정본 레포의 모든 스킬 디렉토리를 순회
+# 원본 하네스 레포의 모든 스킬 디렉토리를 순회
 for skill_dir in "$HARNESS_SRC"/skills/*/; do
   skill_name=$(basename "$skill_dir")
   # .claude/skills/ 에 복사
@@ -56,7 +56,7 @@ done
 ### 복사 대상에서 제외할 항목
 
 - `evals/` 디렉토리 (테스트 전용, 배포 불필요)
-- 정본 레포 자체 설정 파일 (`.git/`, `README.md`, `Harness_Engineering*.md` 등)
+- 원본 하네스 레포 자체 설정 파일 (`.git/`, `README.md`, `Harness_Engineering*.md` 등)
 
 ### 스킬별 하위 구조 유지
 

@@ -26,7 +26,7 @@ allowed-tools: Read, Glob, Grep, Bash, Task
 
 순차 선택 시 Task A → B → C 순서로 직접 수행한다.
 
-#### STEP 0-B — 프로젝트 유형 확인 (C-1 게이트)
+#### STEP 0-B — 프로젝트 유형 확인 (C-1 확인 단계)
 
 감사 범위를 확정하기 위해 **반드시** 아래를 수행한다.
 

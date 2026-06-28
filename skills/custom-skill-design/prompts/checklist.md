@@ -33,7 +33,7 @@
     → 스킬 유형별 실제 경로가 다름 (예: design-doc → .docs/DESIGN.md, context-doc → 루트 CLAUDE.md + .docs/instruction/, impl-doc → .docs/impl-doc/{사용자}/{기능명}.md)
     → 복수앱은 .docs/{앱}-*, .docs/{앱}/, .docs/root-context/ 등으로 추가 분기
     → 리팩토링 작업 계획서.md §3-2 C-2 경로 표준 표를 참조할 것
-[ ] C-1 게이트 필요 스킬이면 STEP 0에 프로젝트 유형 감지 + 사용자 확인이 있는가?
+[ ] C-1 확인 단계 필요 스킬이면 STEP 0에 프로젝트 유형 감지 + 사용자 확인이 있는가?
 ```
 
 **판정 기준**: 전체 통과 → [토큰] 진행 / 미통과 항목 → 즉시 수정 후 재점검

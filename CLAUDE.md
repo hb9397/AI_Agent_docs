@@ -1,13 +1,13 @@
 # AI Agent Harness — Agent 운영 가이드
 
-> AI 에이전트 스킬·운영 문서 기준 레포<br>
+> AI 에이전트 스킬·운영 문서 원본 하네스 레포<br>
 > 단일/복수 애플리케이션 프로젝트를 모두 지원하는 공통 하네스
 
 ---
 
 ## 프로젝트 개요
 
-이 저장소는 AI 에이전트(Claude Code, Gemini CLI 등)가 팀 공통 품질 기준으로 작업하기 위한 **스킬·프롬프트·템플릿·운영 문서의 기준 레포**다.
+이 저장소는 AI 에이전트(Claude Code, Gemini CLI 등)가 팀 공통 품질 기준으로 작업하기 위한 **스킬·프롬프트·템플릿·운영 문서의 원본 하네스 레포**다.
 
 - 총 20종 스킬이 `skills/` 디렉토리에 있다
 - 프로젝트에는 `harness-setup` 스킬로 설치·업데이트한다
@@ -49,7 +49,7 @@ AI_Agent_docs/
 
 | 영역 | 담당 |
 |------|------|
-| 기준 레포 → 프로젝트 최신화 | harness-setup |
+| 원본 하네스 레포 → 프로젝트 최신화 | harness-setup |
 | 복수앱 루트 미관리 파일 | harness-setup 전담 (agent-sync 접근 금지) |
 | `.claude/skills` ↔ `.agents/skills` 양쪽 스킬 맞춤 | agent-sync |
 | 단일앱 `CLAUDE.md` ↔ `AGENTS.md` 양쪽 문서 맞춤 | agent-sync |

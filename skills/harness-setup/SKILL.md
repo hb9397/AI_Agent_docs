@@ -32,7 +32,7 @@ design-doc, context-doc 등 후속 스킬 사용 가능
 
 | 영역 | 소유 스킬 | 비고 |
 |------|-----------|------|
-| 정본 레포 → 프로젝트 `.claude/skills`·`.agents/skills` **pull** | **harness-setup 전담** | 상류→하류 단방향 |
+| 원본 하네스 레포 → 프로젝트 `.claude/skills`·`.agents/skills` **pull** | **harness-setup 전담** | 상류→하류 단방향 |
 | 복수앱 **루트 미관리** `CLAUDE.md`/`AGENTS.md` + `.docs/root-context/` 복사본 | **harness-setup 전담** | agent-sync 접근 **금지** |
 | git 관리 컨텍스트 횡적 일치(CLAUDE↔AGENTS), 로컬 `.claude/skills↔.agents/skills` 미러 | **agent-sync** | 횡적·변경기반 |
 
@@ -55,7 +55,7 @@ design-doc, context-doc 등 후속 스킬 사용 가능
 
 | 감지 결과 | 의미 | 다음 동작 |
 |-----------|------|-----------|
-| 하네스 정본 레포 내부에서 실행 중 | 최초 세팅 또는 외부 프로젝트 대상 | **부모 폴더**를 프로젝트 루트 후보로 설정 → Step 2 |
+| 원본 하네스 레포 내부에서 실행 중 | 최초 세팅 또는 외부 프로젝트 대상 | **부모 폴더**를 프로젝트 루트 후보로 설정 → Step 2 |
 | 이미 배포된 프로젝트에서 실행 중 | 갱신 모드 | **현재 위치**를 프로젝트 루트로 설정 → Step 2 |
 | 판별 불가 | — | 사용자에게 프로젝트 루트 경로를 직접 질문 |
 
@@ -110,7 +110,7 @@ Step 2 확인 결과에 따라 분기한다.
 
 핵심 작업:
 1. 애플리케이션 루트에 `.claude/skills/`, `.agents/skills/` 생성 (이미 있으면 무시)
-2. 하네스 정본 레포의 `skills/` 전체를 위 두 경로에 복사
+2. 원본 하네스 레포의 `skills/` 전체를 위 두 경로에 복사
 3. 멀티플랫폼(Claude Code, Codex 등) 고려 이유 안내
 
 ### Step 4-B — 복수 애플리케이션 세팅
@@ -159,7 +159,7 @@ Step 2 확인 결과에 따라 분기한다.
 `prompts/update-mode.md` 참조.
 
 핵심 작업:
-1. 하네스 정본 레포의 `skills/` 현재 버전과 프로젝트에 배포된 스킬을 비교
+1. 원본 하네스 레포의 `skills/` 현재 버전과 프로젝트에 배포된 스킬을 비교
 2. 변경된 스킬만 갱신 (추가/수정/삭제)
 3. 복수앱인 경우 추가로:
    - `.docs/root-context/CLAUDE.md`, `.docs/root-context/AGENTS.md` 갱신

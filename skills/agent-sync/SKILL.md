@@ -15,13 +15,13 @@ allowed-tools: Read, Write, Glob, Grep, Bash, Task
 
 | 대상 | 담당 | 비고 |
 |------|------|------|
-| 정본 레포(`AI_Agent_docs`) → 프로젝트 `skills/` 풀(pull) | **harness-setup** | 상류(upstream) 방향 |
+| 원본 하네스 레포(`AI_Agent_docs`) → 프로젝트 `skills/` 풀(pull) | **harness-setup** | 상류(upstream) 방향 |
 | 복수앱 루트 미관리 `CLAUDE.md`/`AGENTS.md` + `.docs/root-context/` 복사본 | **harness-setup 전담** | agent-sync 접근 **금지** |
 | `.claude/skills` ↔ `.agents/skills` 횡적 미러 | **agent-sync** | 횡적·변경 기반 |
 | 단일앱 루트 `CLAUDE.md` ↔ `AGENTS.md` 일치 | **agent-sync** | 횡적·변경 기반 |
 | 복수앱 앱별 컨텍스트(`.docs/{앱}-context.md` 등) 변경 미러 | **agent-sync** | 횡적·변경 기반 |
 
-> **원칙**: 정본 레포 pull과 복수앱 루트 미관리 파일은 harness-setup 전담이다.
+> **원칙**: 원본 하네스 레포 pull과 복수앱 루트 미관리 파일은 harness-setup 전담이다.
 > agent-sync는 **횡적 일치**만 담당한다.
 
 ---
@@ -42,7 +42,7 @@ allowed-tools: Read, Write, Glob, Grep, Bash, Task
 > 진입 분기에서 단일 Task만 실행하는 경우(Docs만 / Skills만)에는 해당 Task만 제시한다.
 > 순차 선택 시 아래 진입 분기로 직접 진행한다.
 
-#### STEP 0-B — 프로젝트 유형 확인 (C-1 게이트)
+#### STEP 0-B — 프로젝트 유형 확인 (C-1 확인 단계)
 
 동기화 범위를 확정하기 위해 **반드시** 아래를 수행한다.
 

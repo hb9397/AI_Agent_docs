@@ -12,17 +12,17 @@
 
 ---
 
-## 1. 하네스 정본 레포 위치 확인
+## 1. 원본 하네스 레포 위치 확인
 
 ```bash
-# 프로젝트 루트 내부 또는 동일 레벨에서 하네스 정본 레포 탐색
+# 프로젝트 루트 내부 또는 동일 레벨에서 원본 하네스 레포 탐색
 ls ./AI_Agent_docs/skills/harness-setup/SKILL.md 2>/dev/null \
   || ls ./*-AI-Harness-docs/skills/harness-setup/SKILL.md 2>/dev/null
 ```
 
-정본 레포를 찾지 못한 경우 사용자에게 경로를 질문한다.
+원본 하네스 레포를 찾지 못한 경우 사용자에게 경로를 질문한다.
 
-정본 레포 경로를 `$HARNESS_SRC`로 둔다.
+원본 하네스 레포 경로를 `$HARNESS_SRC`로 둔다.
 
 ---
 
@@ -40,7 +40,7 @@ mkdir -p .agents/skills
 
 ## 3. 스킬 복사
 
-단일 앱 세팅과 동일한 방식으로 정본 레포의 `skills/` 전체를 복사한다.
+단일 앱 세팅과 동일한 방식으로 원본 하네스 레포의 `skills/` 전체를 복사한다.
 
 ```bash
 for skill_dir in "$HARNESS_SRC"/skills/*/; do
@@ -53,7 +53,7 @@ done
 ### 복사 제외
 
 - `evals/` 디렉토리
-- 정본 레포 자체 설정 파일
+- 원본 하네스 레포 자체 설정 파일
 
 ---
 
