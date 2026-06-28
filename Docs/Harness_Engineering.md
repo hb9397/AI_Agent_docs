@@ -36,10 +36,13 @@
 
 ```text
 AI_Agent_docs/
-├── skills/         ← IDE 안의 Agent가 직접 호출하는 스킬과 템플릿의 단일 소스
-├── example/        ← 산출물 예시
-├── Harness_Engineering_Intro.md
-├── Harness_Engineering.md
+├── skills/              ← IDE 안의 Agent가 직접 호출하는 스킬과 템플릿의 단일 소스
+├── Docs/                ← 운영·소개·분석 문서
+│   ├── Harness_Engineering.md
+│   ├── Harness_Engineering_Intro.md
+│   └── Agent_Skills_Repo_Structure_Analysis.md
+├── improvement_plan/    ← 리팩토링 의사결정·점검 이력
+├── example/             ← 산출물 예시
 └── README.md
 ```
 

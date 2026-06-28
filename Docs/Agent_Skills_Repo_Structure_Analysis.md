@@ -1,5 +1,7 @@
 # 외부 Agent Skills 레포지토리 구성 분석
 
+> **⚠ 과거 스냅샷 문서** — 2026-05-27 시점 분석이며, 이후 리팩토링(D-7 파일 생성 폐지, `.instruction` → `.docs/root-context` 전환 등)으로 일부 내용이 현행과 다릅니다.
+
 > 작성일: 2026-05-27
 >
 > 목적: 현재 저장소의 스킬 개선이나 신규 스킬 설계로 넘어가기 전에, 주요 공식/비공식 Agent Skills 레포지토리의 실제 구성, 설치 방식, 스킬 배치 방식, 개별 스킬 목록을 먼저 파악한다.
@@ -202,9 +204,9 @@ my-repo/
 
 | 스킬 | 한글 역할 요약 | 의도가 비슷한 외부 (참고용) |
 |------|----------------|-----------------------------|
-| `rfp-ingest` | RFP PDF에서 특정 SFR(성능요구사항)을 골라 추출·해석하고 화면 후보를 매핑해 `rfp-design-input-{SFR}.md`를 만든다 | 직접 대응 없음 (도메인 특화) |
+| `rfp-ingest` | RFP PDF에서 특정 SFR(성능요구사항)을 골라 추출·해석하고 화면 후보를 매핑한다 (결과는 대화 컨텍스트로 전달, 파일 생성 없음) | 직접 대응 없음 (도메인 특화) |
 | `design-doc` | 인터뷰형 대화로 요구사항·동작 흐름·집중 로직·인터페이스·데이터를 끌어내 `OUTPUT_V2` 설계 문서를 만든다 | superpowers `brainstorming`, gstack `/office-hours`, openai `define-goal` |
-| `context-doc` | 설계 문서를 얇은 `CLAUDE.md`/`AGENTS.md` + 주제별 `.instruction/*-instruction.md` 7종으로 분할 생성해 에이전트 컨텍스트를 만든다 | 직접 대응 없음 (Karpathy 4원칙이 일부 가드 역할) |
+| `context-doc` | 설계 문서를 얇은 `CLAUDE.md`/`AGENTS.md` + 주제별 `.docs/root-context/*-context.md` 7종으로 분할 생성해 에이전트 컨텍스트를 만든다 | 직접 대응 없음 (Karpathy 4원칙이 일부 가드 역할) |
 | `harness-bootstrap` | 문서 없는 기존/레거시 코드베이스를 스캔해 설계 문서·CLAUDE/AGENTS·instruction 문서를 역추출한다 | superpowers `brainstorming` + `writing-plans` 패턴 일부 유사 |
 | `design-prototype-docs` | 프로토타입을 만들기 전에 화면 목록·흐름·기능·레이아웃·더미 데이터를 정리한 목업 디자인 문서를 만든다 | anthropics `frontend-design`, gstack `/design-consultation`·`/design-shotgun` |
 | `create-prototype` | 목업 디자인 문서를 입력으로 받아 실제 HTML/CSS/JSON 프로토타입을 생성한다 | anthropics `web-artifacts-builder`, gstack `/design-html` |

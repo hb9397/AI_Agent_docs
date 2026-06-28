@@ -13,7 +13,7 @@
 
 ```bash
 # 하네스 정본 레포 식별: skills/ 디렉토리 + Harness_Engineering.md 공존 여부
-ls skills/harness-setup/SKILL.md 2>/dev/null && ls Harness_Engineering.md 2>/dev/null
+ls skills/harness-setup/SKILL.md 2>/dev/null && (ls Docs/Harness_Engineering.md 2>/dev/null || ls Harness_Engineering.md 2>/dev/null)
 ```
 
 2. 위 두 파일이 모두 존재하면 → **하네스 정본 레포 내부**. 부모 폴더(`..`)를 프로젝트 루트 후보로 설정.
