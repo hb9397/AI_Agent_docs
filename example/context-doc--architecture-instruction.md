@@ -1,4 +1,11 @@
-# basic-instruction.md — ACRO Backend 코딩 규칙
+<!-- 산출물 예시 메타 -->
+> 📂 **산출물 예시 — `context-doc` 스킬 (instruction)**  
+> 산출 경로: `.docs/instruction/architecture-instruction.md` (복수 앱은 `.docs/{앱}/instruction/architecture-instruction.md`)  
+> context-doc는 설계 문서를 주제별 instruction 파일 7종(`architecture`/`code-style`/`framework`/`api`/`comm`/`file-convention`/`agent`)으로 분할 생성합니다. 이 문서는 그중 아키텍처·코딩 규칙(`architecture-instruction.md`) 예시입니다.
+
+---
+
+# architecture-instruction.md — ACRO Backend 아키텍처·코딩 규칙
 
 > ACRO Backend (Python + FastAPI + SQLAlchemy async + PostgreSQL) 개발 시 반드시 준수해야 할 규칙
 

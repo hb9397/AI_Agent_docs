@@ -1,7 +1,14 @@
-# ACRO Backend — Claude AI Guide
+<!-- 산출물 예시 메타 -->
+> 📂 **산출물 예시 — `context-doc` 스킬 (AGENTS.md)**  
+> 산출 경로: 프로젝트 루트 `AGENTS.md` (복수 앱은 루트 통합 인덱스)  
+> context-doc는 `CLAUDE.md`와 **동일 내용의** `AGENTS.md`(Codex·공용 Agent용)를 함께 생성합니다. 내용은 `context-doc--CLAUDE.md`와 같으며, 진입 파일명만 다릅니다. 두 파일의 일치는 `agent-sync`가 유지합니다.
+
+---
+
+# ACRO Backend — Agent Guide (AGENTS.md)
 
 > Adaptive Crawler RObot | Backend Context  
-> Python + FastAPI + PostgreSQL 기반 Agent 참조용 문서
+> Python + FastAPI + PostgreSQL 기반 Agent 참조용 문서 (Codex·공용 Agent 진입점, CLAUDE.md와 동일 내용)
 
 ---
 
@@ -201,8 +208,12 @@ AI는 이 프로젝트에서 두 가지 역할을 한다.
 ---
 
 ## 2️⃣ Instruction
-코드 작성에 있어서는 늘 아래 지침들을 준수한다.
-@.docs/instruction/basic-instruction.md
+코드 작성에 있어서는 늘 아래 주제별 지침들을 준수한다.
+@.docs/instruction/architecture-instruction.md
+@.docs/instruction/code-style-instruction.md
+@.docs/instruction/framework-instruction.md
+@.docs/instruction/api-instruction.md
+@.docs/instruction/agent-instruction.md
 
 ---
 

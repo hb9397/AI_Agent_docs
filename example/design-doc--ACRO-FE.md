@@ -1,3 +1,10 @@
+<!-- 산출물 예시 메타 -->
+> 📂 **산출물 예시 — `design-doc` 스킬 (복수 앱)**  
+> 산출 경로: `.docs/acro-fe-DESIGN.md`  
+> 복수 애플리케이션 프로젝트에서 FE 앱 단위로 분리 생성한 design-doc OUTPUT 예시입니다. (BE 짝: `design-doc--ACRO-BE.md`)
+
+---
+
 # ACRO Frontend — 설계 문서
 > Adaptive Crawler RObot | `acro/fe/`  
 > Agent 참조용 · React + Vite + Tailwind CSS 기반
