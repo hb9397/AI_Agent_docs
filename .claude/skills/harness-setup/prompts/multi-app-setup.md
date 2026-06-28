@@ -7,7 +7,7 @@
 
 - SKILL.md Step 2에서 **복수 애플리케이션** 확정, Step 3에서 **초기 세팅** 판정.
 - 프로젝트 최상위 폴더는 사용자가 직접 만든 컨테이너이며 **`git init` 조차 하지 않는다.**
-- 그 하위의 `.docs`(별도 git 레포), 각 애플리케이션(별도 git 레포), `{프로젝트명}-AI-Harness-docs`(별도 git 레포)만 각각 독립 git으로 관리된다.
+- 그 하위의 `.docs`(별도 git 레포), 각 애플리케이션(별도 git 레포), `{프로젝트명}-ai-harness-docs`(별도 git 레포)만 각각 독립 git으로 관리된다.
 - 프로젝트 최상위에 생성되는 `CLAUDE.md`/`AGENTS.md`/`.claude/*`/`.agents/*`는 **어떤 git에도 속하지 않으며** `harness-setup`이 단독 관리한다.
 
 ---
@@ -16,8 +16,8 @@
 
 ```bash
 # 프로젝트 루트 내부 또는 동일 레벨에서 원본 하네스 레포 탐색
-ls ./AI_Agent_docs/skills/harness-setup/SKILL.md 2>/dev/null \
-  || ls ./*-AI-Harness-docs/skills/harness-setup/SKILL.md 2>/dev/null
+ls ./ai-agent-harness-docs/skills/harness-setup/SKILL.md 2>/dev/null \
+  || ls ./*-ai-harness-docs/skills/harness-setup/SKILL.md 2>/dev/null
 ```
 
 원본 하네스 레포를 찾지 못한 경우 사용자에게 경로를 질문한다.
@@ -159,7 +159,7 @@ cp AGENTS.md .docs/root-context/AGENTS.md
 │   └── prototype/
 ├── {앱1 폴더}/                  ← 별도 git 레포
 ├── {앱2 폴더}/                  ← 별도 git 레포
-└── {프로젝트명}-AI-Harness-docs/ ← 별도 git 레포 (하네스 정본)
+└── {프로젝트명}-ai-harness-docs/ ← 별도 git 레포 (하네스 정본)
 ```
 
 > 📌 복수 애플리케이션 프로젝트에서는:

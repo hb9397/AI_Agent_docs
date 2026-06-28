@@ -17,10 +17,10 @@
 
 ```bash
 # 프로젝트 내부 또는 동일 레벨
-ls ./*-AI-Harness-docs/skills/harness-setup/SKILL.md 2>/dev/null \
-  || ls ./AI_Agent_docs/skills/harness-setup/SKILL.md 2>/dev/null \
-  || ls ../*-AI-Harness-docs/skills/harness-setup/SKILL.md 2>/dev/null \
-  || ls ../AI_Agent_docs/skills/harness-setup/SKILL.md 2>/dev/null
+ls ./*-ai-harness-docs/skills/harness-setup/SKILL.md 2>/dev/null \
+  || ls ./ai-agent-harness-docs/skills/harness-setup/SKILL.md 2>/dev/null \
+  || ls ../*-ai-harness-docs/skills/harness-setup/SKILL.md 2>/dev/null \
+  || ls ../ai-agent-harness-docs/skills/harness-setup/SKILL.md 2>/dev/null
 ```
 
 원본 하네스 레포를 찾지 못한 경우 사용자에게 경로를 질문한다.

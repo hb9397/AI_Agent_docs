@@ -15,7 +15,7 @@ allowed-tools: Read, Write, Glob, Grep, Bash, Task
 
 | 대상 | 담당 | 비고 |
 |------|------|------|
-| 원본 하네스 레포(`AI_Agent_docs`) → 프로젝트 `skills/` 풀(pull) | **harness-setup** | 상류(upstream) 방향 |
+| 원본 하네스 레포(`ai-agent-harness-docs`) → 프로젝트 `skills/` 풀(pull) | **harness-setup** | 상류(upstream) 방향 |
 | 복수앱 루트 미관리 `CLAUDE.md`/`AGENTS.md` + `.docs/root-context/` 복사본 | **harness-setup 전담** | agent-sync 접근 **금지** |
 | `.claude/skills` ↔ `.agents/skills` 횡적 미러 | **agent-sync** | 횡적·변경 기반 |
 | 단일앱 루트 `CLAUDE.md` ↔ `AGENTS.md` 일치 | **agent-sync** | 횡적·변경 기반 |

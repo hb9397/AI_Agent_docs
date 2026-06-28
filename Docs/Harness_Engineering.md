@@ -35,7 +35,7 @@
 ## 3. 저장소 구조
 
 ```text
-AI_Agent_docs/
+ai-agent-harness-docs/
 ├── skills/              ← IDE 안의 에이전트가 직접 호출하는 스킬과 템플릿의 원본
 ├── Docs/                ← 운영·소개·분석 문서
 │   ├── Harness_Engineering.md

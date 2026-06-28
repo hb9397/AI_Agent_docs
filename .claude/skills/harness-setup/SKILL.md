@@ -6,7 +6,7 @@ description: >
   '하네스 설치', 'setup', '초기 설정', '프로젝트 초기화',
   '하네스 갱신', '스킬 최신화', '하네스 업데이트',
   'harness setup', 'harness init' 요청이 오면 이 스킬을 사용한다.
-  이 저장소(AI_Agent_docs / {프로젝트명}-AI-Harness-docs)를 clone 받은 뒤,
+  이 저장소(ai-agent-harness-docs / {프로젝트명}-ai-harness-docs)를 clone 받은 뒤,
   단일/복수 애플리케이션 프로젝트를 판별하여 스킬·컨텍스트 구조를 자동 세팅한다.
   이미 세팅된 프로젝트에서 재실행하면 스킬·컨텍스트를 최신화한다.
 allowed-tools: Read, Write, Glob, Grep, Bash

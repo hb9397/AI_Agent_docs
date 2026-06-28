@@ -64,7 +64,7 @@ ls package.json pom.xml build.gradle go.mod requirements.txt Cargo.toml *.sln *.
 for d in */; do
   [ -d "$d" ] || continue
   case "$d" in
-    .docs/|.claude/|.agents/|node_modules/|.git/|*-AI-Harness-docs/) continue ;;
+    .docs/|.claude/|.agents/|node_modules/|.git/|*-ai-harness-docs/) continue ;;
   esac
   manifests=$(ls "${d}package.json" "${d}pom.xml" "${d}build.gradle" "${d}go.mod" "${d}requirements.txt" "${d}Cargo.toml" "${d}Gemfile" "${d}pyproject.toml" "${d}composer.json" 2>/dev/null | head -1)
   gitdir=$(ls -d "${d}.git" 2>/dev/null)
@@ -74,7 +74,7 @@ for d in */; do
 done
 
 # 3. 하네스 레포 디렉토리 탐색 (제외 대상)
-ls -d *-AI-Harness-docs/ AI_Agent_docs/ 2>/dev/null
+ls -d *-ai-harness-docs/ ai-agent-harness-docs/ 2>/dev/null
 ```
 
 ### 판정 규칙

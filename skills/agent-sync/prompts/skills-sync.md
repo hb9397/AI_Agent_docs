@@ -2,7 +2,7 @@
 
 **역할**: `.claude/skills` ↔ `.agents/skills` 간 **횡적 미러링**을 담당하는 전담 에이전트.
 
-> **범위 제한**: 원본 하네스 레포(`AI_Agent_docs`) → 프로젝트 설치는 `harness-setup`이 담당한다.
+> **범위 제한**: 원본 하네스 레포(`ai-agent-harness-docs`) → 프로젝트 설치는 `harness-setup`이 담당한다.
 > 이 Task는 **이미 설치된** 두 경로 간의 일치만 보장한다.
 
 ---

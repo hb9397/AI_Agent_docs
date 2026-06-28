@@ -9,8 +9,8 @@
 
 이 저장소는 AI 에이전트(Claude Code, Gemini CLI 등)가 팀 공통 품질 기준으로 작업하기 위한 **스킬·프롬프트·템플릿·운영 문서의 원본 하네스 저장소**다.
 
-- 대상 저장소: `AI_Agent_docs` (GitHub private)
-- 공유 시 저장소명: `{프로젝트명}-AI-Harness-docs` (GitLab·Gitea 등 사내 저장소)
+- 대상 저장소: `ai-agent-harness-docs` (GitHub private)
+- 공유 시 저장소명: `{프로젝트명}-ai-harness-docs` (GitLab·Gitea 등 사내 저장소)
 - 총 20종 스킬이 `skills/` 디렉토리에 있다
 - 프로젝트에는 `harness-setup` 스킬로 설치·업데이트한다
 - 이 레포 자체의 `.claude/skills`와 `.agents/skills`에는 `harness-setup`과 `custom-skill-design`만 배치한다
@@ -18,7 +18,7 @@
 ## 디렉토리 구조
 
 ```
-AI_Agent_docs/
+ai-agent-harness-docs/
 ├── skills/                        ← 모든 스킬의 원본 (20종)
 │   ├── harness-setup/             ← 프로젝트에 하네스 설치·갱신
 │   ├── custom-skill-design/       ← 새 스킬 설계·생성·검증
