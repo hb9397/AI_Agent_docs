@@ -19,7 +19,7 @@
 
 ### 🔴 필수 (추론 불가 시에만 질문, 한 번에 최대 2개)
 
-1. **상위 디렉토리 경로** — 어느 폴더 아래 repo들에 적용할지. (예: `C:\dev\project-a`)
+1. **프로젝트 최상위(컨테이너) 디렉토리 경로** — 이 폴더 자체는 git repo가 아니며, 바로 아래 애플리케이션 repo들에 적용한다. (예: `C:\dev\project-a`)
 2. **git 계정** — `user.name`과 `user.email`.
 
 ### 추론 우선
@@ -32,12 +32,17 @@
 
 ## [탐지]
 
-상위 디렉토리 **바로 아래 1단계** 폴더 중 `.git`이 있는 것만 찾는다. 재귀하지 않는다.
+프로젝트 최상위(컨테이너) 디렉토리 자체는 git repo가 아니어야 하며 적용 대상에도 넣지 않는다. 바로 아래 **1단계** 폴더 중 `.git`이 있는 애플리케이션 repo만 찾는다. 재귀하지 않는다.
 
 ### PowerShell (win32 기본)
 
 ```powershell
 $base = "C:\dev\project-a"
+
+if (Test-Path (Join-Path $base ".git")) {
+  Write-Output "WARN: 기준 디렉토리 자체가 git repo입니다. 이 스킬은 git으로 관리하지 않는 프로젝트 최상위 폴더 아래의 애플리케이션 repo들에 적용합니다."
+}
+
 Get-ChildItem -LiteralPath $base -Directory |
   Where-Object { Test-Path (Join-Path $_.FullName ".git") } |
   Select-Object -ExpandProperty FullName
@@ -47,12 +52,14 @@ Get-ChildItem -LiteralPath $base -Directory |
 
 ```bash
 base="/c/dev/project-a"
+[ -e "$base/.git" ] && printf '%s\n' "WARN: 기준 디렉토리 자체가 git repo입니다. 이 스킬은 git으로 관리하지 않는 프로젝트 최상위 폴더 아래의 애플리케이션 repo들에 적용합니다."
 for d in "$base"/*/; do
   [ -e "$d/.git" ] && printf '%s\n' "${d%/}"
 done
 ```
 
-> 결과 0건이면 "상위 디렉토리 바로 아래에 git repo가 없습니다"라고 알리고 종료한다.
+> 결과 0건이면 "프로젝트 최상위 폴더 바로 아래 1단계에 git repo가 없습니다"라고 알리고 종료한다.
+> 기준 디렉토리 자체와 2단계 이상 중첩 repo에는 적용하지 않는다.
 > 전체 트리 재귀 스캔으로 fallback 하지 않는다.
 
 ---
@@ -63,7 +70,7 @@ done
 
 ### 1) 공통 config 파일 생성
 
-`templates/gitconfig-shared.md` 구조로 상위 디렉토리에 파일을 만든다.
+`templates/gitconfig-shared.md` 구조로 프로젝트 최상위(컨테이너) 디렉토리에 파일을 만든다.
 파일이 이미 있으면 기존 내용을 먼저 보여주고 덮어쓸지 다시 확인받는다.
 
 ### 2) 각 repo에 include.path 주입

@@ -4,7 +4,7 @@
     {
       "id": 1,
       "prompt": "C:\\dev\\project-a 아래에 있는 git repo들 전부 git 계정을 홍길동 / hong@example.com 으로 한 번에 설정해줘. 전역 설정은 건드리지 말고.",
-      "expected_output": "C:/dev/project-a/.gitconfig-scoped 공통 파일 생성(user.name=홍길동, email=hong@example.com), 바로 아래 1단계 .git repo만 탐지해 목록 확인 게이트 통과 후 각 repo에 include.path 주입, --show-origin 검증 리포트 출력. --global/--system 미사용.",
+      "expected_output": "C:/dev/project-a/.gitconfig-scoped 공통 파일 생성(user.name=홍길동, email=hong@example.com), 기준 디렉토리 자체는 적용 대상에서 제외하고 바로 아래 1단계 .git repo만 탐지해 목록 확인 게이트 통과 후 각 repo에 include.path 주입, --show-origin 검증 리포트 출력. --global/--system 미사용.",
       "files": []
     },
     {
@@ -16,7 +16,7 @@
     {
       "id": 3,
       "prompt": "C:\\dev\\empty-dir 아래 repo들에 gitea 계정 적용해줘",
-      "expected_output": "바로 아래 1단계에서 .git repo가 0건이면 전체 재귀 스캔 없이 '하위에 git repo가 없습니다'로 알리고 종료. 파일 생성/수정 없음.",
+      "expected_output": "바로 아래 1단계에서 .git repo가 0건이면 전체 재귀 스캔 없이 '프로젝트 최상위 폴더 바로 아래에 git repo가 없습니다'로 알리고 종료. 파일 생성/수정 없음.",
       "files": []
     }
   ]

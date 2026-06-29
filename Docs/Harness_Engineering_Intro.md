@@ -182,7 +182,7 @@ Phase, 화면, 기능, 모듈 같은 단위로 끊는다.
 | `code-comment` | 변경 코드에 한글 주석 작성/갱신           | 가독성, 인수인계, 맥락 보강이 필요할 때 |
 | `doc-audit`    | 코드와 문서 간 괴리 분석                  | 문서가 낡은 것 같을 때                  |
 | `agent-sync`   | Agent 문서/Skills 양쪽 내용 맞춤    | 지침 파일이나 스킬이 바뀌었을 때 (원본 하네스 저장소에서 가져오는 일은 harness-setup 담당) |
-| `git-scoped-account` | 전역 설정 미변경 + 디렉토리 하위 repo들에 git 계정 일괄 적용·확인 | 한 트리 안 여러 repo의 git 계정을 한 번에 맞춰야 할 때 |
+| `git-scoped-account` | 전역 설정 미변경 + git 미관리 프로젝트 폴더 바로 아래 앱 repo들에 git 계정 일괄 적용·확인 | 한 트리 안 여러 repo의 git 계정을 한 번에 맞춰야 할 때 |
 
 ### 5. 메타 계열
 
@@ -569,7 +569,7 @@ flowchart LR
 ### 0단계. 설치
 
 - `harness-setup` (원본 하네스 저장소에서 스킬·문서를 프로젝트에 설치)
-- `git-scoped-account` (복수 앱 프로젝트에서 하위 repo git 계정 일괄 적용 시)
+- `git-scoped-account` (프로젝트 최상위 아래 앱 repo들의 git 계정을 일괄 적용할 때)
 
 ### 1단계. 최소 도입
 

@@ -85,7 +85,7 @@ ai-agent-harness-docs/
 | `code-comment` | `skills/code-comment` | 변경 파일 한글 주석 작성·갱신 | 승인 전 파일 미수정 원칙 |
 | `doc-audit` | `skills/doc-audit` | 코드와 에이전트 문서 괴리 분석 | 제안만 먼저 출력, 승인 후 반영 |
 | `agent-sync` | `skills/agent-sync` | Agent 문서/Skills 양쪽 내용 맞춤 | `.claude/skills` ↔ `.agents/skills` 미러, `CLAUDE.md` ↔ `AGENTS.md` 일치 (원본 하네스 저장소에서 가져오는 일은 harness-setup 전담) |
-| `git-scoped-account` | `skills/git-scoped-account` | 디렉토리 스코프 git 계정 일괄 적용·확인 | 전역 `~/.gitconfig` 미변경 + `include.path`로 상위 트리 하위 repo에만 user.name/email 적용 |
+| `git-scoped-account` | `skills/git-scoped-account` | 디렉토리 스코프 git 계정 일괄 적용·확인 | 전역 `~/.gitconfig` 미변경 + `include.path`로 git 미관리 프로젝트 폴더 바로 아래 앱 repo에만 user.name/email 적용 |
 
 #### E. 메타 계열
 
@@ -134,22 +134,25 @@ ai-agent-harness-docs/
 
 ```text
 [0단계 — 환경 준비]
-/git-scoped-account   (복수 앱 환경에서 앱별 git 계정 분리 시)
+/git-scoped-account   (최초 1회 — 프로젝트 최상위 아래 앱 repo들의 git 계정을 맞출 때)
         │
         ▼
-/harness-setup        (원본 하네스 저장소 → 프로젝트 스킬 설치·갱신)
+/harness-setup        (최초: 전체 스킬·AI 문서·하네스 환경 설치
+                       이후: 원본 하네스 저장소 갱신 시 최신화·재설정)
         │
         ▼
 [1단계 — 설계]
         │
         ├─ (옵션) RFP가 있으면 /rfp-ingest → 대화 컨텍스트로 전달
         │
-        ├─ 기존 코드베이스면 /harness-bootstrap (역추출)
+        ├─ 기존 코드베이스면 /harness-bootstrap
+        │     └─ 코드베이스 역추출 → /design-doc + /context-doc 산출물 일괄 생성
+        │        (이후 정규 루프 합류, 필요 시 /design-doc·/context-doc로 보강)
         │
         ▼
-/design-doc
+/design-doc           (신규 프로젝트 경로 / 이후 주요 사실·흐름 변경 시 갱신 — /doc-audit 경유)
         │
-        ├─ (권장) /context-doc
+        ├─ (권장) /context-doc  (마찬가지로 변경 시 갱신)
         │
         ├─ (옵션) /design-prototype-docs → /create-prototype
         │          화면 구조가 불확실하거나 제안 단계 목업 필요 시
@@ -186,7 +189,11 @@ impl 스킬 선택
 
 ### 기본 흐름에서 기억할 점
 
-- **0단계는 프로젝트당 한 번**이다. `harness-setup`은 설치 후 원본이 갱신됐을 때 다시 실행한다.
+- **최초 vs 갱신 시점**
+  - `/git-scoped-account`는 **최초 1회**만 실행한다. 계정 정책이 바뀔 때만 다시 돈다.
+  - `/harness-setup`은 **최초에는 전체 스킬·AI 문서·하네스 환경을 설치**하고, **이후에는 원본 하네스 저장소가 갱신됐을 때 동일 명령으로 최신화·재설정**한다.
+    - 복수 애플리케이션에서 **`.docs/`가 프로젝트 최상위 바로 하위에 이미 있다면 1회 설치가 끝난 상태**로 본다 (이후 호출은 갱신).
+  - `/design-doc`·`/context-doc` 산출물은 **프로젝트 주요 사실·중요 흐름이 바뀔 때 갱신**한다. 코드가 산출물과 어긋난 느낌이면 `/doc-audit`으로 괴리를 잡고 승인 후 반영한다.
 - **rfp-ingest는 파일을 생성하지 않는다.** 해석 결과는 대화 컨텍스트로 남아 후속 스킬이 참조한다.
 - **harness-bootstrap → 이후 정규 루프 합류**: 역추출된 설계문서를 기반으로 `design-doc`/`context-doc` 보강 후 같은 흐름을 따른다.
 - 프로젝트 전체 작업이면 `context-doc`를 거의 필수로 본다.
@@ -499,7 +506,7 @@ impl 스킬 선택
 
 ### 새 프로젝트 시작
 
-- [ ] (복수 앱 환경) `git-scoped-account`로 앱별 git 계정 정리.
+- [ ] 필요하면 `git-scoped-account`로 프로젝트 최상위 아래 앱 repo들의 git 계정 정리.
 - [ ] `harness-setup`으로 원본 하네스 저장소의 스킬을 프로젝트에 설치.
 - [ ] 문서 없는 기존 코드베이스라면 먼저 `harness-bootstrap`으로 뼈대 추출.
 - [ ] `design-doc`로 설계 문서를 만든다.

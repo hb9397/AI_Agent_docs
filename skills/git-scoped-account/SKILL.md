@@ -1,13 +1,13 @@
 ---
 name: git-scoped-account
-description: "전역 ~/.gitconfig를 건드리지 않고, 지정한 상위 디렉토리 바로 아래의 여러 git repo에 공통 git 계정(user.name/email)을 include.path 방식으로 일괄 적용·확인한다. '이 폴더 아래 repo들 git 계정 한 번에 바꿔줘', '프로젝트마다 git 계정이 달라서 이 트리에만 적용', '전역 설정 안 건드리고 하위 repo user.name/email 일괄 설정/확인', 'gitea/gitlab/github 계정 디렉토리별로 분리' 같은 요청에 사용한다."
+description: "전역 ~/.gitconfig를 건드리지 않고, git으로 관리하지 않는 프로젝트 최상위 폴더 바로 아래의 애플리케이션 git repo들에 공통 git 계정(user.name/email)을 include.path 방식으로 일괄 적용·확인한다. '이 폴더 아래 repo들 git 계정 한 번에 바꿔줘', '프로젝트마다 git 계정이 달라서 이 트리에만 적용', '전역 설정 안 건드리고 하위 repo user.name/email 일괄 설정/확인', 'gitea/gitlab/github 계정 디렉토리별로 분리' 같은 요청에 사용한다."
 allowed-tools: Read, Write, Bash, Glob
 ---
 
 # git-scoped-account
 
-전역 `~/.gitconfig`는 그대로 두고, 한 상위 디렉토리 바로 아래에 있는 여러 git repo가
-공통 계정 설정 파일을 `include.path`로 참조하게 만들어, 그 디렉토리 트리에만 git 계정을 일괄 적용한다.
+전역 `~/.gitconfig`는 그대로 두고, git으로 관리하지 않는 프로젝트 최상위 폴더 바로 아래의 애플리케이션 git repo들이
+공통 계정 설정 파일을 `include.path`로 참조하게 만들어, 그 프로젝트 폴더의 하위 repo들에만 git 계정을 일괄 적용한다.
 
 명령은 사용자 환경(win32/PowerShell 우선, POSIX 대안)에 맞춰 실행한다.
 세부 명령·탐지·검증 로직은 `prompts/commands.md`에 있다. 이 파일에는 흐름만 둔다.
@@ -25,18 +25,18 @@ allowed-tools: Read, Write, Bash, Glob
 
 ## Step 1 — 입력 수집
 
-상위 디렉토리 경로 + 적용할 `user.name` / `user.email`를 확보한다.
+프로젝트 최상위(컨테이너) 디렉토리 경로 + 적용할 `user.name` / `user.email`를 확보한다.
 대화·인자에서 추론 가능하면 묻지 않는다. 불명확한 항목만 묻는다.
 질문 우선순위는 `prompts/commands.md`의 [입력 수집] 섹션을 참조한다.
 
 ---
 
-## Step 2 — 하위 repo 탐지 (적용 대상 목록화)
+## Step 2 — 애플리케이션 repo 탐지 (적용 대상 목록화)
 
-상위 디렉토리 **바로 아래 1단계** 폴더 중 `.git`을 가진 것만 탐지한다.
+프로젝트 최상위(컨테이너) 디렉토리 자체는 적용 대상이 아니다. 바로 아래 **1단계** 폴더 중 `.git`을 가진 애플리케이션 repo만 포함한다.
 탐지 명령은 `prompts/commands.md`의 [탐지] 섹션을 참조한다.
 
-> 중첩(2단계 이상) repo는 의도적으로 제외한다. 탐지 결과 0건이면 이유와 함께 종료한다.
+> 중첩(2단계 이상) repo는 의도적으로 제외한다. 바로 아래에서 탐지 결과가 0건이면 이유와 함께 종료한다.
 
 ---
 
@@ -54,7 +54,7 @@ allowed-tools: Read, Write, Bash, Glob
 
 세부 명령은 `prompts/commands.md`의 [적용] 섹션을 참조한다.
 
-1. 상위 디렉토리에 공통 config 파일을 생성한다. 구조는 `templates/gitconfig-shared.md` 참조.
+1. 프로젝트 최상위(컨테이너) 디렉토리에 공통 config 파일을 생성한다. 구조는 `templates/gitconfig-shared.md` 참조.
    - 이미 존재하면 덮어쓰기 전 내용을 보여주고 다시 확인받는다.
 2. 대상 repo 각각의 로컬 config에 `include.path`(공통 파일의 절대경로)를 주입한다.
 
