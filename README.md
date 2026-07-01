@@ -316,6 +316,9 @@ impl 스킬 선택
 | `impl-reuse-scan` | `공통 자산 스캔`, `중복 구현 방지`, `Phase 시작 전 점검` | 작업지침서가 손댈 영역의 기존 API/DTO/Entity/Component/Hook/Util을 코드베이스에서 발견·보고(자동 반영 금지) |
 | `impl-verify` | `구현 검증`, `Phase 검증`, `단계별 검증`, `페이즈 종료 검증` | 작업지침서의 검증 기준·통합 검증 시나리오를 추출해 PASS/FAIL 매트릭스 산출(코드/지침서 수정 금지) |
 
+> **impl 산출물 저장 규칙**: `impl-fe-be-doc`/`impl-doc` 모두 작업지침서를 단일앱은 `.docs/impl-doc/{사용자}/{YYMMDD}-{seq}.{slug}-impl-{kind}.md`, 복수앱은 `.docs/{앱}/impl-doc/{사용자}/{YYMMDD}-{seq}.{slug}-impl-{kind}.md`에 저장한다.
+> 두 스킬은 같은 디렉토리에 `{YYMMDD}-0.{앱이름}-roadmap-impl-index.md` 로드맵 인덱스 문서 1개를 공용으로 유지한다. 그 디렉토리에 처음 impl 문서를 만들 때 함께 생성하고(파일명 날짜는 최초 생성 시점에 고정), 이후 다른 impl 문서가 새로 생기거나 갱신될 때마다 인덱스도 함께 갱신한다. 참고 예시: `.docs/be-keai-collector/impl-doc/lhb9397/260629-2.collector-roadmap-impl-index.md`.
+
 ### 품질·운영 계열
 
 | 스킬 | 트리거 예시 | 역할 |
